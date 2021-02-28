@@ -5,5 +5,7 @@ project (${PROJECT_NAME} CXX)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
+set(WORLDENGINE_DIR ${PROJECT_SOURCE_DIR})
+
 add_subdirectory(external/plate-tectonics)
 add_subdirectory(worldengine)
