@@ -1,9 +1,17 @@
 #include "plates.h"
+#include "generation.h"
 #include "world.h"
 
-#include <boost/log/trivial.hpp>
 #include <chrono>
+#include <random>
+
+#include <boost/log/trivial.hpp>
+#include <boost/python/numpy.hpp>
+
 #include <platecapi.hpp>
+
+namespace py    = boost::python;
+namespace numpy = boost::python::numpy;
 
 namespace WorldEngine
 {
@@ -98,8 +106,15 @@ std::shared_ptr<World> PlatesSimulation(const std::string&        name,
                 gammaCurve,
                 curveOffset));
 
-   // TODO: world elevation
-   // TODO: world plates
+   py::tuple size = py::make_tuple(height, width);
+   numpy::ndarray elevation =
+      numpy::array(py::api::object(heightmap)).reshape(size);
+   numpy::ndarray plates = numpy::array(py::api::object(platesmap),
+                                        numpy::dtype::get_builtin<uint16_t>())
+                              .reshape(size);
+
+   world->SetElevationData(elevation);
+   world->SetPlatesData(plates);
 
    platec_api_destroy(p);
 
@@ -136,7 +151,7 @@ void WorldGen(const std::string& name,
                                                    oceanLevel,
                                                    step);
 
-   // TODO: centerLand(world);
+   CenterLand(*world);
 
    endTime = std::chrono::steady_clock::now();
    auto elapsedTime =
@@ -149,7 +164,9 @@ void WorldGen(const std::string& name,
 
    startTime = std::chrono::steady_clock::now();
 
-   // TODO: addNoiseToElevation(world, random)
+   std::default_random_engine              generator;
+   std::uniform_int_distribution<uint32_t> distribution(0, 4095);
+   AddNoiseToElevation(*world, distribution(generator));
 
    endTime = std::chrono::steady_clock::now();
    elapsedTime =
@@ -162,8 +179,8 @@ void WorldGen(const std::string& name,
    startTime = std::chrono::steady_clock::now();
 
    if (fadeBorders)
-      ; // TODO: placeOceansAtMapBorders(world)
-   // TODO: initializeOceanAndThresholds
+      PlaceOceansAtMapBorders(*world);
+   InitializeOceanAndThresholds(*world);
 
    endTime = std::chrono::steady_clock::now();
    elapsedTime =

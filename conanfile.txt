@@ -4,3 +4,6 @@ gtest/1.10.0
 
 [generators]
 cmake
+
+[options]
+boost:without_python=False

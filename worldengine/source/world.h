@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/python/numpy.hpp>
+
 namespace WorldEngine
 {
 
@@ -23,6 +25,25 @@ public:
          float                       gammaCurve  = DEFAULT_GAMMA_CURVE,
          float                       curveOffset = DEFAULT_CURVE_OFFSET);
    ~World();
+
+   const std::string& name() const;
+   uint32_t           width() const;
+   uint32_t           height() const;
+   uint32_t           seed() const;
+   uint32_t           numPlates() const;
+   float              oceanLevel() const;
+   const Step&        step() const;
+
+   bool HasBiome() const;
+   bool HasHumidity() const;
+   bool HasIrrigiation() const;
+   bool HasPermeability() const;
+   bool HasWatermap() const;
+   bool HasPrecipitations() const;
+   bool HasTemperature() const;
+
+   void SetElevationData(const boost::python::numpy::ndarray& data);
+   void SetPlatesData(const boost::python::numpy::ndarray& data);
 
 private:
    std::string          name_;
