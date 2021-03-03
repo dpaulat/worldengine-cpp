@@ -20,8 +20,8 @@ public:
          Size                        size,
          uint32_t                    seed,
          const GenerationParameters& generationParams,
-         const std::vector<float>&   temps,
-         const std::vector<float>&   humids,
+         const std::vector<float>&   temps       = DEFAULT_TEMPS,
+         const std::vector<float>&   humids      = DEFAULT_HUMIDS,
          float                       gammaCurve  = DEFAULT_GAMMA_CURVE,
          float                       curveOffset = DEFAULT_CURVE_OFFSET);
    ~World();
@@ -42,8 +42,8 @@ public:
    bool HasPrecipitations() const;
    bool HasTemperature() const;
 
-   void SetElevationData(const boost::python::numpy::ndarray& data);
-   void SetPlatesData(const boost::python::numpy::ndarray& data);
+   void SetElevationData(const float* heightmap);
+   void SetPlatesData(const uint32_t* platesmap);
 
 private:
    std::string          name_;
@@ -54,6 +54,9 @@ private:
    std::vector<float>   humids_;
    float                gammaCurve_;
    float                curveOffset_;
+
+   boost::python::numpy::ndarray elevation_;
+   boost::python::numpy::ndarray plates_;
 };
 
 } // namespace WorldEngine

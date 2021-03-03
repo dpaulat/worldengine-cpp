@@ -10,9 +10,7 @@ add_library(libworldengine STATIC source/biome.cpp
                                   source/plates.cpp
                                   source/plates.h
                                   source/world.cpp
-                                  source/world.h
-                                  source/worldengine.cpp
-                                  source/worldengine.h)
+                                  source/world.h)
 
 target_include_directories(libworldengine PRIVATE ${WORLDENGINE_DIR}/external/plate-tectonics/src)
 target_include_directories(libworldengine PRIVATE ${PYTHON_INCLUDE_DIR})

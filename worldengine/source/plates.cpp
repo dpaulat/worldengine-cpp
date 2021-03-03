@@ -6,12 +6,8 @@
 #include <random>
 
 #include <boost/log/trivial.hpp>
-#include <boost/python/numpy.hpp>
 
 #include <platecapi.hpp>
-
-namespace py    = boost::python;
-namespace numpy = boost::python::numpy;
 
 namespace WorldEngine
 {
@@ -106,33 +102,26 @@ std::shared_ptr<World> PlatesSimulation(const std::string&        name,
                 gammaCurve,
                 curveOffset));
 
-   py::tuple size = py::make_tuple(height, width);
-   numpy::ndarray elevation =
-      numpy::array(py::api::object(heightmap)).reshape(size);
-   numpy::ndarray plates = numpy::array(py::api::object(platesmap),
-                                        numpy::dtype::get_builtin<uint16_t>())
-                              .reshape(size);
-
-   world->SetElevationData(elevation);
-   world->SetPlatesData(plates);
+   world->SetElevationData(heightmap);
+   world->SetPlatesData(platesmap);
 
    platec_api_destroy(p);
 
    return world;
 }
 
-void WorldGen(const std::string& name,
-              uint32_t           width,
-              uint32_t           height,
-              uint32_t           seed,
-              std::vector<float> temps,
-              std::vector<float> humids,
-              float              gammaCurve,
-              float              curveOffset,
-              uint32_t           numPlates,
-              uint32_t           oceanLevel,
-              const Step&        step,
-              bool               fadeBorders)
+void WorldGen(const std::string&        name,
+              uint32_t                  width,
+              uint32_t                  height,
+              uint32_t                  seed,
+              const std::vector<float>& temps,
+              const std::vector<float>& humids,
+              float                     gammaCurve,
+              float                     curveOffset,
+              uint32_t                  numPlates,
+              uint32_t                  oceanLevel,
+              const Step&               step,
+              bool                      fadeBorders)
 {
    std::chrono::steady_clock::time_point startTime;
    std::chrono::steady_clock::time_point endTime;

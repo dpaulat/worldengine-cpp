@@ -1,7 +1,16 @@
 #include "world.h"
 
+#include <boost/log/trivial.hpp>
+#include <boost/python/numpy.hpp>
+
+namespace py = boost::python;
+namespace np = boost::python::numpy;
+
 namespace WorldEngine
 {
+
+typedef float    ElevationType;
+typedef uint32_t PlateType;
 
 World::World(const std::string&          name,
              Size                        size,
@@ -18,7 +27,10 @@ World::World(const std::string&          name,
     temps_(temps),
     humids_(humids),
     gammaCurve_(gammaCurve),
-    curveOffset_(curveOffset)
+    curveOffset_(curveOffset),
+    elevation_(
+       np::empty(py::make_tuple(0), np::dtype::get_builtin<ElevationType>())),
+    plates_(np::empty(py::make_tuple(0), np::dtype::get_builtin<PlateType>()))
 {
 }
 
@@ -94,7 +106,38 @@ bool World::HasTemperature() const
    return false;
 }
 
-void World::SetElevationData(const boost::python::numpy::ndarray& data) {}
-void World::SetPlatesData(const boost::python::numpy::ndarray& data) {}
+void World::SetElevationData(const float* heightmap)
+{
+   // TODO: Can we optimize by making a 2D ndarray instead of reshaping?
+   py::tuple  shape  = py::make_tuple(size_.height_ * size_.width_);
+   py::tuple  stride = py::make_tuple(sizeof(float));
+   py::tuple  size   = py::make_tuple(size_.height_, size_.width_);
+   py::object own;
+
+   elevation_ =
+      np::from_data(
+         heightmap, np::dtype::get_builtin<ElevationType>(), shape, stride, own)
+         .reshape(size);
+
+   BOOST_LOG_TRIVIAL(debug) << "Elevation ndarray:" << std::endl
+                            << py::extract<const char*>(py::str(elevation_));
+}
+
+void World::SetPlatesData(const uint32_t* platesmap)
+{
+   // TODO: Can we optimize by making a 2D ndarray instead of reshaping?
+   py::tuple  shape  = py::make_tuple(size_.height_ * size_.width_);
+   py::tuple  stride = py::make_tuple(sizeof(float));
+   py::tuple  size   = py::make_tuple(size_.height_, size_.width_);
+   py::object own;
+
+   plates_ =
+      np::from_data(
+         platesmap, np::dtype::get_builtin<PlateType>(), shape, stride, own)
+         .reshape(size);
+
+   BOOST_LOG_TRIVIAL(debug) << "Platesmap ndarray:" << std::endl
+                            << py::extract<const char*>(py::str(plates_));
+}
 
 } // namespace WorldEngine

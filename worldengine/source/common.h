@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace WorldEngine
 {
@@ -65,5 +66,11 @@ const float    DEFAULT_CURVE_OFFSET     = 0.2f;
 const float    DEFAULT_OCEAN_LEVEL      = 1.0f;
 const Step     DEFAULT_STEP             = STEP_FULL;
 const bool     DEFAULT_FADE_BORDERS     = true;
+
+const std::vector<float> DEFAULT_TEMPS {
+   0.126f, 0.235f, 0.406f, 0.561f, 0.634f, 0.876f};
+
+const std::vector<float> DEFAULT_HUMIDS {
+   0.059, 0.222, 0.493, 0.764, 0.927, 0.986, 0.998};
 
 } // namespace WorldEngine
