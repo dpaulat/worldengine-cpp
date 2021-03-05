@@ -31,45 +31,11 @@ enum class WorldFormat
    protobuf
 };
 
-void GenerateWorld(const std::string& worldName,
-                   const std::string& outputDir,
-                   WorldFormat        worldFormat);
-void PrintWorldInfo(const World& world);
-
-void GenerateWorld(const std::string& worldName,
-                   const std::string& outputDir,
-                   WorldFormat        worldFormat)
+struct ArgumentsType
 {
-   BOOST_LOG_TRIVIAL(info) << "Producing output:";
-
-   // Save data
-   std::string filename = outputDir + "/" + worldName + ".world";
-   if (worldFormat == WorldFormat::protobuf) {}
-}
-
-void PrintWorldInfo(const World& world)
-{
-   std::cout << "Name               : " << world.name() << std::endl;
-   std::cout << "Width              : " << world.width() << std::endl;
-   std::cout << "Height             : " << world.height() << std::endl;
-   std::cout << "Seed               : " << world.seed() << std::endl;
-   std::cout << "Num Plates         : " << world.numPlates() << std::endl;
-   std::cout << "Ocean Level        : " << world.oceanLevel() << std::endl;
-   std::cout << "Step               : " << world.step().name_ << std::endl;
-
-   std::cout << "Has Biome          : " << world.HasBiome() << std::endl;
-   std::cout << "Has Humidity       : " << world.HasHumidity() << std::endl;
-   std::cout << "Has Irrigation     : " << world.HasIrrigiation() << std::endl;
-   std::cout << "Has Permeability   : " << world.HasPermeability() << std::endl;
-   std::cout << "Has Watermap       : " << world.HasWatermap() << std::endl;
-   std::cout << "Has Precipitations : " << world.HasPrecipitations()
-             << std::endl;
-   std::cout << "Has Temperature    : " << world.HasTemperature() << std::endl;
-}
-
-void CliMain(int argc, const char** argv)
-{
-   // TODO: Parameter validation
+   // Positional options
+   std::string operation;
+   std::string file;
 
    // Generic options
    bool version;
@@ -116,196 +82,365 @@ void CliMain(int argc, const char** argv)
    std::vector<uint32_t> exportDimensions;
    std::vector<uint32_t> exportNormalize;
    std::vector<uint32_t> exportSubset;
+};
 
+int  AddOptions(int                      argc,
+                const char**             argv,
+                ArgumentsType&           args,
+                po::options_description& options);
+void GenerateWorld(const std::string& worldName,
+                   const std::string& outputDir,
+                   WorldFormat        worldFormat);
+void PrintUsage(const std::string&             programName,
+                const po::options_description& options);
+void PrintWorldInfo(const World& world);
+
+int AddOptions(int                      argc,
+               const char**             argv,
+               ArgumentsType&           args,
+               po::options_description& options)
+{
    po::positional_options_description p;
-   p.add("operator", 1);
+   p.add("operation", 1);
    p.add("file", 1);
+
+   po::options_description hidden("Hidden options");
+   hidden.add_options() //
+      ("operation",
+       po::value<std::string>(&args.operation)->default_value("world"))
+      //
+      ("file", po::value<std::string>(&args.file));
 
    po::options_description genericOptions("Generic options");
    genericOptions.add_options() //
       ("version",
-       po::bool_switch(&version)->default_value(false),
+       po::bool_switch(&args.version)->default_value(false),
        "Print version string")
       //
       ("help,h",
-       po::bool_switch(&help)->default_value(false),
+       po::bool_switch(&args.help)->default_value(false),
        "Produce help message")
       //
       ("verbose,v",
-       po::bool_switch(&verbose)->default_value(false),
+       po::bool_switch(&args.verbose)->default_value(false),
        "Enable verbose messages");
 
    po::options_description configuration("Configuration");
    configuration.add_options() //
       ("output-dir,o",
-       po::value<std::string>(&outputDir)
+       po::value<std::string>(&args.outputDir)
           ->value_name("dir")
           ->default_value("."),
        "Set output directory")
       //
       ("worldname,n", //
-       po::value<std::string>(&worldName),
+       po::value<std::string>(&args.worldName),
        "Set world name")
       //
       ("format,f",
-       po::value<std::string>(&fileFormat)->default_value("protobuf"),
+       po::value<std::string>(&args.fileFormat)->default_value("protobuf"),
        "Set file format\n"
        "Valid formats: hdf5, protobuf")
       //
       ("seed,s",
-       po::value<uint32_t>(&seed),
+       po::value<uint32_t>(&args.seed),
        "Initializes the pseudo-random generation")
       //
       ("step,t",
-       po::value<std::string>(&step)->default_value("full"),
+       po::value<std::string>(&args.step)->default_value("full"),
        "Specifies how far to proceed in the world generation process\n"
        "Valid steps: plates, precipitations, full")
       //
       ("width,x",
-       po::value<uint32_t>(&width)->default_value(512),
+       po::value<uint32_t>(&args.width)->default_value(512),
        "Width of the world to be generated")
       //
       ("height,y",
-       po::value<uint32_t>(&height)->default_value(512),
+       po::value<uint32_t>(&args.height)->default_value(512),
        "Height of the world to be generated")
       //
       ("plates,q",
-       po::value<uint32_t>(&numPlates)->default_value(10),
+       po::value<uint32_t>(&args.numPlates)->default_value(10),
        "Number of plates")
       //
       ("black-and-white",
-       po::bool_switch(&blackAndWhite)->default_value(false),
+       po::bool_switch(&args.blackAndWhite)->default_value(false),
        "Generate maps in black and white");
 
    po::options_description generateOptions(
       "Generate options (plate and world modes only)");
    generateOptions.add_options() //
       ("rivers,r",               //
-       po::bool_switch(&rivers)->default_value(false),
+       po::bool_switch(&args.rivers)->default_value(false),
        "Generate rivers map")
       //
       ("grayscale-heightmap",
-       po::bool_switch(&grayscaleHeightmap)->default_value(false),
+       po::bool_switch(&args.grayscaleHeightmap)->default_value(false),
        "Produce a grayscale heightmap")
       //
       ("ocean-level",
-       po::value<float>(&oceanLevel)->default_value(1.0f),
+       po::value<float>(&args.oceanLevel)->default_value(1.0f),
        "Elevation cutoff for sea level")
       //
       ("temps",
-       po::value<std::vector<float>>(&temps)->multitoken()->default_value(
-          DEFAULT_TEMPS),
+       po::value<std::vector<float>>(&args.temps)
+          ->multitoken()
+          ->default_value(DEFAULT_TEMPS),
        "Provide alternate ranges for temperatures")
       //
       ("humidity",
-       po::value<std::vector<float>>(&humids)->multitoken()->default_value(
-          DEFAULT_HUMIDS),
+       po::value<std::vector<float>>(&args.humids)
+          ->multitoken()
+          ->default_value(DEFAULT_HUMIDS),
        "Provide alternate ranges for humidities")
       //
       ("gamma-value",
-       po::value<float>(&gammaValue)->default_value(DEFAULT_GAMMA_CURVE),
+       po::value<float>(&args.gammaValue)->default_value(DEFAULT_GAMMA_CURVE),
        "Gamma value for temperature/precipitation gamma correction curve")
       //
       ("gamma-offset",
-       po::value<float>(&curveOffset)->default_value(DEFAULT_CURVE_OFFSET),
+       po::value<float>(&args.curveOffset)->default_value(DEFAULT_CURVE_OFFSET),
        "Adjustment value for temperature/precipitation gamma correction curve")
       //
       ("not-fade-borders",
-       po::bool_switch(&notFadeBorders)->default_value(false),
+       po::bool_switch(&args.notFadeBorders)->default_value(false),
        "Don't fade borders")
       //
       ("scatter",
-       po::bool_switch(&scatterPlot)->default_value(false),
+       po::bool_switch(&args.scatterPlot)->default_value(false),
        "Generate scatter plot")
       //
       ("sat",
-       po::bool_switch(&satelliteMap)->default_value(false),
+       po::bool_switch(&args.satelliteMap)->default_value(false),
        "Generate satellite map")
       //
       ("ice",
-       po::bool_switch(&icecapsMap)->default_value(false),
+       po::bool_switch(&args.icecapsMap)->default_value(false),
        "Generate ice caps map");
 
    po::options_description ancientOptions(
       "Ancient map options (ancient map mode only)");
    ancientOptions.add_options() //
       ("worldfile,w",
-       po::value<std::string>(&worldFile)->value_name("filename"),
+       po::value<std::string>(&args.worldFile)->value_name("filename"),
        "File to be loaded")
       //
       ("generated-file,g",
-       po::value<std::string>(&generatedFile)->value_name("filename"),
+       po::value<std::string>(&args.generatedFile)->value_name("filename"),
        "File to be generated")
       //
       ("resize-factor,f",
-       po::value<uint32_t>(&resizeFactor)->default_value(1),
+       po::value<uint32_t>(&args.resizeFactor)->default_value(1),
        "Resize factor\n"
        "NOTE: This can only be used to increase the size of the map")
       //
       ("sea-color",
-       po::value<std::string>(&seaColor)->default_value("brown"),
+       po::value<std::string>(&args.seaColor)->default_value("brown"),
        "Sea color\n"
        "Valid values: blue, brown")
       //
       ("not-draw-biome",
-       po::bool_switch(&notDrawBiome)->default_value(false),
+       po::bool_switch(&args.notDrawBiome)->default_value(false),
        "Don't draw biome")
       //
       ("not-draw-mountains",
-       po::bool_switch(&notDrawMountains)->default_value(false),
+       po::bool_switch(&args.notDrawMountains)->default_value(false),
        "Don't draw mountains")
       //
       ("not-draw-rivers",
-       po::bool_switch(&notDrawRivers)->default_value(false),
+       po::bool_switch(&args.notDrawRivers)->default_value(false),
        "Don't draw rivers")
       //
       ("draw-outer-border",
-       po::bool_switch(&drawOuterBorder)->default_value(false),
+       po::bool_switch(&args.drawOuterBorder)->default_value(false),
        "Draw outer land border");
 
    po::options_description exportOptions("Export options");
    exportOptions.add_options() //
       ("export-format",
-       po::value<std::string>(&exportFormat)->default_value("PNG"),
+       po::value<std::string>(&args.exportFormat)->default_value("PNG"),
        "Export to a specific format\n"
        "All possible formats: http://www.gdal.org/formats_list.html")
       //
       ("export-datatype",
-       po::value<std::string>(&exportDatatype)->default_value("uint16"),
+       po::value<std::string>(&args.exportDatatype)->default_value("uint16"),
        "Type of stored data\n"
        "Valid values: int16, int32, uint16, uint32, float32")
       //
       ("export-dimensions",
-       po::value<std::vector<uint32_t>>(&exportDimensions)->multitoken(),
+       po::value<std::vector<uint32_t>>(&args.exportDimensions)->multitoken(),
        "Export to desired dimensions\n"
        "Example: 4096 4096")
       //
       ("export-normalize",
-       po::value<std::vector<uint32_t>>(&exportNormalize)->multitoken(),
+       po::value<std::vector<uint32_t>>(&args.exportNormalize)->multitoken(),
        "Normalize the data set between min and max\n"
        "Example: 0 255")
       //
       ("export-subset",
-       po::value<std::vector<uint32_t>>(&exportSubset)->multitoken());
+       po::value<std::vector<uint32_t>>(&args.exportSubset)->multitoken());
 
-   po::options_description options("Allowed options");
    options.add(genericOptions);
    options.add(configuration);
    options.add(generateOptions);
    options.add(ancientOptions);
    options.add(exportOptions);
 
-   po::variables_map vm;
-   po::store(
-      po::command_line_parser(argc, argv).options(options).positional(p).run(),
-      vm);
-   po::notify(vm);
+   po::options_description cmdline_options;
+   cmdline_options.add(options);
+   cmdline_options.add(hidden);
 
-   if (help)
+   po::variables_map vm;
+
+   try
    {
-      std::cout << options << std::endl;
+      po::store(po::command_line_parser(argc, argv)
+                   .options(cmdline_options)
+                   .positional(p)
+                   .run(),
+                vm);
+      po::notify(vm);
+   }
+   catch (po::too_many_positional_options_error& e)
+   {
+      //
+      std::cerr << e.what() << std::endl;
+      return -1;
+   }
+   catch (po::error_with_option_name& e)
+   {
+      std::cerr << e.what() << std::endl;
+      return -1;
+   }
+   catch (po::unknown_option& e)
+   {
+      std::cerr << e.what() << std::endl;
+      return -1;
+   }
+
+   return 0;
+}
+
+void GenerateWorld(const std::string& worldName,
+                   const std::string& outputDir,
+                   WorldFormat        worldFormat)
+{
+   BOOST_LOG_TRIVIAL(info) << "Producing output:";
+
+   // Save data
+   std::string filename = outputDir + "/" + worldName + ".world";
+   if (worldFormat == WorldFormat::protobuf) {}
+}
+
+void PrintArguments(const ArgumentsType& args)
+{
+   // TODO
+   bool generationOperation = true;
+   bool ancientMap          = true;
+
+   std::cout << "WorldEngine - A World Generator (version 0.19.1)" << std::endl;
+   std::cout << "------------------------------------------------" << std::endl;
+   if (generationOperation)
+   {
+      std::cout << " Operation            : " << args.operation << " generation"
+                << std::endl;
+      std::cout << " Seed                 : " << args.seed << std::endl;
+      std::cout << " Name                 : " << args.worldName << std::endl;
+      std::cout << " Width                : " << args.width << std::endl;
+      std::cout << " Height               : " << args.height << std::endl;
+      std::cout << " Number of plates     : " << args.numPlates << std::endl;
+      std::cout << " World format         : " << args.fileFormat << std::endl;
+      std::cout << " Black and white maps : " << args.blackAndWhite
+                << std::endl;
+      std::cout << " Step                 : " << args.step << std::endl;
+      std::cout << " Grayscale heightmap  : " << args.grayscaleHeightmap
+                << std::endl;
+      std::cout << " Icecaps heightmap    : " << args.icecapsMap << std::endl;
+      std::cout << " Rivers map           : " << args.rivers << std::endl;
+      std::cout << " Scatter plot         : " << args.scatterPlot << std::endl;
+      std::cout << " Satellite map        : " << args.satelliteMap << std::endl;
+      std::cout << " Fade borders         : " << !args.notFadeBorders
+                << std::endl;
+      std::cout << " Temperature ranges   : " << args.temps << std::endl;
+      std::cout << " Humidity ranges      : " << args.humids << std::endl;
+      std::cout << " Gamma value          : " << args.gammaValue << std::endl;
+      std::cout << " Gamma offset         : " << args.curveOffset << std::endl;
+   }
+   if (ancientMap)
+   {
+      std::cout << " Operation              : " << args.operation
+                << " generation" << std::endl;
+      std::cout << " Resize factor          : " << args.resizeFactor
+                << std::endl;
+      std::cout << " World file             : " << args.worldFile << std::endl;
+      std::cout << " Sea color              : " << args.seaColor << std::endl;
+      std::cout << " Draw biome             : " << !args.notDrawBiome
+                << std::endl;
+      std::cout << " Draw rivers            : " << !args.notDrawRivers
+                << std::endl;
+      std::cout << " Draw mountains         : " << !args.notDrawMountains
+                << std::endl;
+      std::cout << " Draw outer land border : " << args.drawOuterBorder
+                << std::endl;
+   }
+}
+
+void PrintUsage(const std::string&             programName,
+                const po::options_description& options)
+{
+   std::cout << "Usage: " << programName
+             << " [<operation> [<file>]] [<options>] " << std::endl;
+   std::cout << std::endl;
+   std::cout << "Arguments:" << std::endl;
+   std::cout << "  operation                             "
+             << "Valid operations: world, plates, ancient_map," << std::endl;
+   std::cout << "                                        "
+             << "info, export" << std::endl;
+   std::cout << "  file                                  "
+             << "Input filename for info and export" << std::endl;
+   std::cout << "                                        "
+             << "operations " << std::endl;
+   std::cout << std::endl;
+   std::cout << options << std::endl;
+}
+
+void PrintWorldInfo(const World& world)
+{
+   std::cout << "Name               : " << world.name() << std::endl;
+   std::cout << "Width              : " << world.width() << std::endl;
+   std::cout << "Height             : " << world.height() << std::endl;
+   std::cout << "Seed               : " << world.seed() << std::endl;
+   std::cout << "Num Plates         : " << world.numPlates() << std::endl;
+   std::cout << "Ocean Level        : " << world.oceanLevel() << std::endl;
+   std::cout << "Step               : " << world.step().name_ << std::endl;
+
+   std::cout << "Has Biome          : " << world.HasBiome() << std::endl;
+   std::cout << "Has Humidity       : " << world.HasHumidity() << std::endl;
+   std::cout << "Has Irrigation     : " << world.HasIrrigiation() << std::endl;
+   std::cout << "Has Permeability   : " << world.HasPermeability() << std::endl;
+   std::cout << "Has Watermap       : " << world.HasWatermap() << std::endl;
+   std::cout << "Has Precipitations : " << world.HasPrecipitations()
+             << std::endl;
+   std::cout << "Has Temperature    : " << world.HasTemperature() << std::endl;
+}
+
+void CliMain(int argc, const char** argv)
+{
+   int                     status;
+   ArgumentsType           args;
+   po::options_description options("Allowed options");
+
+   status = AddOptions(argc, argv, args, options);
+
+   // TODO: Parameter validation
+
+   if (args.help || status != 0)
+   {
+      PrintUsage((argc > 0 ? argv[0] : "worldengine.exe"), options);
       return;
    }
+
+   PrintArguments(args);
 }
 
 } // namespace WorldEngine
