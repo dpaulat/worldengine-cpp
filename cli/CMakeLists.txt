@@ -10,15 +10,10 @@ target_include_directories(worldengine PRIVATE ${libworldengine_SOURCE_DIR}/sour
 target_link_directories(worldengine PRIVATE ${PYTHON_LIBS_DIR})
 target_link_libraries(worldengine python3 libworldengine)
 
-find_package(Boost)
+find_package(Boost COMPONENTS log
+                              numpy39
+                              program_options REQUIRED)
 
-if(BOOST_FOUND)
-    set(WORLDENGINE_BOOST_LIBS libboost_system
-                               libboost_log
-                               libboost_program_options
-                               libboost_python39
-                               libboost_numpy39
-                               libboost_thread)
-
-    target_link_libraries(worldengine ${WORLDENGINE_BOOST_LIBS})
-endif()
+target_link_libraries(worldengine Boost::log
+                                  Boost::numpy39
+                                  Boost::program_options)

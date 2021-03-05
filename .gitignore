@@ -1,4 +1,4 @@
-build/
+build*/
 
 # CMake.gitignore
 CMakeLists.txt.user
