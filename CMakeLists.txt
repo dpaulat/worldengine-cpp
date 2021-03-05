@@ -31,9 +31,6 @@ set(WORLDENGINE_DIR ${PROJECT_SOURCE_DIR})
 set(PYTHON_INCLUDE_DIR $ENV{PYTHON_INCLUDE})
 set(PYTHON_LIBS_DIR $ENV{PYTHON_LIBS})
 
-# TODO: Plate Tectonics is LGPL, force shared library
-# Needs modification for Visual Studio, no dllexports exist
-add_subdirectory(external/plate-tectonics)
-
+add_subdirectory(external)
 add_subdirectory(worldengine)
 add_subdirectory(cli)

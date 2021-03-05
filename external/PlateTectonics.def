@@ -1,0 +1,13 @@
+LIBRARY PlateTectonics
+EXPORTS
+    platec_api_create
+    platec_api_destroy
+    platec_api_get_agemap
+    platec_api_get_heightmap
+    platec_api_get_platesmap
+    platec_api_is_finished
+    platec_api_step
+    platec_api_velocity_unity_vector_x
+    platec_api_velocity_unity_vector_y
+    lithosphere_getMapWidth
+    lithosphere_getMapHeight
