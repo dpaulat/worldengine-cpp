@@ -1,9 +1,0 @@
-[requires]
-boost/1.75.0
-gtest/1.10.0
-
-[generators]
-cmake
-
-[options]
-boost:without_python=False

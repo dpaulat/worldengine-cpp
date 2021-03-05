@@ -2,6 +2,25 @@ cmake_minimum_required(VERSION 3.19)
 set(PROJECT_NAME worldengine)
 project (${PROJECT_NAME} CXX)
 
+include(${PROJECT_SOURCE_DIR}/external/cmake-conan/conan.cmake)
+
+conan_cmake_configure(REQUIRES boost/1.75.0
+                               gtest/1.10.0
+                      GENERATORS cmake
+                                 cmake_find_package
+                                 cmake_paths
+                      BUILD_REQUIRES cmake/3.19.4
+                      IMPORTS "bin, *.dll -> ./bin"
+                      IMPORTS "lib, *.dylib -> ./bin"
+                      OPTIONS boost:without_python=False)
+
+conan_cmake_autodetect(settings)
+
+conan_cmake_install(PATH_OR_REFERENCE .
+                    BUILD missing
+                    REMOTE conan-center
+                    SETTINGS ${settings})
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
 conan_basic_setup(TARGETS)

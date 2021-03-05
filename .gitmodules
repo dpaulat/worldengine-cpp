@@ -1,3 +1,6 @@
 [submodule "external/plate-tectonics"]
 	path = external/plate-tectonics
 	url = https://github.com/Mindwerks/plate-tectonics
+[submodule "external/cmake-conan"]
+	path = external/cmake-conan
+	url = https://github.com/conan-io/cmake-conan.git

@@ -12,6 +12,8 @@ add_library(libworldengine STATIC source/biome.cpp
                                   source/world.cpp
                                   source/world.h)
 
+find_package(Boost)
+
 target_include_directories(libworldengine PRIVATE ${WORLDENGINE_DIR}/external/plate-tectonics/src)
 target_include_directories(libworldengine PRIVATE ${PYTHON_INCLUDE_DIR})
 target_include_directories(libworldengine PRIVATE ${Boost_INCLUDE_DIR})
