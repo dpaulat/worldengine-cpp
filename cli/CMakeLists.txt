@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.19)
 project(worldengine-cli CXX)
 
 add_executable(worldengine source/main.cpp
+                           source/types.cpp
+                           source/types.h
                            source/worldengine.cpp
                            source/worldengine.h)
 

@@ -1,4 +1,5 @@
 #include "worldengine.h"
+#include "types.h"
 
 #include <iostream>
 
@@ -11,78 +12,8 @@
 
 namespace po = boost::program_options;
 
-namespace std
-{
-std::ostream& operator<<(std::ostream& os, const std::vector<float>& v)
-{
-   for (float item : v)
-   {
-      os << item << " ";
-   }
-   return os;
-}
-} // namespace std
-
 namespace WorldEngine
 {
-
-enum class WorldFormat
-{
-   protobuf
-};
-
-struct ArgumentsType
-{
-   // Positional options
-   std::string operation;
-   std::string file;
-
-   // Generic options
-   bool version;
-   bool help;
-   bool verbose;
-
-   // Configuration
-   std::string outputDir;
-   std::string worldName;
-   std::string fileFormat;
-   uint32_t    seed;
-   std::string step;
-   uint32_t    width;
-   uint32_t    height;
-   uint32_t    numPlates;
-   bool        blackAndWhite;
-
-   // Generate options
-   bool               rivers;
-   bool               grayscaleHeightmap;
-   float              oceanLevel;
-   std::vector<float> temps;
-   std::vector<float> humids;
-   float              gammaValue;
-   float              curveOffset;
-   bool               notFadeBorders;
-   bool               scatterPlot;
-   bool               satelliteMap;
-   bool               icecapsMap;
-
-   // Ancient map options
-   std::string worldFile;
-   std::string generatedFile;
-   uint32_t    resizeFactor;
-   std::string seaColor;
-   bool        notDrawBiome;
-   bool        notDrawMountains;
-   bool        notDrawRivers;
-   bool        drawOuterBorder;
-
-   // Export options
-   std::string           exportFormat;
-   std::string           exportDatatype;
-   std::vector<uint32_t> exportDimensions;
-   std::vector<uint32_t> exportNormalize;
-   std::vector<uint32_t> exportSubset;
-};
 
 int  AddOptions(int                      argc,
                 const char**             argv,
@@ -107,7 +38,8 @@ int AddOptions(int                      argc,
    po::options_description hidden("Hidden options");
    hidden.add_options() //
       ("operation",
-       po::value<std::string>(&args.operation)->default_value("world"))
+       po::value<OperationType>(&args.operation)
+          ->default_value(OperationType::World))
       //
       ("file", po::value<std::string>(&args.file));
 
@@ -138,7 +70,8 @@ int AddOptions(int                      argc,
        "Set world name")
       //
       ("format,f",
-       po::value<std::string>(&args.fileFormat)->default_value("protobuf"),
+       po::value<WorldFormat>(&args.worldFormat)
+          ->default_value(WorldFormat::Protobuf),
        "Set file format\n"
        "Valid formats: hdf5, protobuf")
       //
@@ -147,7 +80,7 @@ int AddOptions(int                      argc,
        "Initializes the pseudo-random generation")
       //
       ("step,t",
-       po::value<std::string>(&args.step)->default_value("full"),
+       po::value<StepType>(&args.step)->default_value(StepType::Full),
        "Specifies how far to proceed in the world generation process\n"
        "Valid steps: plates, precipitations, full")
       //
@@ -160,7 +93,7 @@ int AddOptions(int                      argc,
        "Height of the world to be generated")
       //
       ("plates,q",
-       po::value<uint32_t>(&args.numPlates)->default_value(10),
+       po::value<uint32_t>(&args.numPlates)->default_value(DEFAULT_NUM_PLATES),
        "Number of plates")
       //
       ("black-and-white",
@@ -179,7 +112,7 @@ int AddOptions(int                      argc,
        "Produce a grayscale heightmap")
       //
       ("ocean-level",
-       po::value<float>(&args.oceanLevel)->default_value(1.0f),
+       po::value<float>(&args.oceanLevel)->default_value(DEFAULT_OCEAN_LEVEL),
        "Elevation cutoff for sea level")
       //
       ("temps",
@@ -235,7 +168,7 @@ int AddOptions(int                      argc,
        "NOTE: This can only be used to increase the size of the map")
       //
       ("sea-color",
-       po::value<std::string>(&args.seaColor)->default_value("brown"),
+       po::value<SeaColor>(&args.seaColor)->default_value(SeaColor::Brown),
        "Sea color\n"
        "Valid values: blue, brown")
       //
@@ -263,7 +196,8 @@ int AddOptions(int                      argc,
        "All possible formats: http://www.gdal.org/formats_list.html")
       //
       ("export-datatype",
-       po::value<std::string>(&args.exportDatatype)->default_value("uint16"),
+       po::value<ExportDataType>(&args.exportDatatype)
+          ->default_value(ExportDataType::Uint16),
        "Type of stored data\n"
        "Valid values: int16, int32, uint16, uint32, float32")
       //
@@ -303,16 +237,10 @@ int AddOptions(int                      argc,
    }
    catch (po::too_many_positional_options_error& e)
    {
-      //
       std::cerr << e.what() << std::endl;
       return -1;
    }
    catch (po::error_with_option_name& e)
-   {
-      std::cerr << e.what() << std::endl;
-      return -1;
-   }
-   catch (po::unknown_option& e)
    {
       std::cerr << e.what() << std::endl;
       return -1;
@@ -329,14 +257,13 @@ void GenerateWorld(const std::string& worldName,
 
    // Save data
    std::string filename = outputDir + "/" + worldName + ".world";
-   if (worldFormat == WorldFormat::protobuf) {}
+   if (worldFormat == WorldFormat::Protobuf) {}
 }
 
 void PrintArguments(const ArgumentsType& args)
 {
-   // TODO
-   bool generationOperation = true;
-   bool ancientMap          = true;
+   bool generationOperation = (args.operation == OperationType::World ||
+                               args.operation == OperationType::Plates);
 
    std::cout << "WorldEngine - A World Generator (version 0.19.1)" << std::endl;
    std::cout << "------------------------------------------------" << std::endl;
@@ -349,7 +276,7 @@ void PrintArguments(const ArgumentsType& args)
       std::cout << " Width                : " << args.width << std::endl;
       std::cout << " Height               : " << args.height << std::endl;
       std::cout << " Number of plates     : " << args.numPlates << std::endl;
-      std::cout << " World format         : " << args.fileFormat << std::endl;
+      std::cout << " World format         : " << args.worldFormat << std::endl;
       std::cout << " Black and white maps : " << args.blackAndWhite
                 << std::endl;
       std::cout << " Step                 : " << args.step << std::endl;
@@ -366,7 +293,7 @@ void PrintArguments(const ArgumentsType& args)
       std::cout << " Gamma value          : " << args.gammaValue << std::endl;
       std::cout << " Gamma offset         : " << args.curveOffset << std::endl;
    }
-   if (ancientMap)
+   if (args.operation == OperationType::AncientMap)
    {
       std::cout << " Operation              : " << args.operation
                 << " generation" << std::endl;
@@ -383,6 +310,8 @@ void PrintArguments(const ArgumentsType& args)
       std::cout << " Draw outer land border : " << args.drawOuterBorder
                 << std::endl;
    }
+
+   // TODO: Print warnings
 }
 
 void PrintUsage(const std::string&             programName,
@@ -392,7 +321,7 @@ void PrintUsage(const std::string&             programName,
              << " [<operation> [<file>]] [<options>] " << std::endl;
    std::cout << std::endl;
    std::cout << "Arguments:" << std::endl;
-   std::cout << "  operation                             "
+   std::cout << "  operation (=world)                    "
              << "Valid operations: world, plates, ancient_map," << std::endl;
    std::cout << "                                        "
              << "info, export" << std::endl;
@@ -412,7 +341,7 @@ void PrintWorldInfo(const World& world)
    std::cout << "Seed               : " << world.seed() << std::endl;
    std::cout << "Num Plates         : " << world.numPlates() << std::endl;
    std::cout << "Ocean Level        : " << world.oceanLevel() << std::endl;
-   std::cout << "Step               : " << world.step().name_ << std::endl;
+   std::cout << "Step               : " << world.step().name() << std::endl;
 
    std::cout << "Has Biome          : " << world.HasBiome() << std::endl;
    std::cout << "Has Humidity       : " << world.HasHumidity() << std::endl;

@@ -6,26 +6,56 @@
 namespace WorldEngine
 {
 
+enum class ExportDataType
+{
+   Int16,
+   Int32,
+   Uint16,
+   Uint32,
+   Float32
+};
+
+enum class SeaColor
+{
+   Blue,
+   Brown
+};
+
+enum class StepType
+{
+   Plates,
+   Precipitations,
+   Full
+};
+
+enum class WorldFormat
+{
+   Protobuf,
+   HDF5
+};
+
 struct Step
 {
-   std::string name_;
-   bool        includePlates_;
-   bool        includePrecipitations_;
-   bool        includeErosion_;
-   bool        includeBiome_;
+   StepType stepType_;
+   bool     includePlates_;
+   bool     includePrecipitations_;
+   bool     includeErosion_;
+   bool     includeBiome_;
 
-   Step(const std::string& name,
-        bool               includePlates,
-        bool               includePrecipitations,
-        bool               includeErosion,
-        bool               includeBiome) :
-       name_(name),
+   Step(StepType stepType,
+        bool     includePlates,
+        bool     includePrecipitations,
+        bool     includeErosion,
+        bool     includeBiome) :
+       stepType_(stepType),
        includePlates_(includePlates),
        includePrecipitations_(includePrecipitations),
        includeErosion_(includeErosion),
        includeBiome_(includeBiome)
    {
    }
+
+   std::string name() const;
 };
 
 struct Size
@@ -50,9 +80,10 @@ struct GenerationParameters
    }
 };
 
-const Step STEP_PLATES("plates", true, false, false, false);
-const Step STEP_PRECIPITATIONS("precipitations", true, true, false, false);
-const Step STEP_FULL("full", true, true, true, true);
+const Step STEP_PLATES(StepType::Plates, true, false, false, false);
+const Step
+           STEP_PRECIPITATIONS(StepType::Precipitations, true, true, false, false);
+const Step STEP_FULL(StepType::Full, true, true, true, true);
 
 const float    DEFAULT_SEA_LEVEL        = 0.65f;
 const uint32_t DEFAULT_EROSION_PERIOD   = 60u;
@@ -72,5 +103,25 @@ const std::vector<float> DEFAULT_TEMPS {
 
 const std::vector<float> DEFAULT_HUMIDS {
    0.059, 0.222, 0.493, 0.764, 0.927, 0.986, 0.998};
+
+std::string    ExportDataTypeToString(ExportDataType type);
+ExportDataType ExportDataTypeFromString(const std::string& value);
+std::ostream&  operator<<(std::ostream& os, const ExportDataType& type);
+std::istream&  operator>>(std::istream& in, ExportDataType& type);
+
+std::string   SeaColorToString(SeaColor operation);
+SeaColor      SeaColorFromString(const std::string& value);
+std::ostream& operator<<(std::ostream& os, const SeaColor& color);
+std::istream& operator>>(std::istream& in, SeaColor& color);
+
+std::string   StepTypeToString(StepType step);
+StepType      StepTypeFromString(const std::string& value);
+std::ostream& operator<<(std::ostream& os, const StepType& step);
+std::istream& operator>>(std::istream& in, StepType& step);
+
+std::string   WorldFormatToString(WorldFormat operation);
+WorldFormat   WorldFormatFromString(const std::string& value);
+std::ostream& operator<<(std::ostream& os, const WorldFormat& format);
+std::istream& operator>>(std::istream& in, WorldFormat& format);
 
 } // namespace WorldEngine
