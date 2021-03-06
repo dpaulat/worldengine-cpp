@@ -45,6 +45,8 @@ public:
    void SetElevationData(const float* heightmap);
    void SetPlatesData(const uint32_t* platesmap);
 
+   bool World::ProtobufSerialize(std::string& output) const;
+
 private:
    std::string          name_;
    Size                 size_;
@@ -57,6 +59,9 @@ private:
 
    boost::python::numpy::ndarray elevation_;
    boost::python::numpy::ndarray plates_;
+
+   static int32_t WorldengineTag();
+   static int32_t VersionHashcode();
 };
 
 } // namespace WorldEngine

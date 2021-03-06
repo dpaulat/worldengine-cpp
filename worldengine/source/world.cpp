@@ -2,6 +2,9 @@
 
 #include <boost/log/trivial.hpp>
 #include <boost/python/numpy.hpp>
+#include <boost/tokenizer.hpp>
+
+#include <World.pb.h>
 
 namespace py = boost::python;
 namespace np = boost::python::numpy;
@@ -138,6 +141,84 @@ void World::SetPlatesData(const uint32_t* platesmap)
 
    BOOST_LOG_TRIVIAL(debug) << "Platesmap ndarray:" << std::endl
                             << py::extract<const char*>(py::str(plates_));
+}
+
+bool World::ProtobufSerialize(std::string& output) const
+{
+   bool success = false;
+
+   ::World::World pbWorld;
+
+   ::World::World_GenerationData* pbGenerationData =
+      new ::World::World_GenerationData();
+   ::World::World_DoubleMatrix* pbHeightmapData =
+      new ::World::World_DoubleMatrix();
+   ::World::World_IntegerMatrix* pbPlates = new ::World::World_IntegerMatrix();
+   ::World::World_BooleanMatrix* pbOcean  = new ::World::World_BooleanMatrix();
+   ::World::World_DoubleMatrix*  pbSeaDepth = new ::World::World_DoubleMatrix();
+
+   pbWorld.set_worldengine_tag(WorldengineTag());
+   pbWorld.set_worldengine_version(VersionHashcode());
+
+   pbWorld.set_name(name_);
+   pbWorld.set_width(size_.width_);
+   pbWorld.set_height(size_.height_);
+
+   pbGenerationData->set_seed(seed_);
+   pbGenerationData->set_n_plates(generationParams_.numPlates_);
+   pbGenerationData->set_ocean_level(generationParams_.oceanLevel_);
+   pbGenerationData->set_step(generationParams_.step_.name());
+   pbWorld.set_allocated_generationdata(pbGenerationData);
+
+   // Elevation
+   // TODO
+   pbWorld.set_allocated_heightmapdata(pbHeightmapData);
+   pbWorld.set_heightmapth_sea(0.0);
+   pbWorld.set_heightmapth_plain(0.0);
+   pbWorld.set_heightmapth_hill(0.0);
+
+   // Plates
+   // TODO
+   pbWorld.set_allocated_plates(pbPlates);
+
+   // Ocean
+   // TODO
+   pbWorld.set_allocated_ocean(pbOcean);
+   pbWorld.set_allocated_sea_depth(pbSeaDepth);
+
+   try
+   {
+      success = pbWorld.SerializeToString(&output);
+   }
+   catch (const std::exception& ex)
+   {
+      BOOST_LOG_TRIVIAL(error) << ex.what();
+   }
+
+   return success;
+}
+
+int32_t World::WorldengineTag()
+{
+   return ('W' << 24) | ('o' << 16) | ('e' << 8) | 'n';
+}
+
+int32_t World::VersionHashcode()
+{
+   int hashcode = 0;
+
+   boost::char_separator<char>                   sep(".");
+   boost::tokenizer<boost::char_separator<char>> t(WORLDENGINE_VERSION, sep);
+   for (auto it = t.begin(); it != t.end(); it++)
+   {
+      // 3 version components
+      hashcode = (hashcode << 8) | std::stoi(*it);
+   }
+
+   // 4th component (0)
+   hashcode <<= 8;
+
+   return hashcode;
 }
 
 } // namespace WorldEngine

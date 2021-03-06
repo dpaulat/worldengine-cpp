@@ -1,6 +1,7 @@
 #include "worldengine.h"
 #include "types.h"
 
+#include <fstream>
 #include <iostream>
 #include <random>
 
@@ -300,7 +301,24 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    std::string worldFilename = outputDir + "/" + worldName + ".world";
    if (worldFormat == WorldFormat::Protobuf)
    {
-      // TODO: Write
+      std::string data;
+      if (world->ProtobufSerialize(data))
+      {
+         try
+         {
+            std::ofstream ofs(worldFilename);
+            ofs << data;
+            ofs.close();
+         }
+         catch (const std::exception& ex)
+         {
+            BOOST_LOG_TRIVIAL(error) << ex.what();
+         }
+      }
+      else
+      {
+         BOOST_LOG_TRIVIAL(error) << "Error serializing world data";
+      }
    }
    else if (worldFormat == WorldFormat::HDF5)
    {

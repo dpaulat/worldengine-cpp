@@ -87,6 +87,8 @@ struct GenerationParameters
    }
 };
 
+const std::string WORLDENGINE_VERSION("0.19.0");
+
 const Step STEP_PLATES(StepType::Plates, true, false, false, false);
 const Step
            STEP_PRECIPITATIONS(StepType::Precipitations, true, true, false, false);
