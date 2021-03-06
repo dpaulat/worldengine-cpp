@@ -7,6 +7,17 @@
 namespace WorldEngine
 {
 
+const Step& Step::step(StepType type)
+{
+   switch (type)
+   {
+   case StepType::Plates: return STEP_PLATES;
+   case StepType::Precipitations: return STEP_PRECIPITATIONS;
+   case StepType::Full:
+   default: return STEP_FULL;
+   }
+}
+
 std::string Step::name() const
 {
    return StepTypeToString(stepType_);

@@ -2,12 +2,14 @@
 #include "types.h"
 
 #include <iostream>
+#include <random>
 
 #include <boost/assign.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/program_options.hpp>
 
 #include <common.h>
+#include <plates.h>
 #include <world.h>
 
 namespace po = boost::program_options;
@@ -15,21 +17,37 @@ namespace po = boost::program_options;
 namespace WorldEngine
 {
 
-int  AddOptions(int                      argc,
-                const char**             argv,
-                ArgumentsType&           args,
-                po::options_description& options);
-void GenerateWorld(const std::string& worldName,
-                   const std::string& outputDir,
-                   WorldFormat        worldFormat);
+int AddOptions(int                      argc,
+               const char**             argv,
+               ArgumentsType&           args,
+               po::options_description& options,
+               po::variables_map&       vm);
+std::shared_ptr<World>
+     GenerateWorld(const std::string&        worldName,
+                   uint32_t                  width,
+                   uint32_t                  height,
+                   uint32_t                  seed,
+                   uint32_t                  numPlates,
+                   const std::string&        outputDir,
+                   const Step&               step,
+                   float                     oceanLevel,
+                   const std::vector<float>& temps,
+                   const std::vector<float>& humids,
+                   WorldFormat               worldFormat,
+                   float                     gammaCurve  = DEFAULT_GAMMA_CURVE,
+                   float                     curveOffset = DEFAULT_CURVE_OFFSET,
+                   bool                      fadeBorders = DEFAULT_FADE_BORDERS,
+                   bool blackAndWhite = DEFAULT_BLACK_AND_WHITE);
 void PrintUsage(const std::string&             programName,
                 const po::options_description& options);
 void PrintWorldInfo(const World& world);
+int  ValidateArguments(ArgumentsType& args, const po::variables_map& vm);
 
 int AddOptions(int                      argc,
                const char**             argv,
                ArgumentsType&           args,
-               po::options_description& options)
+               po::options_description& options,
+               po::variables_map&       vm)
 {
    po::positional_options_description p;
    p.add("operation", 1);
@@ -224,8 +242,6 @@ int AddOptions(int                      argc,
    cmdline_options.add(options);
    cmdline_options.add(hidden);
 
-   po::variables_map vm;
-
    try
    {
       po::store(po::command_line_parser(argc, argv)
@@ -249,25 +265,94 @@ int AddOptions(int                      argc,
    return 0;
 }
 
-void GenerateWorld(const std::string& worldName,
-                   const std::string& outputDir,
-                   WorldFormat        worldFormat)
+std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
+                                     uint32_t                  width,
+                                     uint32_t                  height,
+                                     uint32_t                  seed,
+                                     uint32_t                  numPlates,
+                                     const std::string&        outputDir,
+                                     const Step&               step,
+                                     float                     oceanLevel,
+                                     const std::vector<float>& temps,
+                                     const std::vector<float>& humids,
+                                     WorldFormat               worldFormat,
+                                     float                     gammaCurve,
+                                     float                     curveOffset,
+                                     bool                      fadeBorders,
+                                     bool                      blackAndWhite)
 {
-   BOOST_LOG_TRIVIAL(info) << "Producing output:";
+   std::shared_ptr<World> world = WorldGen(worldName,
+                                           width,
+                                           height,
+                                           seed,
+                                           temps,
+                                           humids,
+                                           gammaCurve,
+                                           curveOffset,
+                                           numPlates,
+                                           oceanLevel,
+                                           step,
+                                           fadeBorders);
+
+   BOOST_LOG_TRIVIAL(info) << "Producing output";
 
    // Save data
-   std::string filename = outputDir + "/" + worldName + ".world";
-   if (worldFormat == WorldFormat::Protobuf) {}
+   std::string worldFilename = outputDir + "/" + worldName + ".world";
+   if (worldFormat == WorldFormat::Protobuf)
+   {
+      // TODO: Write
+   }
+   else if (worldFormat == WorldFormat::HDF5)
+   {
+      // TODO: SaveWorldToHdf5()
+   }
+   else
+   {
+      BOOST_LOG_TRIVIAL(error)
+         << "Unknown format " << worldFormat << ", not saving";
+   }
+   BOOST_LOG_TRIVIAL(info) << "World data saved in " << worldFilename;
+
+   // Generate images
+   std::string oceanFilename = outputDir + "/" + worldName + "_ocean.png";
+   // TODO: DrawOceanOnFile();
+   BOOST_LOG_TRIVIAL(info) << "Ocean image generated in " << oceanFilename;
+
+   if (step.includePrecipitations_)
+   {
+      std::string precipitationFilename =
+         outputDir + "/" + worldName + "_precipitation.png";
+      // TODO: DrawPrecipitationOnFile();
+      BOOST_LOG_TRIVIAL(info)
+         << "Precipitation image generated in " << precipitationFilename;
+
+      std::string temperatureFilename =
+         outputDir + "/" + worldName + "_temperature.png";
+      // TODO: DrawTemperatureLevelsOnFile();
+      BOOST_LOG_TRIVIAL(info)
+         << "Temperature image generated in " << temperatureFilename;
+   }
+
+   if (step.includeBiome_)
+   {
+      std::string biomeFilename = outputDir + "/" + worldName + "_biome.png";
+      // TODO: DrawBiomeOnFile();
+      BOOST_LOG_TRIVIAL(info) << "Biome image generated in " << biomeFilename;
+   }
+
+   std::string elevationFilename = outputDir + "/" + worldName + "_biome.png";
+   // TODO: DrawSimpleElevationOnFile();
+   BOOST_LOG_TRIVIAL(info) << "Elevation image generated in "
+                           << elevationFilename;
+
+   return world;
 }
 
 void PrintArguments(const ArgumentsType& args)
 {
-   bool generationOperation = (args.operation == OperationType::World ||
-                               args.operation == OperationType::Plates);
-
    std::cout << "WorldEngine - A World Generator (version 0.19.1)" << std::endl;
    std::cout << "------------------------------------------------" << std::endl;
-   if (generationOperation)
+   if (IsGenerationOption(args.operation))
    {
       std::cout << " Operation            : " << args.operation << " generation"
                 << std::endl;
@@ -353,15 +438,33 @@ void PrintWorldInfo(const World& world)
    std::cout << "Has Temperature    : " << world.HasTemperature() << std::endl;
 }
 
+int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
+{
+   // TODO: Validate file positional parameter
+
+   if (!vm.count("seed"))
+   {
+      std::default_random_engine              generator;
+      std::uniform_int_distribution<uint32_t> distribution(MIN_SEED, MAX_SEED);
+      args.seed = distribution(generator);
+   }
+
+   if (args.worldName.empty())
+   {
+      args.worldName = "seed_" + std::to_string(args.seed);
+   }
+
+   return 0;
+}
+
 void CliMain(int argc, const char** argv)
 {
    int                     status;
    ArgumentsType           args;
    po::options_description options("Allowed options");
+   po::variables_map       vm;
 
-   status = AddOptions(argc, argv, args, options);
-
-   // TODO: Parameter validation
+   status = AddOptions(argc, argv, args, options, vm);
 
    if (args.help || status != 0)
    {
@@ -369,7 +472,78 @@ void CliMain(int argc, const char** argv)
       return;
    }
 
+   status = ValidateArguments(args, vm);
+
    PrintArguments(args);
+
+   if (args.operation == OperationType::World)
+   {
+      BOOST_LOG_TRIVIAL(info) << "Starting world generation...";
+
+      std::shared_ptr<World> world = GenerateWorld(args.worldName,
+                                                   args.width,
+                                                   args.height,
+                                                   args.seed,
+                                                   args.numPlates,
+                                                   args.outputDir,
+                                                   Step::step(args.step),
+                                                   args.oceanLevel,
+                                                   args.temps,
+                                                   args.humids,
+                                                   args.worldFormat,
+                                                   args.gammaValue,
+                                                   args.curveOffset,
+                                                   !args.notFadeBorders,
+                                                   args.blackAndWhite);
+
+      if (args.grayscaleHeightmap)
+      {
+         // TODO: GenerateGrayscaleHeightmap();
+      }
+
+      if (args.rivers)
+      {
+         // TODO: GenerateRiversMap();
+      }
+
+      if (args.scatterPlot)
+      {
+         // TODO: DrawScatterPlot
+      }
+
+      if (args.satelliteMap)
+      {
+         // TODO: DrawSatelliteMap();
+      }
+
+      if (args.icecapsMap)
+      {
+         // TODO: DrawIcecapsMap();
+      }
+   }
+   else if (args.operation == OperationType::Plates)
+   {
+      // TODO
+   }
+   else if (args.operation == OperationType::AncientMap)
+   {
+      // TODO
+   }
+   else if (args.operation == OperationType::Info)
+   {
+      // TODO
+   }
+   else if (args.operation == OperationType::Export)
+   {
+      // TODO
+   }
+   else
+   {
+      throw std::invalid_argument("Unknown operation: " +
+                                  OperationTypeToString(args.operation));
+   }
+
+   BOOST_LOG_TRIVIAL(info) << "Done";
 }
 
 } // namespace WorldEngine

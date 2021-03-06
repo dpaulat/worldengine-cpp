@@ -110,18 +110,18 @@ std::shared_ptr<World> PlatesSimulation(const std::string&        name,
    return world;
 }
 
-void WorldGen(const std::string&        name,
-              uint32_t                  width,
-              uint32_t                  height,
-              uint32_t                  seed,
-              const std::vector<float>& temps,
-              const std::vector<float>& humids,
-              float                     gammaCurve,
-              float                     curveOffset,
-              uint32_t                  numPlates,
-              uint32_t                  oceanLevel,
-              const Step&               step,
-              bool                      fadeBorders)
+std::shared_ptr<World> WorldGen(const std::string&        name,
+                                uint32_t                  width,
+                                uint32_t                  height,
+                                uint32_t                  seed,
+                                const std::vector<float>& temps,
+                                const std::vector<float>& humids,
+                                float                     gammaCurve,
+                                float                     curveOffset,
+                                uint32_t                  numPlates,
+                                uint32_t                  oceanLevel,
+                                const Step&               step,
+                                bool                      fadeBorders)
 {
    std::chrono::steady_clock::time_point startTime;
    std::chrono::steady_clock::time_point endTime;
@@ -178,6 +178,8 @@ void WorldGen(const std::string&        name,
 
    BOOST_LOG_TRIVIAL(debug) << "WorldGen(): oceans initialized. "
                             << "Elapsed time " << elapsedTime << "ms.";
+
+   return world;
 }
 
 } // namespace WorldEngine

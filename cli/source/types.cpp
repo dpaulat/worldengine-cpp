@@ -21,6 +21,12 @@ std::ostream& operator<<(std::ostream& os, const std::vector<float>& v)
 namespace WorldEngine
 {
 
+bool IsGenerationOption(OperationType operation)
+{
+   return (operation == OperationType::World ||
+           operation == OperationType::Plates);
+}
+
 std::string OperationTypeToString(OperationType operation)
 {
    switch (operation)

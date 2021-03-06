@@ -74,6 +74,8 @@ struct ArgumentsType
    std::vector<uint32_t> exportSubset;
 };
 
+bool IsGenerationOption(OperationType args);
+
 std::string   OperationTypeToString(OperationType operation);
 OperationType OperationTypeFromString(const std::string& value);
 std::ostream& operator<<(std::ostream& os, const OperationType& operation);
