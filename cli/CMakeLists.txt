@@ -15,7 +15,9 @@ target_link_libraries(worldengine python3 libworldengine PlateTectonics)
 find_package(Boost COMPONENTS log
                               numpy39
                               program_options REQUIRED)
+find_package(protobuf)
 
 target_link_libraries(worldengine Boost::log
                                   Boost::numpy39
-                                  Boost::program_options)
+                                  Boost::program_options
+                                  protobuf::protobuf)

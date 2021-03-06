@@ -7,6 +7,8 @@ include(${PROJECT_SOURCE_DIR}/external/cmake-conan/conan.cmake)
 conan_cmake_configure(REQUIRES boost/1.75.0
                                gtest/1.10.0
                                libpng/1.6.37
+                               protobuf/3.6.1@bincrafters/stable
+                      BUILD_REQUIRES protoc_installer/3.6.1@bincrafters/stable
                       GENERATORS cmake
                                  cmake_find_package
                                  cmake_paths
