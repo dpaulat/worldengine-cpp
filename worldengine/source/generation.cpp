@@ -41,7 +41,35 @@ void InitializeOceanAndThresholds(World& world, float oceanLevel)
    // TODO: Finish
 }
 
-void PlaceOceansAtMapBorders(World& world) {}
+void PlaceOceansAtMapBorders(World& world)
+{
+   // Lower the elevation near the border of the map
+   uint32_t oceanBorder =
+      std::min(30u, std::max(world.width() / 5, world.height() / 5));
+   ElevationArrayType& elevation = world.GetElevationData();
+
+   auto PlaceOcean = [&](uint32_t x, uint32_t y, uint32_t i) {
+      elevation[y][x] = elevation[y][x] * i / oceanBorder;
+   };
+
+   for (uint32_t x = 0; x < world.width(); x++)
+   {
+      for (uint32_t i = 0; i < oceanBorder; i++)
+      {
+         PlaceOcean(x, i, i);
+         PlaceOcean(x, world.height() - i - 1, i);
+      }
+   }
+
+   for (uint32_t y = 0; y < world.height(); y++)
+   {
+      for (uint32_t i = 0; i < oceanBorder; i++)
+      {
+         PlaceOcean(i, y, i);
+         PlaceOcean(world.width() - i - 1, y, i);
+      }
+   }
+}
 
 static void Around(std::vector<CoordType>& coordList,
                    uint32_t                x,

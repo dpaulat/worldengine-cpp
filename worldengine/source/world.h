@@ -50,8 +50,7 @@ public:
    bool HasPrecipitations() const;
    bool HasTemperature() const;
 
-   const ElevationArrayType& World::GetElevationData() const;
-
+   ElevationArrayType& World::GetElevationData();
    OceanArrayType& World::GetOceanData();
 
    void SetElevationData(const float* heightmap);

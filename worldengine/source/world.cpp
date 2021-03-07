@@ -147,7 +147,7 @@ bool World::HasTemperature() const
    return false;
 }
 
-const ElevationArrayType& World::GetElevationData() const
+ElevationArrayType& World::GetElevationData()
 {
    return elevation_;
 }
