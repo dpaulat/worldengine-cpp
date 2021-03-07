@@ -1,19 +1,57 @@
 #include "world.h"
 
 #include <boost/log/trivial.hpp>
-#include <boost/python/numpy.hpp>
 #include <boost/tokenizer.hpp>
 
 #include <World.pb.h>
 
-namespace py = boost::python;
-namespace np = boost::python::numpy;
+namespace std
+{
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const boost::multi_array<T, 2>& a)
+{
+   boost::multi_array<T, 2>::const_iterator i;
+
+   os << "[";
+   for (uint32_t y = 0; y < a.shape()[0]; y++)
+   {
+      if (y > 0)
+      {
+         os << std::endl << " ";
+      }
+      os << "[";
+      for (uint32_t x = 0; x < a.shape()[1]; x++)
+      {
+         os << a[y][x];
+
+         if (x == 2 && x < a.shape()[1] - 4)
+         {
+            x = a.shape()[1] - 4;
+            os << " ...";
+         }
+
+         if (x < a.shape()[1] - 1)
+         {
+            os << " ";
+         }
+      }
+
+      os << "]";
+
+      if (y == 2 && y < a.shape()[0] - 4)
+      {
+         y = a.shape()[0] - 4;
+         os << std::endl << " ...";
+      }
+   }
+   os << "]";
+
+   return os;
+}
+} // namespace std
 
 namespace WorldEngine
 {
-
-typedef float    ElevationType;
-typedef uint32_t PlateType;
 
 World::World(const std::string&          name,
              Size                        size,
@@ -31,9 +69,9 @@ World::World(const std::string&          name,
     humids_(humids),
     gammaCurve_(gammaCurve),
     curveOffset_(curveOffset),
-    elevation_(
-       np::empty(py::make_tuple(0), np::dtype::get_builtin<ElevationType>())),
-    plates_(np::empty(py::make_tuple(0), np::dtype::get_builtin<PlateType>()))
+    elevation_(),
+    plates_(),
+    ocean_()
 {
 }
 
@@ -109,38 +147,29 @@ bool World::HasTemperature() const
    return false;
 }
 
+const ElevationArrayType& World::GetElevationData() const
+{
+   return elevation_;
+}
+
+OceanArrayType& World::GetOceanData()
+{
+   return ocean_;
+}
+
 void World::SetElevationData(const float* heightmap)
 {
-   // TODO: Can we optimize by making a 2D ndarray instead of reshaping?
-   py::tuple  shape  = py::make_tuple(size_.height_ * size_.width_);
-   py::tuple  stride = py::make_tuple(sizeof(float));
-   py::tuple  size   = py::make_tuple(size_.height_, size_.width_);
-   py::object own;
+   SetArrayData(heightmap, elevation_);
 
-   elevation_ =
-      np::from_data(
-         heightmap, np::dtype::get_builtin<ElevationType>(), shape, stride, own)
-         .reshape(size);
-
-   BOOST_LOG_TRIVIAL(debug) << "Elevation ndarray:" << std::endl
-                            << py::extract<const char*>(py::str(elevation_));
+   BOOST_LOG_TRIVIAL(debug) << "Elevation multi_array:" << std::endl
+                            << elevation_;
 }
 
 void World::SetPlatesData(const uint32_t* platesmap)
 {
-   // TODO: Can we optimize by making a 2D ndarray instead of reshaping?
-   py::tuple  shape  = py::make_tuple(size_.height_ * size_.width_);
-   py::tuple  stride = py::make_tuple(sizeof(float));
-   py::tuple  size   = py::make_tuple(size_.height_, size_.width_);
-   py::object own;
+   SetArrayData(platesmap, plates_);
 
-   plates_ =
-      np::from_data(
-         platesmap, np::dtype::get_builtin<PlateType>(), shape, stride, own)
-         .reshape(size);
-
-   BOOST_LOG_TRIVIAL(debug) << "Platesmap ndarray:" << std::endl
-                            << py::extract<const char*>(py::str(plates_));
+   BOOST_LOG_TRIVIAL(debug) << "Platesmap multi_array:" << std::endl << plates_;
 }
 
 bool World::ProtobufSerialize(std::string& output) const
@@ -219,6 +248,22 @@ int32_t World::VersionHashcode()
    hashcode <<= 8;
 
    return hashcode;
+}
+
+template<typename T, typename U>
+void World::SetArrayData(const U* source, boost::multi_array<T, 2>& dest)
+{
+   dest.resize(boost::extents[size_.height_][size_.width_]);
+
+   for (uint32_t y = 0; y < size_.height_; y++)
+   {
+      uint32_t rowOffset = y * size_.width_;
+
+      for (uint32_t x = 0; x < size_.width_; x++)
+      {
+         dest[y][x] = static_cast<T>(source[x + rowOffset]);
+      }
+   }
 }
 
 } // namespace WorldEngine

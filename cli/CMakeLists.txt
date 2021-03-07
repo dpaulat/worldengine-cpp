@@ -7,17 +7,15 @@ add_executable(worldengine source/main.cpp
                            source/worldengine.cpp
                            source/worldengine.h)
 
-target_include_directories(worldengine PRIVATE ${PYTHON_INCLUDE_DIR})
 target_include_directories(worldengine PRIVATE ${libworldengine_SOURCE_DIR}/source)
-target_link_directories(worldengine PRIVATE ${PYTHON_LIBS_DIR})
-target_link_libraries(worldengine python3 libworldengine PlateTectonics)
+target_link_libraries(worldengine libworldengine PlateTectonics)
 
 find_package(Boost COMPONENTS log
-                              numpy39
                               program_options REQUIRED)
+find_package(PNG)
 find_package(protobuf)
 
 target_link_libraries(worldengine Boost::log
-                                  Boost::numpy39
                                   Boost::program_options
+                                  PNG::PNG
                                   protobuf::protobuf)

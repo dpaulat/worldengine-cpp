@@ -5,10 +5,18 @@
 #include <string>
 #include <vector>
 
-#include <boost/python/numpy.hpp>
+#include <boost/multi_array.hpp>
 
 namespace WorldEngine
 {
+
+typedef float    ElevationDataType;
+typedef bool     OceanDataType;
+typedef uint16_t PlateDataType;
+
+typedef boost::multi_array<ElevationDataType, 2> ElevationArrayType;
+typedef boost::multi_array<OceanDataType, 2>     OceanArrayType;
+typedef boost::multi_array<PlateDataType, 2>     PlateArrayType;
 
 class World
 {
@@ -42,6 +50,10 @@ public:
    bool HasPrecipitations() const;
    bool HasTemperature() const;
 
+   const ElevationArrayType& World::GetElevationData() const;
+
+   OceanArrayType& World::GetOceanData();
+
    void SetElevationData(const float* heightmap);
    void SetPlatesData(const uint32_t* platesmap);
 
@@ -57,11 +69,15 @@ private:
    float                gammaCurve_;
    float                curveOffset_;
 
-   boost::python::numpy::ndarray elevation_;
-   boost::python::numpy::ndarray plates_;
+   ElevationArrayType elevation_;
+   PlateArrayType     plates_;
+   OceanArrayType     ocean_;
 
    static int32_t WorldengineTag();
    static int32_t VersionHashcode();
+
+   template<typename T, typename U>
+   void SetArrayData(const U* source, boost::multi_array<T, 2>& dest);
 };
 
 } // namespace WorldEngine

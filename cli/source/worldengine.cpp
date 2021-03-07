@@ -10,6 +10,7 @@
 #include <boost/program_options.hpp>
 
 #include <common.h>
+#include <draw.h>
 #include <plates.h>
 #include <world.h>
 
@@ -333,7 +334,7 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
 
    // Generate images
    std::string oceanFilename = outputDir + "/" + worldName + "_ocean.png";
-   // TODO: DrawOceanOnFile();
+   DrawOceanOnFile(world->GetOceanData(), oceanFilename);
    BOOST_LOG_TRIVIAL(info) << "Ocean image generated in " << oceanFilename;
 
    if (step.includePrecipitations_)
