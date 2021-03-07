@@ -23,7 +23,74 @@ static void HarmonizeOcean(const OceanArrayType&     ocean,
 
 void AddNoiseToElevation(World& world, uint32_t seed) {}
 
-void CenterLand(World& world) {}
+void CenterLand(World& world)
+{
+   ElevationArrayType& elevation = world.GetElevationData();
+   PlateArrayType&     plates    = world.GetPlateData();
+
+   std::vector<ElevationDataType> rowSums;
+   std::vector<ElevationDataType> colSums;
+
+   // Find row with the lowest elevation
+   for (uint32_t y = 0; y < world.height(); y++)
+   {
+      ElevationDataType sum =
+         std::accumulate(elevation[y].begin(), elevation[y].end(), 0.0f);
+      rowSums.push_back(sum);
+   }
+   int32_t yWithMinSum =
+      std::min_element(rowSums.cbegin(), rowSums.cend()) - rowSums.cbegin();
+   BOOST_LOG_TRIVIAL(debug)
+      << "CenterLand(): Height complete (min y = " << yWithMinSum << ")";
+
+   // Find column with the lowest elevation
+   for (uint32_t x = 0; x < world.width(); x++)
+   {
+      ElevationArrayType::array_view<1>::type colView =
+         elevation[boost::indices[ElevationArrayType::index_range()][x]];
+      ElevationDataType sum =
+         std::accumulate(colView.begin(), colView.end(), 0.0f);
+      colSums.push_back(sum);
+   }
+   int32_t xWithMinSum =
+      std::min_element(colSums.cbegin(), colSums.cend()) - colSums.cbegin();
+   BOOST_LOG_TRIVIAL(debug)
+      << "CenterLand(): Width complete (min x = " << xWithMinSum << ")";
+
+   int32_t latShift = 0;
+   int32_t xOffset  = xWithMinSum;
+   int32_t yOffset  = yWithMinSum - latShift;
+   if (yOffset < 0)
+      yOffset += world.height();
+
+   // Rotate so the column with the lowest elevation is at the left edge
+   for (uint32_t y = 0; y < world.height(); y++)
+   {
+      std::rotate(elevation[y].begin(),
+                  elevation[y].begin() + xOffset,
+                  elevation[y].end());
+      std::rotate(
+         plates[y].begin(), plates[y].begin() + xOffset, plates[y].end());
+   }
+
+   // Rotate so the row with the lowest elevation is at the top
+   for (uint32_t x = 0; x < world.width(); x++)
+   {
+      ElevationArrayType::array_view<1>::type elevationColView =
+         elevation[boost::indices[ElevationArrayType::index_range()][x]];
+      PlateArrayType::array_view<1>::type platesColView =
+         plates[boost::indices[ElevationArrayType::index_range()][x]];
+
+      std::rotate(elevationColView.begin(),
+                  elevationColView.begin() + yOffset,
+                  elevationColView.end());
+      std::rotate(platesColView.begin(),
+                  platesColView.begin() + yOffset,
+                  platesColView.end());
+   }
+
+   BOOST_LOG_TRIVIAL(debug) << "CenterLand(): Rotate complete";
+}
 
 void InitializeOceanAndThresholds(World& world, float oceanLevel)
 {
@@ -100,8 +167,6 @@ static void FillOcean(OceanArrayType&           ocean,
 {
    uint32_t height = elevation.shape()[0];
    uint32_t width  = elevation.shape()[1];
-
-   BOOST_LOG_TRIVIAL(trace) << "FillOcean(): " << width << "x" << height;
 
    ocean.resize(boost::extents[height][width]);
 

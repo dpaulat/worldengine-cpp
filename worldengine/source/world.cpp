@@ -157,6 +157,11 @@ OceanArrayType& World::GetOceanData()
    return ocean_;
 }
 
+PlateArrayType& World::GetPlateData()
+{
+   return plates_;
+}
+
 void World::SetElevationData(const float* heightmap)
 {
    SetArrayData(heightmap, elevation_);

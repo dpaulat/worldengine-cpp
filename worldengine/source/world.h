@@ -50,13 +50,14 @@ public:
    bool HasPrecipitations() const;
    bool HasTemperature() const;
 
-   ElevationArrayType& World::GetElevationData();
-   OceanArrayType& World::GetOceanData();
+   ElevationArrayType& GetElevationData();
+   OceanArrayType&     GetOceanData();
+   PlateArrayType&     GetPlateData();
 
    void SetElevationData(const float* heightmap);
    void SetPlatesData(const uint32_t* platesmap);
 
-   bool World::ProtobufSerialize(std::string& output) const;
+   bool ProtobufSerialize(std::string& output) const;
 
 private:
    std::string          name_;
