@@ -4,3 +4,6 @@
 [submodule "external/cmake-conan"]
 	path = external/cmake-conan
 	url = https://github.com/conan-io/cmake-conan.git
+[submodule "external/OpenSimplexNoise"]
+	path = external/OpenSimplexNoise
+	url = https://github.com/deerel/OpenSimplexNoise.git

@@ -24,9 +24,10 @@ find_package(PNG)
 find_package(protobuf)
 find_package(ZLIB)
 
-target_include_directories(libworldengine PRIVATE ${WORLDENGINE_DIR}/external/plate-tectonics/src)
-target_include_directories(libworldengine PRIVATE ${Boost_INCLUDE_DIR})
-target_include_directories(libworldengine PRIVATE ${PNG_INCLUDE_DIR})
-target_include_directories(libworldengine PRIVATE ${protobuf_INCLUDE_DIR})
-target_include_directories(libworldengine PRIVATE ${ZLIB_INCLUDE_DIR})
-target_include_directories(libworldengine PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(libworldengine PRIVATE ${PLATE_TECTONICS_INCLUDE_DIR}
+                                                  ${OPENSIMPLEX_NOISE_INCLUDE_DIR}
+                                                  ${Boost_INCLUDE_DIR}
+                                                  ${PNG_INCLUDE_DIR}
+                                                  ${protobuf_INCLUDE_DIR}
+                                                  ${ZLIB_INCLUDE_DIR}
+                                                  ${CMAKE_CURRENT_BINARY_DIR})

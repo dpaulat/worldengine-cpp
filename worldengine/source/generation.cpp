@@ -4,6 +4,8 @@
 
 #include <boost/log/trivial.hpp>
 
+#include <OpenSimplexNoise.h>
+
 namespace WorldEngine
 {
 
@@ -21,7 +23,24 @@ static void HarmonizeOcean(const OceanArrayType&     ocean,
                            const ElevationArrayType& elevation,
                            float                     oceanLevel);
 
-void AddNoiseToElevation(World& world, uint32_t seed) {}
+void AddNoiseToElevation(World& world, uint32_t seed)
+{
+   uint32_t octaves = 8;
+   double   freq    = 16.0 * octaves;
+   
+   ElevationArrayType& elevation = world.GetElevationData();
+
+   OpenSimplexNoise::Noise noise(seed);
+
+   for (uint32_t y = 0; y < world.height(); y++)
+   {
+      for (uint32_t x = 0; x < world.width(); x++)
+      {
+         double n = noise.eval(x / freq * 2.0, y / freq * 2.0, octaves);
+         elevation[y][x] += n;
+      }
+   }
+}
 
 void CenterLand(World& world)
 {
