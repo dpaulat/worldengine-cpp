@@ -3,7 +3,9 @@ project(libworldengine CXX)
 
 include(cmake/protoc-config)
 
-add_library(libworldengine STATIC source/biome.cpp
+add_library(libworldengine STATIC source/basic.cpp
+                                  source/basic.h
+                                  source/biome.cpp
                                   source/biome.h
                                   source/common.cpp
                                   source/common.h
@@ -15,6 +17,8 @@ add_library(libworldengine STATIC source/biome.cpp
                                   source/plates.h
                                   source/world.cpp
                                   source/world.h
+                                  source/simulations/biome_simulation.cpp
+                                  source/simulations/biome_simulation.h
                                   World.proto)
 
 protobuf_generate(TARGET libworldengine)

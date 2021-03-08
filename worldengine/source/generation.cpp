@@ -1,4 +1,6 @@
 #include "generation.h"
+#include "basic.h"
+#include "biome.h"
 
 #include <queue>
 
@@ -118,13 +120,16 @@ void InitializeOceanAndThresholds(World& world, float oceanLevel)
 
    FillOcean(ocean, e, oceanLevel);
 
-   // TODO: Finish
-   // hl = FindThresholdF(e, 0.10); // Highest 10% of land is hills
-   // ml = FindThresholdF(e, 0.03); // Highest 3% of land is mountains
+   float hl = FindThresholdF(e, 0.10); // Highest 10% of land is hills
+   float ml = FindThresholdF(e, 0.03); // Highest 3% of land is mountains
+   world.SetThreshold(ThresholdType::Sea, oceanLevel);
+   world.SetThreshold(ThresholdType::Hill, hl);
+   world.SetThreshold(ThresholdType::Mountain, ml);
 
    HarmonizeOcean(ocean, e, oceanLevel);
 
    // TODO: Finish
+   // SeaDepth(world, oceanLevel);
 }
 
 void PlaceOceansAtMapBorders(World& world)
@@ -248,6 +253,10 @@ static void HarmonizeOcean(const OceanArrayType&     ocean,
                            const ElevationArrayType& elevation,
                            float                     oceanLevel)
 {
+   float shallowSea = oceanLevel * 0.85f;
+   float midpoint   = shallowSea / 2.0f;
+
+   // TODO: Finish
 }
 
 } // namespace WorldEngine

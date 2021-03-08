@@ -28,6 +28,15 @@ enum class StepType
    Full
 };
 
+enum class ThresholdType : uint32_t
+{
+   Sea = 0,
+   Hill = 1,
+   Mountain = 2,
+   Count = 3,
+   Last = Mountain
+};
+
 enum class WorldFormat
 {
    Protobuf,

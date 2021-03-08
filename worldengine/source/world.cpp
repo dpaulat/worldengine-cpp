@@ -71,7 +71,8 @@ World::World(const std::string&          name,
     curveOffset_(curveOffset),
     elevation_(),
     plates_(),
-    ocean_()
+    ocean_(),
+    thresholds_ {0.0f, 0.0f, 0.0f}
 {
 }
 
@@ -162,6 +163,16 @@ PlateArrayType& World::GetPlateData()
    return plates_;
 }
 
+float World::GetThreshold(ThresholdType type) const
+{
+   if (type > ThresholdType::Last)
+   {
+      throw std::invalid_argument("Invalid threshold type");
+   }
+
+   return thresholds_[static_cast<uint32_t>(type)];
+}
+
 void World::SetElevationData(const float* heightmap)
 {
    SetArrayData(heightmap, elevation_);
@@ -175,6 +186,16 @@ void World::SetPlatesData(const uint32_t* platesmap)
    SetArrayData(platesmap, plates_);
 
    BOOST_LOG_TRIVIAL(debug) << "Platesmap multi_array:" << std::endl << plates_;
+}
+
+void World::SetThreshold(ThresholdType type, float value)
+{
+   if (type > ThresholdType::Last)
+   {
+      throw std::invalid_argument("Invalid threshold type");
+   }
+
+   thresholds_[static_cast<uint32_t>(type)] = value;
 }
 
 bool World::ProtobufSerialize(std::string& output) const
@@ -207,9 +228,9 @@ bool World::ProtobufSerialize(std::string& output) const
    // Elevation
    // TODO
    pbWorld.set_allocated_heightmapdata(pbHeightmapData);
-   pbWorld.set_heightmapth_sea(0.0);
-   pbWorld.set_heightmapth_plain(0.0);
-   pbWorld.set_heightmapth_hill(0.0);
+   pbWorld.set_heightmapth_sea(GetThreshold(ThresholdType::Sea));
+   pbWorld.set_heightmapth_plain(GetThreshold(ThresholdType::Hill));
+   pbWorld.set_heightmapth_hill(GetThreshold(ThresholdType::Mountain));
 
    // Plates
    // TODO

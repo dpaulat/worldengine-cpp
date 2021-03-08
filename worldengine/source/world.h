@@ -54,8 +54,12 @@ public:
    OceanArrayType&     GetOceanData();
    PlateArrayType&     GetPlateData();
 
+   float GetThreshold(ThresholdType type) const;
+
    void SetElevationData(const float* heightmap);
    void SetPlatesData(const uint32_t* platesmap);
+
+   void SetThreshold(ThresholdType type, float value);
 
    bool ProtobufSerialize(std::string& output) const;
 
@@ -72,6 +76,8 @@ private:
    ElevationArrayType elevation_;
    PlateArrayType     plates_;
    OceanArrayType     ocean_;
+
+   float thresholds_[static_cast<uint32_t>(ThresholdType::Count)];
 
    static int32_t WorldengineTag();
    static int32_t VersionHashcode();
