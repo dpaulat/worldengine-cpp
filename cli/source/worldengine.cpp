@@ -341,13 +341,13 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    {
       std::string precipitationFilename =
          outputDir + "/" + worldName + "_precipitation.png";
-      // TODO: DrawPrecipitationOnFile();
+      DrawPrecipitationOnFile(*world, precipitationFilename, blackAndWhite);
       BOOST_LOG_TRIVIAL(info)
          << "Precipitation image generated in " << precipitationFilename;
 
       std::string temperatureFilename =
          outputDir + "/" + worldName + "_temperature.png";
-      // TODO: DrawTemperatureLevelsOnFile();
+      DrawTemperatureLevelsOnFile(*world, temperatureFilename, blackAndWhite);
       BOOST_LOG_TRIVIAL(info)
          << "Temperature image generated in " << temperatureFilename;
    }
@@ -355,12 +355,13 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    if (step.includeBiome_)
    {
       std::string biomeFilename = outputDir + "/" + worldName + "_biome.png";
-      // TODO: DrawBiomeOnFile();
+      DrawBiomeOnFile(*world, biomeFilename);
       BOOST_LOG_TRIVIAL(info) << "Biome image generated in " << biomeFilename;
    }
 
-   std::string elevationFilename = outputDir + "/" + worldName + "_biome.png";
-   // TODO: DrawSimpleElevationOnFile();
+   std::string elevationFilename = outputDir + "/" + worldName + "_elevation.png";
+   DrawSimpleElevationOnFile(
+      *world, elevationFilename, world->GetThreshold(ThresholdType::Sea));
    BOOST_LOG_TRIVIAL(info) << "Elevation image generated in "
                            << elevationFilename;
 

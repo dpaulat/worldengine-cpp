@@ -148,6 +148,16 @@ bool World::HasTemperature() const
    return false;
 }
 
+const ElevationArrayType& World::GetElevationData() const
+{
+   return elevation_;
+}
+
+const OceanArrayType& World::GetOceanData() const
+{
+   return ocean_;
+}
+
 ElevationArrayType& World::GetElevationData()
 {
    return elevation_;

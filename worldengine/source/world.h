@@ -50,6 +50,9 @@ public:
    bool HasPrecipitations() const;
    bool HasTemperature() const;
 
+   const ElevationArrayType& GetElevationData() const;
+   const OceanArrayType&     GetOceanData() const;
+
    ElevationArrayType& GetElevationData();
    OceanArrayType&     GetOceanData();
    PlateArrayType&     GetPlateData();
