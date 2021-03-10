@@ -154,101 +154,69 @@ static void DrawSimpleElevation(const World&                       world,
    const ElevationArrayType& e     = world.GetElevationData();
    const OceanArrayType&     ocean = world.GetOceanData();
 
-   boost::multi_array<float, 2> c(
-      boost::extents[world.height()][world.width()]);
-
    bool  hasOcean    = (seaLevel != NAN) && (!ocean.empty());
    float minElevLand = 10.0f;
    float maxElevLand = -10.0f;
    float minElevSea  = 10.0f;
    float maxElevSea  = -10.0f;
 
-   if (hasOcean)
+   for (uint32_t y = 0; y < world.height(); y++)
    {
-      for (uint32_t y = 0; y < world.height(); y++)
+      for (uint32_t x = 0; x < world.width(); x++)
       {
-         for (uint32_t x = 0; x < world.width(); x++)
+         if (hasOcean && ocean[y][x])
          {
-            if (e[y][x] <= seaLevel)
+            if (minElevSea > e[y][x])
             {
-               if (minElevSea > e[y][x])
-               {
-                  minElevSea = e[y][x];
-               }
-               if (maxElevSea < e[y][x])
-               {
-                  maxElevSea = e[y][x];
-               }
+               minElevSea = e[y][x];
             }
-            else
+            if (maxElevSea < e[y][x])
             {
+               maxElevSea = e[y][x];
+            }
+         }
+         else
+         {
 
-               if (minElevLand > e[y][x])
-               {
-                  minElevLand = e[y][x];
-               }
-               if (maxElevLand < e[y][x])
-               {
-                  maxElevLand = e[y][x];
-               }
+            if (minElevLand > e[y][x])
+            {
+               minElevLand = e[y][x];
+            }
+            if (maxElevLand < e[y][x])
+            {
+               maxElevLand = e[y][x];
             }
          }
       }
+   }
 
+   if (hasOcean)
+   {
       BOOST_LOG_TRIVIAL(debug) << "minElevSea = " << minElevSea;
       BOOST_LOG_TRIVIAL(debug) << "maxElevSea = " << maxElevSea;
-      BOOST_LOG_TRIVIAL(debug) << "minElevLand = " << minElevLand;
-      BOOST_LOG_TRIVIAL(debug) << "maxElevLand = " << maxElevLand;
    }
-   else
-   {
-      std::pair<const float*, const float*> minmax =
-         std::minmax_element(e.data(), e.data() + e.num_elements());
-      minElevLand = *minmax.first;
-      maxElevLand = *minmax.second;
 
-      BOOST_LOG_TRIVIAL(debug) << "minElevLand = " << minElevLand;
-      BOOST_LOG_TRIVIAL(debug) << "maxElevLand = " << maxElevLand;
-   }
+   BOOST_LOG_TRIVIAL(debug) << "minElevLand = " << minElevLand;
+   BOOST_LOG_TRIVIAL(debug) << "maxElevLand = " << maxElevLand;
 
    float elevDeltaLand = (maxElevLand - minElevLand) / 11.0f;
    float elevDeltaSea  = (maxElevSea - minElevSea);
-
-   if (hasOcean)
-   {
-      for (uint32_t y = 0; y < world.height(); y++)
-      {
-         for (uint32_t x = 0; x < world.width(); x++)
-         {
-            if (ocean[y][x])
-            {
-               c[y][x] = ((e[y][x] - minElevSea) / elevDeltaSea);
-            }
-            else
-            {
-               c[y][x] = ((e[y][x] - minElevLand) / elevDeltaLand) + 1;
-            }
-         }
-      }
-   }
-   else
-   {
-      for (uint32_t y = 0; y < world.height(); y++)
-      {
-         for (uint32_t x = 0; x < world.width(); x++)
-         {
-            c[y][x] = ((e[y][x] - minElevLand) / elevDeltaLand) + 1;
-         }
-      }
-   }
+   float elevation;
 
    for (uint32_t y = 0; y < world.height(); y++)
    {
       for (uint32_t x = 0; x < world.width(); x++)
       {
-         boost::gil::rgba8_pixel_t color = ElevationColor(c[y][x], seaLevel);
+         if (hasOcean && ocean[y][x])
+         {
+            elevation = ((e[y][x] - minElevSea) / elevDeltaSea);
+         }
+         else
+         {
+            elevation = ((e[y][x] - minElevLand) / elevDeltaLand) + 1;
+         }
 
-         target(x, y) = color;
+         target(x, y) = ElevationColor(elevation, seaLevel);
       }
    }
 }
@@ -332,8 +300,8 @@ static std::tuple<float, float, float> ElevationColorF(float elevation,
    while (elevation > 2.0f * colorStep)
    {
       elevation -= 2.0f * colorStep;
-      return std::make_tuple(1.0f, 1.0f - elevation / 4.0f, 1.0f);
    }
+   return std::make_tuple(1.0f, 1.0f - elevation / 4.0f, 1.0f);
 }
 
 static void SatureColorComponent(float& component)

@@ -6,6 +6,8 @@
 #include <random>
 
 #include <boost/assign.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/program_options.hpp>
 
@@ -43,6 +45,7 @@ std::shared_ptr<World>
 void PrintUsage(const std::string&             programName,
                 const po::options_description& options);
 void PrintWorldInfo(const World& world);
+void SetLogLevel(const ArgumentsType& args, const po::variables_map& vm);
 int  ValidateArguments(ArgumentsType& args, const po::variables_map& vm);
 
 int AddOptions(int                      argc,
@@ -359,7 +362,8 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
       BOOST_LOG_TRIVIAL(info) << "Biome image generated in " << biomeFilename;
    }
 
-   std::string elevationFilename = outputDir + "/" + worldName + "_elevation.png";
+   std::string elevationFilename =
+      outputDir + "/" + worldName + "_elevation.png";
    DrawSimpleElevationOnFile(
       *world, elevationFilename, world->GetThreshold(ThresholdType::Sea));
    BOOST_LOG_TRIVIAL(info) << "Elevation image generated in "
@@ -458,6 +462,19 @@ void PrintWorldInfo(const World& world)
    std::cout << "Has Temperature    : " << world.HasTemperature() << std::endl;
 }
 
+void SetLogLevel(const ArgumentsType& args, const po::variables_map& vm)
+{
+   boost::log::trivial::severity_level severity = boost::log::trivial::debug;
+
+   if (args.verbose)
+   {
+      severity = boost::log::trivial::trace;
+   }
+
+   boost::log::core::get()->set_filter(boost::log::trivial::severity >=
+                                       severity);
+}
+
 int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
 {
    // TODO: Validate file positional parameter
@@ -491,6 +508,8 @@ void CliMain(int argc, const char** argv)
       PrintUsage((argc > 0 ? argv[0] : "worldengine.exe"), options);
       return;
    }
+
+   SetLogLevel(args, vm);
 
    status = ValidateArguments(args, vm);
 

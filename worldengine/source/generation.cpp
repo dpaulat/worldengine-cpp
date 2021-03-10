@@ -21,15 +21,15 @@ static void Around(std::vector<CoordType>& coordList,
 static void FillOcean(OceanArrayType&           ocean,
                       const ElevationArrayType& elevation,
                       float                     seaLevel);
-static void HarmonizeOcean(const OceanArrayType&     ocean,
-                           const ElevationArrayType& elevation,
-                           float                     oceanLevel);
+static void HarmonizeOcean(const OceanArrayType& ocean,
+                           ElevationArrayType&   elevation,
+                           float                 oceanLevel);
 
 void AddNoiseToElevation(World& world, uint32_t seed)
 {
    uint32_t octaves = 8;
    double   freq    = 16.0 * octaves;
-   
+
    ElevationArrayType& elevation = world.GetElevationData();
 
    OpenSimplexNoise::Noise noise(seed);
@@ -115,8 +115,8 @@ void CenterLand(World& world)
 
 void InitializeOceanAndThresholds(World& world, float oceanLevel)
 {
-   const ElevationArrayType& e     = world.GetElevationData();
-   OceanArrayType&           ocean = world.GetOceanData();
+   ElevationArrayType& e     = world.GetElevationData();
+   OceanArrayType&     ocean = world.GetOceanData();
 
    FillOcean(ocean, e, oceanLevel);
 
@@ -249,14 +249,35 @@ static void FillOcean(OceanArrayType&           ocean,
    }
 }
 
-static void HarmonizeOcean(const OceanArrayType&     ocean,
-                           const ElevationArrayType& elevation,
-                           float                     oceanLevel)
+static void HarmonizeOcean(const OceanArrayType& ocean,
+                           ElevationArrayType&   elevation,
+                           float                 oceanLevel)
 {
+   uint32_t width  = ocean.shape()[1];
+   uint32_t height = ocean.shape()[0];
+
    float shallowSea = oceanLevel * 0.85f;
    float midpoint   = shallowSea / 2.0f;
 
-   // TODO: Finish
+   for (uint32_t y = 0; y < height; y++)
+   {
+      for (uint32_t x = 0; x < width; x++)
+      {
+         if (ocean[y][x] && elevation[y][x] < shallowSea)
+         {
+            if (elevation[y][x] < midpoint)
+            {
+               elevation[y][x] =
+                  midpoint - ((midpoint - elevation[y][x]) / 5.0f);
+            }
+            else if (elevation[y][x] > midpoint)
+            {
+               elevation[y][x] =
+                  midpoint + ((elevation[y][x] - midpoint) / 5.0f);
+            }
+         }
+      }
+   }
 }
 
 } // namespace WorldEngine
