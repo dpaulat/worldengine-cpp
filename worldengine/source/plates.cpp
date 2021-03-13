@@ -12,6 +12,22 @@
 namespace WorldEngine
 {
 
+/**
+ * @brief Perform an initial plates simulation using the Plate Tectonics library
+ * @param heightmap Elevation map
+ * @param platesmap Plates map
+ * @param seed Random seed value
+ * @param width Width in pixels
+ * @param height Height in pixels
+ * @param seaLevel The elevation representing the ocean level
+ * @param erosionPeriod
+ * @param foldingRatio
+ * @param aggrOverlapAbs
+ * @param aggrOverlapRel
+ * @param cycleCount
+ * @param numPlates Number of plates
+ * @return
+ */
 static void*
 GeneratePlatesSimulation(float**    heightmap,
                          uint32_t** platesmap,
@@ -26,6 +42,23 @@ GeneratePlatesSimulation(float**    heightmap,
                          uint32_t   cycleCount     = DEFAULT_CYCLE_COUNT,
                          uint32_t   numPlates      = DEFAULT_NUM_PLATES);
 
+/**
+ * @brief Create a new world based on an initial plates simulation
+ * @param name World name
+ * @param width Width in pixels
+ * @param height Height in pixels
+ * @param seed Random seed value
+ * @param temps A list of six temperatures
+ * @param humids A list of seven humidity values
+ * @param gammaCurve Gamma value for temperature and precipitation on gamma
+ * correction curve
+ * @param curveOffset Adjustment value for temperature and precipitation gamma
+ * correction curve
+ * @param numPlates Number of plates
+ * @param oceanLevel The elevation representing the ocean level
+ * @param step Generation steps to perform
+ * @return
+ */
 static std::shared_ptr<World>
 PlatesSimulation(const std::string&        name,
                  uint32_t                  width,

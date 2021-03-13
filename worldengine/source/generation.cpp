@@ -18,9 +18,24 @@ static void Around(std::vector<CoordType>& coordList,
                    uint32_t                y,
                    uint32_t                width,
                    uint32_t                height);
+
+/**
+ * @brief Fill the ocean from the borders of the map
+ * @param ocean Ocean data
+ * @param elevation Elevation data
+ * @param seaLevel The elevation representing the sea level
+*/
 static void FillOcean(OceanArrayType&           ocean,
                       const ElevationArrayType& elevation,
                       float                     seaLevel);
+
+/**
+ * @brief Make the ocean floor less noisy. The underwater erosion should cause
+ * the ocean floor to be more uniform.
+ * @param ocean Ocean data
+ * @param elevation Elevation data
+ * @param oceanLevel The elevation representing the ocean level
+ */
 static void HarmonizeOcean(const OceanArrayType& ocean,
                            ElevationArrayType&   elevation,
                            float                 oceanLevel);

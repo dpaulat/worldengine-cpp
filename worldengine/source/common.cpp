@@ -87,9 +87,9 @@ std::istream& operator>>(std::istream& in, ExportDataType& type)
    return in;
 }
 
-std::string SeaColorToString(SeaColor operation)
+std::string SeaColorToString(SeaColor color)
 {
-   switch (operation)
+   switch (color)
    {
    case SeaColor::Blue: return "blue";
    case SeaColor::Brown: return "brown";
@@ -186,9 +186,9 @@ std::istream& operator>>(std::istream& in, StepType& step)
    return in;
 }
 
-std::string WorldFormatToString(WorldFormat operation)
+std::string WorldFormatToString(WorldFormat format)
 {
-   switch (operation)
+   switch (format)
    {
    case WorldFormat::Protobuf: return "protobuf";
    case WorldFormat::HDF5: return "hdf5";

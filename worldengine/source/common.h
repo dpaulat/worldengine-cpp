@@ -30,11 +30,11 @@ enum class StepType
 
 enum class ThresholdType : uint32_t
 {
-   Sea = 0,
-   Hill = 1,
+   Sea      = 0,
+   Hill     = 1,
    Mountain = 2,
-   Count = 3,
-   Last = Mountain
+   Count    = 3,
+   Last     = Mountain
 };
 
 enum class WorldFormat
@@ -126,22 +126,67 @@ const std::vector<float> DEFAULT_TEMPS {
 const std::vector<float> DEFAULT_HUMIDS {
    0.059, 0.222, 0.493, 0.764, 0.927, 0.986, 0.998};
 
-std::string    ExportDataTypeToString(ExportDataType type);
-ExportDataType ExportDataTypeFromString(const std::string& value);
-std::ostream&  operator<<(std::ostream& os, const ExportDataType& type);
-std::istream&  operator>>(std::istream& in, ExportDataType& type);
+/**
+ * @brief Convert from an export data type enumeration to a string value
+ * @param type Export data type enumeration
+ * @return String value
+ */
+std::string ExportDataTypeToString(ExportDataType type);
 
-std::string   SeaColorToString(SeaColor operation);
+/**
+ * @brief Convert from a string value to an export data type enumeration
+ * @param value String value
+ * @return Export data type enumeration
+ */
+ExportDataType ExportDataTypeFromString(const std::string& value);
+
+std::ostream& operator<<(std::ostream& os, const ExportDataType& type);
+std::istream& operator>>(std::istream& in, ExportDataType& type);
+
+/**
+ * @brief Convert from a sea color enumeration to a string value
+ * @param color Sea color enumeration
+ * @return String value
+ */
+std::string SeaColorToString(SeaColor color);
+
+/**
+ * @brief Convert from a string value to a sea color enumeration
+ * @param value String value
+ * @return Sea color enumeration
+ */
 SeaColor      SeaColorFromString(const std::string& value);
 std::ostream& operator<<(std::ostream& os, const SeaColor& color);
 std::istream& operator>>(std::istream& in, SeaColor& color);
 
-std::string   StepTypeToString(StepType step);
+/**
+ * @brief Convert from a step type enumeration to a string value
+ * @param step Step type enumeration
+ * @return String value
+ */
+std::string StepTypeToString(StepType step);
+
+/**
+ * @brief Convert from a string value to a step type enumeration
+ * @param value String value
+ * @return Step type enumeration
+ */
 StepType      StepTypeFromString(const std::string& value);
 std::ostream& operator<<(std::ostream& os, const StepType& step);
 std::istream& operator>>(std::istream& in, StepType& step);
 
-std::string   WorldFormatToString(WorldFormat operation);
+/**
+ * @brief Convert from a world format enumeration to a string value
+ * @param format World format enumeration
+ * @return String value
+ */
+std::string WorldFormatToString(WorldFormat format);
+
+/**
+ * @brief Convert from a string value to a world format enumeration
+ * @param value String value
+ * @return World format enumeration
+ */
 WorldFormat   WorldFormatFromString(const std::string& value);
 std::ostream& operator<<(std::ostream& os, const WorldFormat& format);
 std::istream& operator>>(std::istream& in, WorldFormat& format);
