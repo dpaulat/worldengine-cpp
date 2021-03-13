@@ -16,8 +16,7 @@ conan_cmake_configure(REQUIRES boost/1.75.0
                                  cmake_paths
                       BUILD_REQUIRES cmake/3.19.4
                       IMPORTS "bin, *.dll -> ./bin"
-                      IMPORTS "lib, *.dylib -> ./bin"
-                      OPTIONS boost:without_python=False)
+                      IMPORTS "lib, *.dylib -> ./bin")
 
 conan_cmake_autodetect(settings)
 
