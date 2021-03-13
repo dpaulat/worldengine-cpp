@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 
+/**
+ * @brief WorldEngine C++ Namespace
+*/
 namespace WorldEngine
 {
 

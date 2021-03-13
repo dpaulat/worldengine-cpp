@@ -26,7 +26,7 @@ namespace WorldEngine
  * @param aggrOverlapRel
  * @param cycleCount
  * @param numPlates Number of plates
- * @return
+ * @return Handle to a Plate Tectonics library object
  */
 static void*
 GeneratePlatesSimulation(float**    heightmap,
@@ -57,7 +57,7 @@ GeneratePlatesSimulation(float**    heightmap,
  * @param numPlates Number of plates
  * @param oceanLevel The elevation representing the ocean level
  * @param step Generation steps to perform
- * @return
+ * @return A new world
  */
 static std::shared_ptr<World>
 PlatesSimulation(const std::string&        name,

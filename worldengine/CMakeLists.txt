@@ -35,3 +35,5 @@ target_include_directories(libworldengine PRIVATE ${PLATE_TECTONICS_INCLUDE_DIR}
                                                   ${protobuf_INCLUDE_DIR}
                                                   ${ZLIB_INCLUDE_DIR}
                                                   ${CMAKE_CURRENT_BINARY_DIR})
+
+target_include_directories(libworldengine INTERFACE ${libworldengine_SOURCE_DIR}/source)

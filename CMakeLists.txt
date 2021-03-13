@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.19)
 set(PROJECT_NAME worldengine)
 project (${PROJECT_NAME} CXX)
 
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
 include(${PROJECT_SOURCE_DIR}/external/cmake-conan/conan.cmake)
 
 conan_cmake_configure(REQUIRES boost/1.75.0
@@ -35,3 +37,4 @@ set(WORLDENGINE_DIR ${PROJECT_SOURCE_DIR})
 add_subdirectory(external)
 add_subdirectory(worldengine)
 add_subdirectory(cli)
+add_subdirectory(docs)
