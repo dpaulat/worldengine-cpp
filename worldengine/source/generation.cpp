@@ -113,6 +113,16 @@ void CenterLand(World& world)
    BOOST_LOG_TRIVIAL(debug) << "CenterLand(): Rotate complete";
 }
 
+void GenerateWorld(World& world, const Step& step)
+{
+   if (!step.includePrecipitations_)
+   {
+      return;
+   }
+
+   // TODO: Simulations
+}
+
 void InitializeOceanAndThresholds(World& world, float oceanLevel)
 {
    ElevationArrayType& e     = world.GetElevationData();
