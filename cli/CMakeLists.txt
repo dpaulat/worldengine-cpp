@@ -13,7 +13,7 @@ target_link_libraries(worldengine libworldengine OpenSimplexNoise PlateTectonics
 find_package(Boost COMPONENTS log
                               program_options REQUIRED)
 find_package(PNG)
-find_package(protobuf)
+find_package(Protobuf)
 
 target_link_libraries(worldengine Boost::log
                                   Boost::program_options

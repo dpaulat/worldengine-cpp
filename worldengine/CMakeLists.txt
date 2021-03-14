@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.19)
 project(libworldengine CXX)
 
-include(cmake/protoc-config)
+find_package(Boost)
+find_package(PNG)
+find_package(Protobuf)
+find_package(ZLIB)
 
 add_library(libworldengine STATIC source/basic.cpp
                                   source/basic.h
@@ -23,17 +26,11 @@ add_library(libworldengine STATIC source/basic.cpp
 
 protobuf_generate(TARGET libworldengine)
 
-find_package(Boost)
-find_package(PNG)
-find_package(protobuf)
-find_package(ZLIB)
-
 target_include_directories(libworldengine PRIVATE ${PLATE_TECTONICS_INCLUDE_DIR}
                                                   ${OPENSIMPLEX_NOISE_INCLUDE_DIR}
                                                   ${Boost_INCLUDE_DIR}
                                                   ${PNG_INCLUDE_DIR}
                                                   ${protobuf_INCLUDE_DIR}
-                                                  ${ZLIB_INCLUDE_DIR}
-                                                  ${CMAKE_CURRENT_BINARY_DIR})
+                                                  ${ZLIB_INCLUDE_DIR})
 
 target_include_directories(libworldengine INTERFACE ${libworldengine_SOURCE_DIR}/source)
