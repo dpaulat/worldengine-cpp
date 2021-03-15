@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.19)
 set(PROJECT_NAME worldengine)
 project (${PROJECT_NAME} CXX)
 
+enable_testing()
+
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 include(${PROJECT_SOURCE_DIR}/external/cmake-conan/conan.cmake)

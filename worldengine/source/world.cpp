@@ -158,6 +158,11 @@ const OceanArrayType& World::GetOceanData() const
    return ocean_;
 }
 
+const TemperatureArrayType& World::GetTemperatureData() const
+{
+   return temperature_;
+}
+
 ElevationArrayType& World::GetElevationData()
 {
    return elevation_;
@@ -171,6 +176,11 @@ OceanArrayType& World::GetOceanData()
 PlateArrayType& World::GetPlateData()
 {
    return plates_;
+}
+
+TemperatureArrayType& World::GetTemperatureData()
+{
+   return temperature_;
 }
 
 float World::GetThreshold(ThresholdType type) const

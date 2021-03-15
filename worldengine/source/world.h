@@ -13,10 +13,12 @@ namespace WorldEngine
 typedef float    ElevationDataType;
 typedef bool     OceanDataType;
 typedef uint16_t PlateDataType;
+typedef float    TemperatureDataType;
 
-typedef boost::multi_array<ElevationDataType, 2> ElevationArrayType;
-typedef boost::multi_array<OceanDataType, 2>     OceanArrayType;
-typedef boost::multi_array<PlateDataType, 2>     PlateArrayType;
+typedef boost::multi_array<ElevationDataType, 2>   ElevationArrayType;
+typedef boost::multi_array<OceanDataType, 2>       OceanArrayType;
+typedef boost::multi_array<PlateDataType, 2>       PlateArrayType;
+typedef boost::multi_array<TemperatureDataType, 2> TemperatureArrayType;
 
 class World
 {
@@ -50,12 +52,14 @@ public:
    bool HasPrecipitations() const;
    bool HasTemperature() const;
 
-   const ElevationArrayType& GetElevationData() const;
-   const OceanArrayType&     GetOceanData() const;
+   const ElevationArrayType&   GetElevationData() const;
+   const OceanArrayType&       GetOceanData() const;
+   const TemperatureArrayType& GetTemperatureData() const;
 
-   ElevationArrayType& GetElevationData();
-   OceanArrayType&     GetOceanData();
-   PlateArrayType&     GetPlateData();
+   ElevationArrayType&   GetElevationData();
+   OceanArrayType&       GetOceanData();
+   PlateArrayType&       GetPlateData();
+   TemperatureArrayType& GetTemperatureData();
 
    float GetThreshold(ThresholdType type) const;
 
@@ -76,9 +80,10 @@ private:
    float                gammaCurve_;
    float                curveOffset_;
 
-   ElevationArrayType elevation_;
-   PlateArrayType     plates_;
-   OceanArrayType     ocean_;
+   ElevationArrayType   elevation_;
+   PlateArrayType       plates_;
+   OceanArrayType       ocean_;
+   TemperatureArrayType temperature_;
 
    float thresholds_[static_cast<uint32_t>(ThresholdType::Count)];
 

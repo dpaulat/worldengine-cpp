@@ -1,8 +1,10 @@
 #include "generation.h"
 #include "basic.h"
 #include "biome.h"
+#include "simulations/temperature.h"
 
 #include <queue>
+#include <random>
 
 #include <boost/log/trivial.hpp>
 
@@ -53,7 +55,7 @@ void AddNoiseToElevation(World& world, uint32_t seed)
    {
       for (uint32_t x = 0; x < world.width(); x++)
       {
-         double n = noise.eval(x / freq * 2.0, y / freq * 2.0, octaves);
+         double n = Noise(noise, x / freq * 2.0, y / freq * 2.0, octaves);
          elevation[y][x] += n;
       }
    }
@@ -134,6 +136,11 @@ void GenerateWorld(World& world, const Step& step)
    {
       return;
    }
+
+   std::default_random_engine              generator;
+   std::uniform_int_distribution<uint32_t> distribution(0, UINT32_MAX);
+
+   TemperatureSimulation(world, distribution(generator));
 
    // TODO: Simulations
 }

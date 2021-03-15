@@ -20,8 +20,10 @@ set(HDR_MAIN source/basic.h
              source/generation.h
              source/plates.h
              source/world.h)
-set(SRC_SIMULATIONS source/simulations/biome_simulation.cpp)
-set(HDR_SIMULATIONS source/simulations/biome_simulation.h)
+set(SRC_SIMULATIONS source/simulations/biome_simulation.cpp
+                    source/simulations/temperature.cpp)
+set(HDR_SIMULATIONS source/simulations/biome_simulation.h
+                    source/simulations/temperature.h)
 set(PROTO_FILES World.proto)
 
 add_library(worldengine STATIC ${SRC_MAIN}
@@ -52,3 +54,9 @@ target_include_directories(worldengine PRIVATE ${PLATE_TECTONICS_INCLUDE_DIR}
                                                ${libworldengine_BINARY_DIR})
 
 target_include_directories(worldengine INTERFACE ${libworldengine_SOURCE_DIR}/source)
+
+set_target_properties(worldengine PROPERTIES CXX_STANDARD 17
+                                             CXX_STANDARD_REQUIRED ON
+                                             CXX_EXTENSIONS OFF)
+
+add_subdirectory(test)
