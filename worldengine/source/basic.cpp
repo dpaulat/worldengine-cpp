@@ -13,7 +13,7 @@ namespace WorldEngine
 
 float FindThresholdF(const boost::multi_array<float, 2>& mapData,
                      float                               landPercentage,
-                     OceanArrayType*                     ocean)
+                     const OceanArrayType*               ocean)
 {
    typedef ba::accumulator_set<float, ba::stats<ba::tag::p_square_quantile>>
       accumulator_t;

@@ -36,13 +36,15 @@ public:
          float                       curveOffset = DEFAULT_CURVE_OFFSET);
    ~World();
 
-   const std::string& name() const;
-   uint32_t           width() const;
-   uint32_t           height() const;
-   uint32_t           seed() const;
-   uint32_t           numPlates() const;
-   float              oceanLevel() const;
-   const Step&        step() const;
+   const std::string&        name() const;
+   uint32_t                  width() const;
+   uint32_t                  height() const;
+   uint32_t                  seed() const;
+   uint32_t                  numPlates() const;
+   float                     oceanLevel() const;
+   const Step&               step() const;
+   const std::vector<float>& temps() const;
+   const std::vector<float>& humids() const;
 
    bool HasBiome() const;
    bool HasHumidity() const;
@@ -61,12 +63,16 @@ public:
    PlateArrayType&       GetPlateData();
    TemperatureArrayType& GetTemperatureData();
 
-   float GetThreshold(ThresholdType type) const;
+   float GetThreshold(ElevationThresholdType type) const;
+   float GetThreshold(TemperatureType type) const;
+
+   TemperatureType GetTemperatureType(uint32_t x, uint32_t y) const;
 
    void SetElevationData(const float* heightmap);
    void SetPlatesData(const uint32_t* platesmap);
 
-   void SetThreshold(ThresholdType type, float value);
+   void SetThreshold(ElevationThresholdType type, float value);
+   void SetThreshold(TemperatureType type, float value);
 
    bool ProtobufSerialize(std::string& output) const;
 
@@ -85,7 +91,10 @@ private:
    OceanArrayType       ocean_;
    TemperatureArrayType temperature_;
 
-   float thresholds_[static_cast<uint32_t>(ThresholdType::Count)];
+   float elevationThresholds_[static_cast<uint32_t>(
+      ElevationThresholdType::Count)];
+   float temperatureThresholds_[static_cast<uint32_t>(
+      TemperatureType::Count)];
 
    static int32_t WorldengineTag();
    static int32_t VersionHashcode();

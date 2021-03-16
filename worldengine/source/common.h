@@ -5,9 +5,18 @@
 
 /**
  * @brief WorldEngine C++ Namespace
-*/
+ */
 namespace WorldEngine
 {
+
+enum class ElevationThresholdType : uint32_t
+{
+   Sea      = 0,
+   Hill     = 1,
+   Mountain = 2,
+   Count    = 3,
+   Last     = Mountain
+};
 
 enum class ExportDataType
 {
@@ -31,13 +40,18 @@ enum class StepType
    Full
 };
 
-enum class ThresholdType : uint32_t
+enum class TemperatureType : uint32_t
 {
-   Sea      = 0,
-   Hill     = 1,
-   Mountain = 2,
-   Count    = 3,
-   Last     = Mountain
+   Polar       = 0,
+   Alpine      = 1,
+   Boreal      = 2,
+   Cool        = 3,
+   Warm        = 4,
+   Subtropical = 5,
+   Tropical    = 6,
+   Count       = 7,
+   First       = Polar,
+   Last        = Tropical
 };
 
 enum class WorldFormat
@@ -103,7 +117,7 @@ const std::string WORLDENGINE_VERSION("0.19.0");
 
 const Step STEP_PLATES(StepType::Plates, true, false, false, false);
 const Step
-           STEP_PRECIPITATIONS(StepType::Precipitations, true, true, false, false);
+   STEP_PRECIPITATIONS(StepType::Precipitations, true, true, false, false);
 const Step STEP_FULL(StepType::Full, true, true, true, true);
 
 const uint32_t MIN_SEED = 0u;

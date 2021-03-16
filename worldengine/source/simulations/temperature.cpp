@@ -19,12 +19,25 @@ static void TemperatureCalculation(World&              world,
 void TemperatureSimulation(World& world, uint32_t seed)
 {
    ElevationArrayType& elevation = world.GetElevationData();
-   float mountainLevel           = world.GetThreshold(ThresholdType::Mountain);
-   const OceanArrayType& ocean   = world.GetOceanData();
+   float mountainLevel = world.GetThreshold(ElevationThresholdType::Mountain);
+   const OceanArrayType&       ocean = world.GetOceanData();
+   const TemperatureArrayType& t     = world.GetTemperatureData();
 
    TemperatureCalculation(world, seed, elevation, mountainLevel);
 
-   // TODO: Thresholds
+   world.SetThreshold(TemperatureType::Polar,
+                      FindThresholdF(t, world.temps()[5], &ocean));
+   world.SetThreshold(TemperatureType::Alpine,
+                      FindThresholdF(t, world.temps()[4], &ocean));
+   world.SetThreshold(TemperatureType::Boreal,
+                      FindThresholdF(t, world.temps()[3], &ocean));
+   world.SetThreshold(TemperatureType::Cool,
+                      FindThresholdF(t, world.temps()[2], &ocean));
+   world.SetThreshold(TemperatureType::Warm,
+                      FindThresholdF(t, world.temps()[1], &ocean));
+   world.SetThreshold(TemperatureType::Subtropical,
+                      FindThresholdF(t, world.temps()[0], &ocean));
+   world.SetThreshold(TemperatureType::Tropical, 0.0f);
 }
 
 static void TemperatureCalculation(World&              world,

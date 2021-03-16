@@ -364,8 +364,9 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
 
    std::string elevationFilename =
       outputDir + "/" + worldName + "_elevation.png";
-   DrawSimpleElevationOnFile(
-      *world, elevationFilename, world->GetThreshold(ThresholdType::Sea));
+   DrawSimpleElevationOnFile(*world,
+                             elevationFilename,
+                             world->GetThreshold(ElevationThresholdType::Sea));
    BOOST_LOG_TRIVIAL(info) << "Elevation image generated in "
                            << elevationFilename;
 

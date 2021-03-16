@@ -20,7 +20,7 @@ namespace WorldEngine
  */
 float FindThresholdF(const boost::multi_array<float, 2>& mapData,
                      float                               landPercentage,
-                     OceanArrayType*                     ocean = nullptr);
+                     const OceanArrayType*               ocean = nullptr);
 
 /**
  * @brief Perform a linear interpolation over the given points

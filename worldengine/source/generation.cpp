@@ -26,7 +26,7 @@ static void Around(std::vector<CoordType>& coordList,
  * @param ocean Ocean data
  * @param elevation Elevation data
  * @param seaLevel The elevation representing the sea level
-*/
+ */
 static void FillOcean(OceanArrayType&           ocean,
                       const ElevationArrayType& elevation,
                       float                     seaLevel);
@@ -154,9 +154,9 @@ void InitializeOceanAndThresholds(World& world, float oceanLevel)
 
    float hl = FindThresholdF(e, 0.10); // Highest 10% of land is hills
    float ml = FindThresholdF(e, 0.03); // Highest 3% of land is mountains
-   world.SetThreshold(ThresholdType::Sea, oceanLevel);
-   world.SetThreshold(ThresholdType::Hill, hl);
-   world.SetThreshold(ThresholdType::Mountain, ml);
+   world.SetThreshold(ElevationThresholdType::Sea, oceanLevel);
+   world.SetThreshold(ElevationThresholdType::Hill, hl);
+   world.SetThreshold(ElevationThresholdType::Mountain, ml);
 
    HarmonizeOcean(ocean, e, oceanLevel);
 

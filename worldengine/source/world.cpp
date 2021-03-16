@@ -72,7 +72,8 @@ World::World(const std::string&          name,
     elevation_(),
     plates_(),
     ocean_(),
-    thresholds_ {0.0f, 0.0f, 0.0f}
+    elevationThresholds_ {0.0f, 0.0f, 0.0f},
+    temperatureThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}
 {
 }
 
@@ -111,6 +112,16 @@ float World::oceanLevel() const
 const Step& World::step() const
 {
    return generationParams_.step_;
+}
+
+const std::vector<float>& World::temps() const
+{
+   return temps_;
+}
+
+const std::vector<float>& World::humids() const
+{
+   return humids_;
 }
 
 bool World::HasBiome() const
@@ -183,14 +194,51 @@ TemperatureArrayType& World::GetTemperatureData()
    return temperature_;
 }
 
-float World::GetThreshold(ThresholdType type) const
+float World::GetThreshold(ElevationThresholdType type) const
 {
-   if (type > ThresholdType::Last)
+   if (type > ElevationThresholdType::Last)
    {
       throw std::invalid_argument("Invalid threshold type");
    }
 
-   return thresholds_[static_cast<uint32_t>(type)];
+   return elevationThresholds_[static_cast<uint32_t>(type)];
+}
+
+float World::GetThreshold(TemperatureType type) const
+{
+   if (type > TemperatureType::Last)
+   {
+      throw std::invalid_argument("Invalid threshold type");
+   }
+
+   return temperatureThresholds_[static_cast<uint32_t>(type)];
+}
+
+TemperatureType World::GetTemperatureType(uint32_t x, uint32_t y) const
+{
+   uint32_t width  = temperature_.shape()[1];
+   uint32_t height = temperature_.shape()[0];
+
+   if (x >= width || y >= height)
+   {
+      throw std::invalid_argument("Coordinates out of bounds");
+   }
+
+   float temperature = temperature_[y][x];
+
+   for (uint32_t i = static_cast<uint32_t>(TemperatureType::First);
+        i < static_cast<uint32_t>(TemperatureType::Last);
+        i++)
+   {
+      TemperatureType type = static_cast<TemperatureType>(i);
+
+      if (temperature < GetThreshold(type))
+      {
+         return type;
+      }
+   }
+
+   return TemperatureType::Last;
 }
 
 void World::SetElevationData(const float* heightmap)
@@ -208,14 +256,24 @@ void World::SetPlatesData(const uint32_t* platesmap)
    BOOST_LOG_TRIVIAL(debug) << "Platesmap multi_array:" << std::endl << plates_;
 }
 
-void World::SetThreshold(ThresholdType type, float value)
+void World::SetThreshold(ElevationThresholdType type, float value)
 {
-   if (type > ThresholdType::Last)
+   if (type > ElevationThresholdType::Last)
    {
       throw std::invalid_argument("Invalid threshold type");
    }
 
-   thresholds_[static_cast<uint32_t>(type)] = value;
+   elevationThresholds_[static_cast<uint32_t>(type)] = value;
+}
+
+void World::SetThreshold(TemperatureType type, float value)
+{
+   if (type > TemperatureType::Last)
+   {
+      throw std::invalid_argument("Invalid threshold type");
+   }
+
+   temperatureThresholds_[static_cast<uint32_t>(type)] = value;
 }
 
 bool World::ProtobufSerialize(std::string& output) const
@@ -248,9 +306,9 @@ bool World::ProtobufSerialize(std::string& output) const
    // Elevation
    // TODO
    pbWorld.set_allocated_heightmapdata(pbHeightmapData);
-   pbWorld.set_heightmapth_sea(GetThreshold(ThresholdType::Sea));
-   pbWorld.set_heightmapth_plain(GetThreshold(ThresholdType::Hill));
-   pbWorld.set_heightmapth_hill(GetThreshold(ThresholdType::Mountain));
+   pbWorld.set_heightmapth_sea(GetThreshold(ElevationThresholdType::Sea));
+   pbWorld.set_heightmapth_plain(GetThreshold(ElevationThresholdType::Hill));
+   pbWorld.set_heightmapth_hill(GetThreshold(ElevationThresholdType::Mountain));
 
    // Plates
    // TODO
