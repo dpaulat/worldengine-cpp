@@ -61,26 +61,6 @@ float FindThresholdF(const boost::multi_array<float, 2>& mapData,
    return threshold;
 }
 
-float InterpolateF(float x, const std::vector<std::pair<float, float>>& points)
-{
-   if (x <= points[0].first)
-   {
-      return points[0].second;
-   }
-
-   for (auto it = points.begin() + 1; it != points.end(); it++)
-   {
-      if (x <= it->first)
-      {
-         float t = (x - (it - 1)->first) / (it->first - (it - 1)->first);
-         float y = (it - 1)->second + t * (it->second - (it - 1)->second);
-         return y;
-      }
-   }
-
-   return points.back().second;
-}
-
 double Noise(const OpenSimplexNoise::Noise& noise,
              double                         x,
              double                         y,

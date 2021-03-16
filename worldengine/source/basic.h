@@ -28,7 +28,26 @@ float FindThresholdF(const boost::multi_array<float, 2>& mapData,
  * @param points A list of (x, y) points, sorted along the x-axis
  * @return Evaluated y coordinate
  */
-float InterpolateF(float x, const std::vector<std::pair<float, float>>& points);
+template<typename T, typename U>
+U Interpolate(T x, const std::vector<std::pair<T, U>>& points)
+{
+   if (x <= points[0].first)
+   {
+      return points[0].second;
+   }
+
+   for (auto it = points.begin() + 1; it != points.end(); it++)
+   {
+      if (x <= it->first)
+      {
+         T t = (x - (it - 1)->first) / (it->first - (it - 1)->first);
+         U y = (it - 1)->second + t * (it->second - (it - 1)->second);
+         return y;
+      }
+   }
+
+   return points.back().second;
+}
 
 /**
  * @brief OpenSimplex noise value for specified 2D coordinate

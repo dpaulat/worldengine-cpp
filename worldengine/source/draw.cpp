@@ -1,4 +1,5 @@
 #include "draw.h"
+#include "basic.h"
 #include "world.h"
 
 #include <cstdint>
@@ -58,8 +59,9 @@ static void DrawSimpleElevation(const World&                       world,
                                 float                              seaLevel,
                                 boost::gil::rgba8_image_t::view_t& target);
 static void DrawTemperatureLevels(const World&                       world,
-                                  boost::gil::rgba8_image_t::view_t& target,
-                                  bool blackAndWhite = false);
+                                  boost::gil::gray8_image_t::view_t& target);
+static void DrawTemperatureLevels(const World&                       world,
+                                  boost::gil::rgba8_image_t::view_t& target);
 
 static boost::gil::rgba8_pixel_t       ElevationColor(float elevation,
                                                       float seaLevel);
@@ -122,18 +124,37 @@ void DrawTemperatureLevelsOnFile(const World&       world,
                                  const std::string& filename,
                                  bool               blackAndWhite)
 {
-   boost::gil::rgba8_image_t         image(world.width(), world.height());
-   boost::gil::rgba8_image_t::view_t view = boost::gil::view(image);
-
-   DrawTemperatureLevels(world, view, blackAndWhite);
-
-   try
+   if (blackAndWhite)
    {
-      boost::gil::write_view(filename, view, boost::gil::png_tag());
+      boost::gil::gray8_image_t         image(world.width(), world.height());
+      boost::gil::gray8_image_t::view_t view = boost::gil::view(image);
+
+      DrawTemperatureLevels(world, view);
+
+      try
+      {
+         boost::gil::write_view(filename, view, boost::gil::png_tag());
+      }
+      catch (const std::exception& ex)
+      {
+         BOOST_LOG_TRIVIAL(error) << ex.what();
+      }
    }
-   catch (const std::exception& ex)
+   else
    {
-      BOOST_LOG_TRIVIAL(error) << ex.what();
+      boost::gil::rgba8_image_t         image(world.width(), world.height());
+      boost::gil::rgba8_image_t::view_t view = boost::gil::view(image);
+
+      DrawTemperatureLevels(world, view);
+
+      try
+      {
+         boost::gil::write_view(filename, view, boost::gil::png_tag());
+      }
+      catch (const std::exception& ex)
+      {
+         BOOST_LOG_TRIVIAL(error) << ex.what();
+      }
    }
 }
 
@@ -237,50 +258,63 @@ static void DrawSimpleElevation(const World&                       world,
 }
 
 static void DrawTemperatureLevels(const World&                       world,
-                                  boost::gil::rgba8_image_t::view_t& target,
-                                  bool blackAndWhite)
+                                  boost::gil::gray8_image_t::view_t& target)
 {
-   if (blackAndWhite)
+   float    low     = world.GetThreshold(TemperatureType::Polar);
+   float    high    = world.GetThreshold(TemperatureType::Subtropical);
+   uint32_t floor   = 0;
+   uint32_t ceiling = 255;
+
+   const std::vector<std::pair<float, uint32_t>> points = {{low, floor},
+                                                           {high, ceiling}};
+
+   for (uint32_t y = 0; y < world.height(); y++)
    {
-      // TODO
-   }
-   else
-   {
-      for (uint32_t y = 0; y < world.height(); y++)
+      for (uint32_t x = 0; x < world.width(); x++)
       {
-         for (uint32_t x = 0; x < world.width(); x++)
+         uint32_t color = Interpolate(world.GetTemperatureData()[y][x], points);
+         target(x, y)   = boost::gil::gray8_pixel_t(color);
+      }
+   }
+}
+
+static void DrawTemperatureLevels(const World&                       world,
+                                  boost::gil::rgba8_image_t::view_t& target)
+{
+   for (uint32_t y = 0; y < world.height(); y++)
+   {
+      for (uint32_t x = 0; x < world.width(); x++)
+      {
+         switch (world.GetTemperatureType(x, y))
          {
-            switch (world.GetTemperatureType(x, y))
-            {
-            case TemperatureType::Polar:
-               target(x, y) = boost::gil::rgba8_pixel_t(0, 0, 255, 255);
-               break;
+         case TemperatureType::Polar:
+            target(x, y) = boost::gil::rgba8_pixel_t(0, 0, 255, 255);
+            break;
 
-            case TemperatureType::Alpine:
-               target(x, y) = boost::gil::rgba8_pixel_t(42, 0, 213, 255);
-               break;
+         case TemperatureType::Alpine:
+            target(x, y) = boost::gil::rgba8_pixel_t(42, 0, 213, 255);
+            break;
 
-            case TemperatureType::Boreal:
-               target(x, y) = boost::gil::rgba8_pixel_t(85, 0, 170, 255);
-               break;
+         case TemperatureType::Boreal:
+            target(x, y) = boost::gil::rgba8_pixel_t(85, 0, 170, 255);
+            break;
 
-            case TemperatureType::Cool:
-               target(x, y) = boost::gil::rgba8_pixel_t(128, 0, 128, 255);
-               break;
+         case TemperatureType::Cool:
+            target(x, y) = boost::gil::rgba8_pixel_t(128, 0, 128, 255);
+            break;
 
-            case TemperatureType::Warm:
-               target(x, y) = boost::gil::rgba8_pixel_t(170, 0, 85, 255);
-               break;
+         case TemperatureType::Warm:
+            target(x, y) = boost::gil::rgba8_pixel_t(170, 0, 85, 255);
+            break;
 
-            case TemperatureType::Subtropical:
-               target(x, y) = boost::gil::rgba8_pixel_t(213, 0, 42, 255);
-               break;
+         case TemperatureType::Subtropical:
+            target(x, y) = boost::gil::rgba8_pixel_t(213, 0, 42, 255);
+            break;
 
-            case TemperatureType::Tropical:
-            default:
-               target(x, y) = boost::gil::rgba8_pixel_t(255, 0, 0, 255);
-               break;
-            }
+         case TemperatureType::Tropical:
+         default:
+            target(x, y) = boost::gil::rgba8_pixel_t(255, 0, 0, 255);
+            break;
          }
       }
    }

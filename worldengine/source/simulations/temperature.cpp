@@ -118,7 +118,7 @@ static void TemperatureCalculation(World&              world,
       // most sunlight hits the world:
       //     1.0 = hottest zone
       //     0.0 = coldest zone
-      float latitudeFactor = InterpolateF(yScaled, points);
+      float latitudeFactor = Interpolate(yScaled, points);
 
       for (uint32_t x = 0; x < width; x++)
       {
