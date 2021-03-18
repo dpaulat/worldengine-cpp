@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <random>
 
+#include <boost/log/trivial.hpp>
+
 #include <OpenSimplexNoise.h>
 
 namespace WorldEngine
@@ -18,6 +20,8 @@ static void TemperatureCalculation(World&              world,
 
 void TemperatureSimulation(World& world, uint32_t seed)
 {
+   BOOST_LOG_TRIVIAL(debug) << "Temperature simulation start";
+
    ElevationArrayType& elevation = world.GetElevationData();
    float mountainLevel = world.GetThreshold(ElevationThresholdType::Mountain);
    const OceanArrayType&       ocean = world.GetOceanData();
@@ -38,6 +42,8 @@ void TemperatureSimulation(World& world, uint32_t seed)
    world.SetThreshold(TemperatureType::Subtropical,
                       FindThresholdF(t, world.temps()[0], &ocean));
    world.SetThreshold(TemperatureType::Tropical, 0.0f);
+
+   BOOST_LOG_TRIVIAL(debug) << "Temperature simulation finish";
 }
 
 static void TemperatureCalculation(World&              world,
@@ -125,12 +131,12 @@ static void TemperatureCalculation(World&              world,
          float n = Noise(noise, //
                          x * nScale / freq,
                          y * nScale / freq,
-                         octaves) *
-                   x / border;
+                         octaves);
 
          // Added to allow noise pattern to wrap around right and left
          if (x <= border)
          {
+            n *= static_cast<float>(x) / border;
             n += Noise(noise,
                        (x * nScale + width) / freq,
                        y * nScale / freq,

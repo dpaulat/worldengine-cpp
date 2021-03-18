@@ -14,11 +14,13 @@ typedef float    ElevationDataType;
 typedef bool     OceanDataType;
 typedef uint16_t PlateDataType;
 typedef float    TemperatureDataType;
+typedef float    PrecipitationDataType;
 
-typedef boost::multi_array<ElevationDataType, 2>   ElevationArrayType;
-typedef boost::multi_array<OceanDataType, 2>       OceanArrayType;
-typedef boost::multi_array<PlateDataType, 2>       PlateArrayType;
-typedef boost::multi_array<TemperatureDataType, 2> TemperatureArrayType;
+typedef boost::multi_array<ElevationDataType, 2>     ElevationArrayType;
+typedef boost::multi_array<OceanDataType, 2>         OceanArrayType;
+typedef boost::multi_array<PlateDataType, 2>         PlateArrayType;
+typedef boost::multi_array<TemperatureDataType, 2>   TemperatureArrayType;
+typedef boost::multi_array<PrecipitationDataType, 2> PrecipitationArrayType;
 
 class World
 {
@@ -45,6 +47,8 @@ public:
    const Step&               step() const;
    const std::vector<float>& temps() const;
    const std::vector<float>& humids() const;
+   float                     gammaCurve() const;
+   float                     curveOffset() const;
 
    bool HasBiome() const;
    bool HasHumidity() const;
@@ -54,16 +58,19 @@ public:
    bool HasPrecipitations() const;
    bool HasTemperature() const;
 
-   const ElevationArrayType&   GetElevationData() const;
-   const OceanArrayType&       GetOceanData() const;
-   const TemperatureArrayType& GetTemperatureData() const;
+   const ElevationArrayType&     GetElevationData() const;
+   const OceanArrayType&         GetOceanData() const;
+   const TemperatureArrayType&   GetTemperatureData() const;
+   const PrecipitationArrayType& GetPrecipitationData() const;
 
-   ElevationArrayType&   GetElevationData();
-   OceanArrayType&       GetOceanData();
-   PlateArrayType&       GetPlateData();
-   TemperatureArrayType& GetTemperatureData();
+   ElevationArrayType&     GetElevationData();
+   OceanArrayType&         GetOceanData();
+   PlateArrayType&         GetPlateData();
+   TemperatureArrayType&   GetTemperatureData();
+   PrecipitationArrayType& GetPrecipitationData();
 
    float GetThreshold(ElevationThresholdType type) const;
+   float GetThreshold(PrecipitationLevelType type) const;
    float GetThreshold(TemperatureType type) const;
 
    TemperatureType GetTemperatureType(uint32_t x, uint32_t y) const;
@@ -72,6 +79,7 @@ public:
    void SetPlatesData(const uint32_t* platesmap);
 
    void SetThreshold(ElevationThresholdType type, float value);
+   void SetThreshold(PrecipitationLevelType type, float value);
    void SetThreshold(TemperatureType type, float value);
 
    bool ProtobufSerialize(std::string& output) const;
@@ -86,15 +94,17 @@ private:
    float                gammaCurve_;
    float                curveOffset_;
 
-   ElevationArrayType   elevation_;
-   PlateArrayType       plates_;
-   OceanArrayType       ocean_;
-   TemperatureArrayType temperature_;
+   ElevationArrayType     elevation_;
+   PlateArrayType         plates_;
+   OceanArrayType         ocean_;
+   TemperatureArrayType   temperature_;
+   PrecipitationArrayType precipitation_;
 
    float elevationThresholds_[static_cast<uint32_t>(
       ElevationThresholdType::Count)];
-   float temperatureThresholds_[static_cast<uint32_t>(
-      TemperatureType::Count)];
+   float precipitationThresholds_[static_cast<uint32_t>(
+      PrecipitationLevelType::Count)];
+   float temperatureThresholds_[static_cast<uint32_t>(TemperatureType::Count)];
 
    static int32_t WorldengineTag();
    static int32_t VersionHashcode();

@@ -27,6 +27,16 @@ enum class ExportDataType
    Float32
 };
 
+enum class PrecipitationLevelType : uint32_t
+{
+   Low    = 0,
+   Medium = 1,
+   High   = 2,
+   Count  = 3,
+   First  = Low,
+   Last   = High
+};
+
 enum class SeaColor
 {
    Blue,

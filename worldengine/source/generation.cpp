@@ -1,6 +1,7 @@
 #include "generation.h"
 #include "basic.h"
 #include "biome.h"
+#include "simulations/precipitation.h"
 #include "simulations/temperature.h"
 
 #include <queue>
@@ -141,6 +142,7 @@ void GenerateWorld(World& world, const Step& step)
    std::uniform_int_distribution<uint32_t> distribution(0, UINT32_MAX);
 
    TemperatureSimulation(world, distribution(generator));
+   PrecipitationSimulation(world);
 
    // TODO: Simulations
 }

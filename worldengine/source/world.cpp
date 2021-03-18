@@ -72,7 +72,10 @@ World::World(const std::string&          name,
     elevation_(),
     plates_(),
     ocean_(),
+    temperature_(),
+    precipitation_(),
     elevationThresholds_ {0.0f, 0.0f, 0.0f},
+    precipitationThresholds_ {0.0f, 0.0f, 0.0f},
     temperatureThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}
 {
 }
@@ -122,6 +125,16 @@ const std::vector<float>& World::temps() const
 const std::vector<float>& World::humids() const
 {
    return humids_;
+}
+
+float World::gammaCurve() const
+{
+   return gammaCurve_;
+}
+
+float World::curveOffset() const
+{
+   return curveOffset_;
 }
 
 bool World::HasBiome() const
@@ -174,6 +187,11 @@ const TemperatureArrayType& World::GetTemperatureData() const
    return temperature_;
 }
 
+const PrecipitationArrayType& World::GetPrecipitationData() const
+{
+   return precipitation_;
+}
+
 ElevationArrayType& World::GetElevationData()
 {
    return elevation_;
@@ -194,6 +212,11 @@ TemperatureArrayType& World::GetTemperatureData()
    return temperature_;
 }
 
+PrecipitationArrayType& World::GetPrecipitationData()
+{
+   return precipitation_;
+}
+
 float World::GetThreshold(ElevationThresholdType type) const
 {
    if (type > ElevationThresholdType::Last)
@@ -202,6 +225,16 @@ float World::GetThreshold(ElevationThresholdType type) const
    }
 
    return elevationThresholds_[static_cast<uint32_t>(type)];
+}
+
+float World::GetThreshold(PrecipitationLevelType type) const
+{
+   if (type > PrecipitationLevelType::Last)
+   {
+      throw std::invalid_argument("Invalid threshold type");
+   }
+
+   return precipitationThresholds_[static_cast<uint32_t>(type)];
 }
 
 float World::GetThreshold(TemperatureType type) const
@@ -264,6 +297,16 @@ void World::SetThreshold(ElevationThresholdType type, float value)
    }
 
    elevationThresholds_[static_cast<uint32_t>(type)] = value;
+}
+
+void World::SetThreshold(PrecipitationLevelType type, float value)
+{
+   if (type > PrecipitationLevelType::Last)
+   {
+      throw std::invalid_argument("Invalid threshold type");
+   }
+
+   precipitationThresholds_[static_cast<uint32_t>(type)] = value;
 }
 
 void World::SetThreshold(TemperatureType type, float value)
