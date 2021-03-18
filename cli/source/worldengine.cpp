@@ -12,9 +12,12 @@
 #include <boost/program_options.hpp>
 
 #include <common.h>
-#include <draw.h>
 #include <plates.h>
 #include <world.h>
+
+#include <images/ocean_image.h>
+#include <images/simple_elevation_image.h>
+#include <images/temperature_image.h>
 
 namespace po = boost::program_options;
 
@@ -337,20 +340,21 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
 
    // Generate images
    std::string oceanFilename = outputDir + "/" + worldName + "_ocean.png";
-   DrawOceanOnFile(world->GetOceanData(), oceanFilename);
+   OceanImage().Draw(*world, oceanFilename);
    BOOST_LOG_TRIVIAL(info) << "Ocean image generated in " << oceanFilename;
 
    if (step.includePrecipitations_)
    {
       std::string precipitationFilename =
          outputDir + "/" + worldName + "_precipitation.png";
-      DrawPrecipitationOnFile(*world, precipitationFilename, blackAndWhite);
+      // PrecipitationImage().Draw(*world, precipitationFilename,
+      // blackAndWhite);
       BOOST_LOG_TRIVIAL(info)
          << "Precipitation image generated in " << precipitationFilename;
 
       std::string temperatureFilename =
          outputDir + "/" + worldName + "_temperature.png";
-      DrawTemperatureLevelsOnFile(*world, temperatureFilename, blackAndWhite);
+      TemperatureImage().Draw(*world, temperatureFilename, blackAndWhite);
       BOOST_LOG_TRIVIAL(info)
          << "Temperature image generated in " << temperatureFilename;
    }
@@ -358,15 +362,16 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    if (step.includeBiome_)
    {
       std::string biomeFilename = outputDir + "/" + worldName + "_biome.png";
-      DrawBiomeOnFile(*world, biomeFilename);
+      // BiomeImage().Draw(*world, biomeFilename);
       BOOST_LOG_TRIVIAL(info) << "Biome image generated in " << biomeFilename;
    }
 
    std::string elevationFilename =
       outputDir + "/" + worldName + "_elevation.png";
-   DrawSimpleElevationOnFile(*world,
-                             elevationFilename,
-                             world->GetThreshold(ElevationThresholdType::Sea));
+   SimpleElevationImage().Draw(
+      *world,
+      elevationFilename,
+      world->GetThreshold(ElevationThresholdType::Sea));
    BOOST_LOG_TRIVIAL(info) << "Elevation image generated in "
                            << elevationFilename;
 
