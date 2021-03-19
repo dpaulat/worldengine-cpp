@@ -11,18 +11,22 @@ namespace WorldEngine
 {
 
 typedef float    ElevationDataType;
+typedef float    HumidityDataType;
+typedef float    LakeMapDataType;
 typedef bool     OceanDataType;
 typedef uint16_t PlateDataType;
-typedef float    TemperatureDataType;
 typedef float    PrecipitationDataType;
-typedef float    HumidityDataType;
+typedef float    RiverMapDataType;
+typedef float    TemperatureDataType;
 
 typedef boost::multi_array<ElevationDataType, 2>     ElevationArrayType;
+typedef boost::multi_array<HumidityDataType, 2>      HumidityArrayType;
+typedef boost::multi_array<LakeMapDataType, 2>       LakeMapArrayType;
 typedef boost::multi_array<OceanDataType, 2>         OceanArrayType;
 typedef boost::multi_array<PlateDataType, 2>         PlateArrayType;
-typedef boost::multi_array<TemperatureDataType, 2>   TemperatureArrayType;
 typedef boost::multi_array<PrecipitationDataType, 2> PrecipitationArrayType;
-typedef boost::multi_array<HumidityDataType, 2>      HumidityArrayType;
+typedef boost::multi_array<TemperatureDataType, 2>   TemperatureArrayType;
+typedef boost::multi_array<RiverMapDataType, 2>      RiverMapArrayType;
 
 class World
 {
@@ -62,16 +66,20 @@ public:
 
    const ElevationArrayType&     GetElevationData() const;
    const OceanArrayType&         GetOceanData() const;
-   const TemperatureArrayType&   GetTemperatureData() const;
-   const PrecipitationArrayType& GetPrecipitationData() const;
    const HumidityArrayType&      GetHumidityData() const;
+   const LakeMapArrayType&       GetLakeMapData() const;
+   const PrecipitationArrayType& GetPrecipitationData() const;
+   const RiverMapArrayType&      GetRiverMapData() const;
+   const TemperatureArrayType&   GetTemperatureData() const;
 
    ElevationArrayType&     GetElevationData();
    OceanArrayType&         GetOceanData();
    PlateArrayType&         GetPlateData();
-   TemperatureArrayType&   GetTemperatureData();
-   PrecipitationArrayType& GetPrecipitationData();
    HumidityArrayType&      GetHumidityData();
+   LakeMapArrayType&       GetLakeMapData();
+   PrecipitationArrayType& GetPrecipitationData();
+   RiverMapArrayType&      GetRiverMapData();
+   TemperatureArrayType&   GetTemperatureData();
 
    float GetThreshold(ElevationThresholdType type) const;
    float GetThreshold(HumidityLevels type) const;
@@ -104,9 +112,11 @@ private:
    ElevationArrayType     elevation_;
    PlateArrayType         plates_;
    OceanArrayType         ocean_;
-   TemperatureArrayType   temperature_;
-   PrecipitationArrayType precipitation_;
    HumidityArrayType      humidity_;
+   LakeMapArrayType       lakeMap_;
+   PrecipitationArrayType precipitation_;
+   RiverMapArrayType      riverMap_;
+   TemperatureArrayType   temperature_;
 
    float elevationThresholds_[static_cast<uint32_t>(
       ElevationThresholdType::Count)];

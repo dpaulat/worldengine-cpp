@@ -184,9 +184,14 @@ const OceanArrayType& World::GetOceanData() const
    return ocean_;
 }
 
-const TemperatureArrayType& World::GetTemperatureData() const
+const HumidityArrayType& World::GetHumidityData() const
 {
-   return temperature_;
+   return humidity_;
+}
+
+const LakeMapArrayType& World::GetLakeMapData() const
+{
+   return lakeMap_;
 }
 
 const PrecipitationArrayType& World::GetPrecipitationData() const
@@ -194,9 +199,14 @@ const PrecipitationArrayType& World::GetPrecipitationData() const
    return precipitation_;
 }
 
-const PrecipitationArrayType& World::GetHumidityData() const
+const RiverMapArrayType& World::GetRiverMapData() const
 {
-   return humidity_;
+   return riverMap_;
+}
+
+const TemperatureArrayType& World::GetTemperatureData() const
+{
+   return temperature_;
 }
 
 ElevationArrayType& World::GetElevationData()
@@ -214,9 +224,14 @@ PlateArrayType& World::GetPlateData()
    return plates_;
 }
 
-TemperatureArrayType& World::GetTemperatureData()
+HumidityArrayType& World::GetHumidityData()
 {
-   return temperature_;
+   return humidity_;
+}
+
+LakeMapArrayType& World::GetLakeMapData()
+{
+   return lakeMap_;
 }
 
 PrecipitationArrayType& World::GetPrecipitationData()
@@ -224,9 +239,14 @@ PrecipitationArrayType& World::GetPrecipitationData()
    return precipitation_;
 }
 
-PrecipitationArrayType& World::GetHumidityData()
+RiverMapArrayType& World::GetRiverMapData()
 {
-   return humidity_;
+   return riverMap_;
+}
+
+TemperatureArrayType& World::GetTemperatureData()
+{
+   return temperature_;
 }
 
 float World::GetThreshold(ElevationThresholdType type) const
