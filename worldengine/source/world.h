@@ -15,12 +15,14 @@ typedef bool     OceanDataType;
 typedef uint16_t PlateDataType;
 typedef float    TemperatureDataType;
 typedef float    PrecipitationDataType;
+typedef float    HumidityDataType;
 
 typedef boost::multi_array<ElevationDataType, 2>     ElevationArrayType;
 typedef boost::multi_array<OceanDataType, 2>         OceanArrayType;
 typedef boost::multi_array<PlateDataType, 2>         PlateArrayType;
 typedef boost::multi_array<TemperatureDataType, 2>   TemperatureArrayType;
 typedef boost::multi_array<PrecipitationDataType, 2> PrecipitationArrayType;
+typedef boost::multi_array<HumidityDataType, 2>      HumidityArrayType;
 
 class World
 {
@@ -62,23 +64,28 @@ public:
    const OceanArrayType&         GetOceanData() const;
    const TemperatureArrayType&   GetTemperatureData() const;
    const PrecipitationArrayType& GetPrecipitationData() const;
+   const HumidityArrayType&      GetHumidityData() const;
 
    ElevationArrayType&     GetElevationData();
    OceanArrayType&         GetOceanData();
    PlateArrayType&         GetPlateData();
    TemperatureArrayType&   GetTemperatureData();
    PrecipitationArrayType& GetPrecipitationData();
+   HumidityArrayType&      GetHumidityData();
 
    float GetThreshold(ElevationThresholdType type) const;
+   float GetThreshold(HumidityLevels type) const;
    float GetThreshold(PrecipitationLevelType type) const;
    float GetThreshold(TemperatureType type) const;
 
    TemperatureType GetTemperatureType(uint32_t x, uint32_t y) const;
+   HumidityLevels  GetHumidityLevel(uint32_t x, uint32_t y) const;
 
    void SetElevationData(const float* heightmap);
    void SetPlatesData(const uint32_t* platesmap);
 
    void SetThreshold(ElevationThresholdType type, float value);
+   void SetThreshold(HumidityLevels type, float value);
    void SetThreshold(PrecipitationLevelType type, float value);
    void SetThreshold(TemperatureType type, float value);
 
@@ -99,9 +106,11 @@ private:
    OceanArrayType         ocean_;
    TemperatureArrayType   temperature_;
    PrecipitationArrayType precipitation_;
+   HumidityArrayType      humidity_;
 
    float elevationThresholds_[static_cast<uint32_t>(
       ElevationThresholdType::Count)];
+   float humidityThresholds_[static_cast<uint32_t>(HumidityLevels::Count)];
    float precipitationThresholds_[static_cast<uint32_t>(
       PrecipitationLevelType::Count)];
    float temperatureThresholds_[static_cast<uint32_t>(TemperatureType::Count)];

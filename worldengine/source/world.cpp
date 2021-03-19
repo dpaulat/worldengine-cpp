@@ -74,9 +74,11 @@ World::World(const std::string&          name,
     ocean_(),
     temperature_(),
     precipitation_(),
+    humidity_(),
     elevationThresholds_ {0.0f, 0.0f, 0.0f},
+    humidityThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
     precipitationThresholds_ {0.0f, 0.0f, 0.0f},
-    temperatureThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}
+    temperatureThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}
 {
 }
 
@@ -144,7 +146,7 @@ bool World::HasBiome() const
 
 bool World::HasHumidity() const
 {
-   return false;
+   return humidity_.size() > 0;
 }
 
 bool World::HasIrrigiation() const
@@ -164,12 +166,12 @@ bool World::HasWatermap() const
 
 bool World::HasPrecipitations() const
 {
-   return false;
+   return precipitation_.size() > 0;
 }
 
 bool World::HasTemperature() const
 {
-   return false;
+   return temperature_.size() > 0;
 }
 
 const ElevationArrayType& World::GetElevationData() const
@@ -190,6 +192,11 @@ const TemperatureArrayType& World::GetTemperatureData() const
 const PrecipitationArrayType& World::GetPrecipitationData() const
 {
    return precipitation_;
+}
+
+const PrecipitationArrayType& World::GetHumidityData() const
+{
+   return humidity_;
 }
 
 ElevationArrayType& World::GetElevationData()
@@ -217,6 +224,11 @@ PrecipitationArrayType& World::GetPrecipitationData()
    return precipitation_;
 }
 
+PrecipitationArrayType& World::GetHumidityData()
+{
+   return humidity_;
+}
+
 float World::GetThreshold(ElevationThresholdType type) const
 {
    if (type > ElevationThresholdType::Last)
@@ -225,6 +237,16 @@ float World::GetThreshold(ElevationThresholdType type) const
    }
 
    return elevationThresholds_[static_cast<uint32_t>(type)];
+}
+
+float World::GetThreshold(HumidityLevels type) const
+{
+   if (type > HumidityLevels::Last)
+   {
+      throw std::invalid_argument("Invalid threshold type");
+   }
+
+   return humidityThresholds_[static_cast<uint32_t>(type)];
 }
 
 float World::GetThreshold(PrecipitationLevelType type) const
@@ -274,6 +296,33 @@ TemperatureType World::GetTemperatureType(uint32_t x, uint32_t y) const
    return TemperatureType::Last;
 }
 
+HumidityLevels World::GetHumidityLevel(uint32_t x, uint32_t y) const
+{
+   uint32_t width  = precipitation_.shape()[1];
+   uint32_t height = precipitation_.shape()[0];
+
+   if (x >= width || y >= height)
+   {
+      throw std::invalid_argument("Coordinates out of bounds");
+   }
+
+   float precipitation = precipitation_[y][x];
+
+   for (uint32_t i = static_cast<uint32_t>(HumidityLevels::First);
+        i < static_cast<uint32_t>(HumidityLevels::Last);
+        i++)
+   {
+      HumidityLevels type = static_cast<HumidityLevels>(i);
+
+      if (precipitation < GetThreshold(type))
+      {
+         return type;
+      }
+   }
+
+   return HumidityLevels::Last;
+}
+
 void World::SetElevationData(const float* heightmap)
 {
    SetArrayData(heightmap, elevation_);
@@ -297,6 +346,16 @@ void World::SetThreshold(ElevationThresholdType type, float value)
    }
 
    elevationThresholds_[static_cast<uint32_t>(type)] = value;
+}
+
+void World::SetThreshold(HumidityLevels type, float value)
+{
+   if (type > HumidityLevels::Last)
+   {
+      throw std::invalid_argument("Invalid threshold type");
+   }
+
+   humidityThresholds_[static_cast<uint32_t>(type)] = value;
 }
 
 void World::SetThreshold(PrecipitationLevelType type, float value)

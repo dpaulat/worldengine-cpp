@@ -27,6 +27,21 @@ enum class ExportDataType
    Float32
 };
 
+enum class HumidityLevels : uint32_t
+{
+   Superarid  = 0,
+   Perarid    = 1,
+   Arid       = 2,
+   Semiarid   = 3,
+   Subhumid   = 4,
+   Humid      = 5,
+   Perhumid   = 6,
+   Superhumid = 7,
+   Count      = 8,
+   First      = Superarid,
+   Last       = Superhumid
+};
+
 enum class PrecipitationLevelType : uint32_t
 {
    Low    = 0,
