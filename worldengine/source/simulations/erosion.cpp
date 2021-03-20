@@ -13,7 +13,7 @@ typedef boost::multi_array<WaterPathDataType, 2> WaterPathArrayType;
 
 void ErosionSimulation(World& world)
 {
-   BOOST_LOG_TRIVIAL(debug) << "Erosion simulation start";
+   BOOST_LOG_TRIVIAL(info) << "Erosion simulation start";
 
    uint32_t width  = world.width();
    uint32_t height = world.height();
@@ -42,7 +42,7 @@ void ErosionSimulation(World& world)
    // Step 5: Rivers with no paths to sea form lakes
    // TODO
 
-   BOOST_LOG_TRIVIAL(debug) << "Erosion simulation finish";
+   BOOST_LOG_TRIVIAL(info) << "Erosion simulation finish";
 }
 
 } // namespace WorldEngine

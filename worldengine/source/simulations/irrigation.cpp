@@ -9,11 +9,11 @@ static void IrrigationExecute(World& world);
 
 void IrrigationSimulation(World& world)
 {
-   BOOST_LOG_TRIVIAL(debug) << "Irrigation simulation start";
+   BOOST_LOG_TRIVIAL(info) << "Irrigation simulation start";
 
    IrrigationExecute(world);
 
-   BOOST_LOG_TRIVIAL(debug) << "Irrigation simulation finish";
+   BOOST_LOG_TRIVIAL(info) << "Irrigation simulation finish";
 }
 
 static void IrrigationExecute(World& world)

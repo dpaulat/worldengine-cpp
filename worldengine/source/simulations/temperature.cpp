@@ -20,7 +20,7 @@ static void TemperatureCalculation(World&              world,
 
 void TemperatureSimulation(World& world, uint32_t seed)
 {
-   BOOST_LOG_TRIVIAL(debug) << "Temperature simulation start";
+   BOOST_LOG_TRIVIAL(info) << "Temperature simulation start";
 
    ElevationArrayType& elevation = world.GetElevationData();
    float mountainLevel = world.GetThreshold(ElevationThresholdType::Mountain);
@@ -43,7 +43,7 @@ void TemperatureSimulation(World& world, uint32_t seed)
                       FindThresholdF(t, world.temps()[0], &ocean));
    world.SetThreshold(TemperatureType::Tropical, 0.0f);
 
-   BOOST_LOG_TRIVIAL(debug) << "Temperature simulation finish";
+   BOOST_LOG_TRIVIAL(info) << "Temperature simulation finish";
 }
 
 static void TemperatureCalculation(World&              world,

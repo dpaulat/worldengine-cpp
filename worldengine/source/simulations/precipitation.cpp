@@ -14,7 +14,7 @@ static void PrecipitationCalculation(World& world);
 
 void PrecipitationSimulation(World& world)
 {
-   BOOST_LOG_TRIVIAL(debug) << "Precipitation simulation start";
+   BOOST_LOG_TRIVIAL(info) << "Precipitation simulation start";
 
    const OceanArrayType&         ocean = world.GetOceanData();
    const PrecipitationArrayType& p     = world.GetPrecipitationData();
@@ -27,7 +27,7 @@ void PrecipitationSimulation(World& world)
                       FindThresholdF(p, 0.3f, &ocean));
    world.SetThreshold(PrecipitationLevelType::High, 0.0f);
 
-   BOOST_LOG_TRIVIAL(debug) << "Precipitation simulation finish";
+   BOOST_LOG_TRIVIAL(info) << "Precipitation simulation finish";
 }
 
 static void PrecipitationCalculation(World& world)
@@ -45,8 +45,8 @@ static void PrecipitationCalculation(World& world)
    float curveGamma = world.gammaCurve();
    float curveBonus = world.curveOffset();
 
-   TemperatureArrayType&   temperature   = world.GetTemperatureData();
-   PrecipitationArrayType& precipitation = world.GetPrecipitationData();
+   const TemperatureArrayType& temperature   = world.GetTemperatureData();
+   PrecipitationArrayType&     precipitation = world.GetPrecipitationData();
    precipitation.resize(boost::extents[height][width]);
 
    uint32_t octaves = 6;
@@ -91,6 +91,11 @@ static void PrecipitationCalculation(World& world)
 
    float precipDelta = maxPrecip - minPrecip;
    float tempDelta   = maxTemp - minTemp;
+
+   BOOST_LOG_TRIVIAL(debug)
+      << "Precipitation minmax: " << minPrecip << ", " << maxPrecip;
+   BOOST_LOG_TRIVIAL(debug)
+      << "Temperature minmax: " << minTemp << ", " << maxTemp;
 
    for (uint32_t y = 0; y < height; y++)
    {
@@ -137,6 +142,9 @@ static void PrecipitationCalculation(World& world)
    minPrecip   = *minmaxPrecip.first;
    maxPrecip   = *minmaxPrecip.second;
    precipDelta = maxPrecip - minPrecip;
+
+   BOOST_LOG_TRIVIAL(debug)
+      << "Precipitation minmax (modified): " << minPrecip << ", " << maxPrecip;
 
    for (uint32_t y = 0; y < height; y++)
    {

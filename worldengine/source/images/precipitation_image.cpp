@@ -12,8 +12,8 @@ void PrecipitationImage::DrawImage(
    const PrecipitationArrayType& precipitation = world.GetPrecipitationData();
 
    auto minmax =
-      std::minmax(precipitation.data(),
-                  precipitation.data() + precipitation.num_elements());
+      std::minmax_element(precipitation.data(),
+                          precipitation.data() + precipitation.num_elements());
    float    low     = *minmax.first;
    float    high    = *minmax.second;
    uint32_t floor   = 0;

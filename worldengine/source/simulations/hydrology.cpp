@@ -13,7 +13,7 @@ static const uint32_t NUM_SAMPLES = 20000u;
 
 void WatermapSimulation(World& world)
 {
-   BOOST_LOG_TRIVIAL(debug) << "Watermap simulation start";
+   BOOST_LOG_TRIVIAL(info) << "Watermap simulation start";
 
    const WaterMapArrayType& watermap = world.GetWaterMapData();
    const OceanArrayType&    ocean    = world.GetOceanData();
@@ -27,7 +27,7 @@ void WatermapSimulation(World& world)
    world.SetThreshold(WaterThresholds::MainRiver,
                       FindThresholdF(watermap, 0.007f, &ocean));
 
-   BOOST_LOG_TRIVIAL(debug) << "Watermap simulation finish";
+   BOOST_LOG_TRIVIAL(info) << "Watermap simulation finish";
 }
 
 static void Droplet(World& world, uint32_t x, uint32_t y, float q)

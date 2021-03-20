@@ -10,7 +10,7 @@ static void HumidityCalculation(World& world);
 
 void HumiditySimulation(World& world)
 {
-   BOOST_LOG_TRIVIAL(debug) << "Humidity simulation start";
+   BOOST_LOG_TRIVIAL(info) << "Humidity simulation start";
 
    const OceanArrayType&    ocean = world.GetOceanData();
    const HumidityArrayType& h     = world.GetHumidityData();
@@ -33,7 +33,7 @@ void HumiditySimulation(World& world)
                       FindThresholdF(h, world.humids()[0], &ocean));
    world.SetThreshold(HumidityLevels::Superhumid, 0.0f);
 
-   BOOST_LOG_TRIVIAL(debug) << "Humidity simulation finish";
+   BOOST_LOG_TRIVIAL(info) << "Humidity simulation finish";
 }
 
 static void HumidityCalculation(World& world)
