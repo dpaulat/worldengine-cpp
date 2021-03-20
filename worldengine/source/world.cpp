@@ -1,5 +1,7 @@
 #include "world.h"
 
+#include <random>
+
 #include <boost/log/trivial.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -72,13 +74,15 @@ World::World(const std::string&          name,
     elevation_(),
     plates_(),
     ocean_(),
-    temperature_(),
-    precipitation_(),
     humidity_(),
+    precipitation_(),
+    temperature_(),
+    waterMap_(),
     elevationThresholds_ {0.0f, 0.0f, 0.0f},
     humidityThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
     precipitationThresholds_ {0.0f, 0.0f, 0.0f},
-    temperatureThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}
+    temperatureThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+    waterThresholds_ {0.0f, 0.0f, 0.0f}
 {
 }
 
@@ -209,6 +213,11 @@ const TemperatureArrayType& World::GetTemperatureData() const
    return temperature_;
 }
 
+const WaterMapArrayType& World::GetWaterMapData() const
+{
+   return waterMap_;
+}
+
 ElevationArrayType& World::GetElevationData()
 {
    return elevation_;
@@ -249,6 +258,11 @@ TemperatureArrayType& World::GetTemperatureData()
    return temperature_;
 }
 
+WaterMapArrayType& World::GetWaterMapData()
+{
+   return waterMap_;
+}
+
 float World::GetThreshold(ElevationThresholdType type) const
 {
    if (type > ElevationThresholdType::Last)
@@ -287,6 +301,21 @@ float World::GetThreshold(TemperatureType type) const
    }
 
    return temperatureThresholds_[static_cast<uint32_t>(type)];
+}
+
+float World::GetThreshold(WaterThresholds type) const
+{
+   if (type > WaterThresholds::Last)
+   {
+      throw std::invalid_argument("Invalid threshold type");
+   }
+
+   return waterThresholds_[static_cast<uint32_t>(type)];
+}
+
+bool World::IsOcean(uint32_t x, uint32_t y) const
+{
+   return ocean_[y][x];
 }
 
 TemperatureType World::GetTemperatureType(uint32_t x, uint32_t y) const
@@ -343,6 +372,62 @@ HumidityLevels World::GetHumidityLevel(uint32_t x, uint32_t y) const
    return HumidityLevels::Last;
 }
 
+void World::GetRandomLand(
+   std::vector<std::pair<uint32_t, uint32_t>>& landSamples,
+   uint32_t                                    numSamples) const
+{
+   std::vector<std::pair<uint32_t, uint32_t>> land;
+
+   uint32_t width  = ocean_.shape()[1];
+   uint32_t height = ocean_.shape()[0];
+
+   for (uint32_t y = 0; y < height; y++)
+   {
+      for (uint32_t x = 0; x < width; x++)
+      {
+         if (!ocean_[y][x])
+         {
+            land.push_back({x, y});
+         }
+      }
+   }
+
+   if (land.size() == 0)
+   {
+      return;
+   }
+
+   std::default_random_engine              generator;
+   std::uniform_int_distribution<uint32_t> distribution(0, land.size() - 1);
+
+   for (uint32_t i = 0; i < numSamples; i++)
+   {
+      landSamples.push_back(land[distribution(generator)]);
+   }
+}
+
+void World::GetTilesAround(std::vector<std::pair<uint32_t, uint32_t>>& tiles,
+                           uint32_t                                    x,
+                           uint32_t                                    y) const
+{
+   int32_t radius = 1;
+   for (int32_t dx = -radius; dx <= radius; dx++)
+   {
+      int32_t nx = x + dx;
+      if (0 <= nx && nx < width())
+      {
+         for (int32_t dy = -radius; dy <= radius; dy++)
+         {
+            int32_t ny = y + dy;
+            if (0 <= ny && ny < width())
+            {
+               tiles.push_back({nx, ny});
+            }
+         }
+      }
+   }
+}
+
 void World::SetElevationData(const float* heightmap)
 {
    SetArrayData(heightmap, elevation_);
@@ -396,6 +481,16 @@ void World::SetThreshold(TemperatureType type, float value)
    }
 
    temperatureThresholds_[static_cast<uint32_t>(type)] = value;
+}
+
+void World::SetThreshold(WaterThresholds type, float value)
+{
+   if (type > WaterThresholds::Last)
+   {
+      throw std::invalid_argument("Invalid threshold type");
+   }
+
+   waterThresholds_[static_cast<uint32_t>(type)] = value;
 }
 
 bool World::ProtobufSerialize(std::string& output) const

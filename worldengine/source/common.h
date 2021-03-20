@@ -79,6 +79,16 @@ enum class TemperatureType : uint32_t
    Last        = Tropical
 };
 
+enum class WaterThresholds : uint32_t
+{
+   Creek     = 0,
+   River     = 1,
+   MainRiver = 2,
+   Count     = 3,
+   First     = Creek,
+   Last      = MainRiver
+};
+
 enum class WorldFormat
 {
    Protobuf,

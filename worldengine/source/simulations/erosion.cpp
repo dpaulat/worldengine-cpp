@@ -24,8 +24,8 @@ void ErosionSimulation(World& world)
    RiverMapArrayType& riverMap = world.GetRiverMapData();
    LakeMapArrayType&  lakeMap  = world.GetLakeMapData();
 
-   riverMap.resize(boost::extents[height][width]);
-   lakeMap.resize(boost::extents[height][width]);
+   //riverMap.resize(boost::extents[height][width]);
+   //lakeMap.resize(boost::extents[height][width]);
 
    // Step 1: Water flow per cell based on rainfall
    // TODO

@@ -22,11 +22,13 @@ set(HDR_MAIN source/basic.h
 set(SRC_SIMULATIONS source/simulations/biome_simulation.cpp
                     source/simulations/erosion.cpp
                     source/simulations/humidity.cpp
+                    source/simulations/hydrology.cpp
                     source/simulations/precipitation.cpp
                     source/simulations/temperature.cpp)
 set(HDR_SIMULATIONS source/simulations/biome_simulation.h
                     source/simulations/erosion.h
                     source/simulations/humidity.h
+                    source/simulations/hydrology.h
                     source/simulations/precipitation.h
                     source/simulations/temperature.h)
 set(SRC_IMAGES source/images/image.cpp

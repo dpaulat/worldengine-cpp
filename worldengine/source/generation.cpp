@@ -1,6 +1,9 @@
 #include "generation.h"
 #include "basic.h"
 #include "biome.h"
+#include "simulations/erosion.h"
+#include "simulations/humidity.h"
+#include "simulations/hydrology.h"
 #include "simulations/precipitation.h"
 #include "simulations/temperature.h"
 
@@ -144,7 +147,21 @@ void GenerateWorld(World& world, const Step& step)
    TemperatureSimulation(world, distribution(generator));
    PrecipitationSimulation(world);
 
-   // TODO: Simulations
+   if (!step.includeErosion_)
+   {
+      return;
+   }
+
+   ErosionSimulation(world);
+   WatermapSimulation(world);
+   // TODO: IrrigationSimulation(world);
+   HumiditySimulation(world);
+   // TODO: PermeabilitySimulation(world);
+   // TODO: BiomeSimulation(world);
+
+   // TODO: Biome stuff
+
+   // TODO: IcecapSimulation(world);
 }
 
 void InitializeOceanAndThresholds(World& world, float oceanLevel)
