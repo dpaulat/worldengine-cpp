@@ -26,7 +26,7 @@ float FindThresholdF(const boost::multi_array<float, 2>& mapData,
 
    if (ocean == nullptr || ocean->size() != mapData.size())
    {
-      BOOST_LOG_TRIVIAL(debug) << "Calculating threshold (" << landPercentage
+      BOOST_LOG_TRIVIAL(trace) << "Calculating threshold (" << landPercentage
                                << ") without ocean data...";
 
       for (uint32_t y = 0; y < height; y++)
@@ -39,7 +39,7 @@ float FindThresholdF(const boost::multi_array<float, 2>& mapData,
    }
    else
    {
-      BOOST_LOG_TRIVIAL(debug) << "Calculating threshold (" << landPercentage
+      BOOST_LOG_TRIVIAL(trace) << "Calculating threshold (" << landPercentage
                                << ") with ocean data...";
 
       for (uint32_t y = 0; y < height; y++)
@@ -56,7 +56,7 @@ float FindThresholdF(const boost::multi_array<float, 2>& mapData,
 
    float threshold = ba::p_square_quantile(accumulator);
 
-   BOOST_LOG_TRIVIAL(debug) << "Threshold: " << threshold;
+   BOOST_LOG_TRIVIAL(trace) << "Threshold: " << threshold;
 
    return threshold;
 }
