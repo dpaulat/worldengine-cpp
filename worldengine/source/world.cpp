@@ -75,6 +75,7 @@ World::World(const std::string&          name,
     plates_(),
     ocean_(),
     humidity_(),
+    irrigation_(),
     precipitation_(),
     temperature_(),
     waterMap_(),
@@ -150,12 +151,12 @@ bool World::HasBiome() const
 
 bool World::HasHumidity() const
 {
-   return humidity_.size() > 0;
+   return !humidity_.empty();
 }
 
 bool World::HasIrrigiation() const
 {
-   return false;
+   return !irrigation_.empty();
 }
 
 bool World::HasPermeability() const
@@ -165,17 +166,17 @@ bool World::HasPermeability() const
 
 bool World::HasWatermap() const
 {
-   return false;
+   return !waterMap_.empty();
 }
 
 bool World::HasPrecipitations() const
 {
-   return precipitation_.size() > 0;
+   return !precipitation_.empty();
 }
 
 bool World::HasTemperature() const
 {
-   return temperature_.size() > 0;
+   return !temperature_.empty();
 }
 
 const ElevationArrayType& World::GetElevationData() const
@@ -191,6 +192,11 @@ const OceanArrayType& World::GetOceanData() const
 const HumidityArrayType& World::GetHumidityData() const
 {
    return humidity_;
+}
+
+const IrrigationArrayType& World::GetIrrigationData() const
+{
+   return irrigation_;
 }
 
 const LakeMapArrayType& World::GetLakeMapData() const
@@ -236,6 +242,11 @@ PlateArrayType& World::GetPlateData()
 HumidityArrayType& World::GetHumidityData()
 {
    return humidity_;
+}
+
+IrrigationArrayType& World::GetIrrigationData()
+{
+   return irrigation_;
 }
 
 LakeMapArrayType& World::GetLakeMapData()

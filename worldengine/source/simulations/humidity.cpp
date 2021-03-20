@@ -48,14 +48,12 @@ static void HumidityCalculation(World& world)
 
    PrecipitationArrayType& p = world.GetPrecipitationData();
    HumidityArrayType&      h = world.GetHumidityData();
-   // TODO:
-   // IrrigationArrayType&    i = world.GetIrrigationData();
-   PrecipitationArrayType& i = world.GetPrecipitationData();
+   IrrigationArrayType&    i = world.GetIrrigationData();
    h.resize(boost::extents[height][width]);
 
    for (uint32_t y = 0; y < height; y++)
    {
-      for (uint32_t x = 0; x < height; x++)
+      for (uint32_t x = 0; x < width; x++)
       {
          h[y][x] =
             (p[y][x] * precipitationWeight - i[y][x] * irrigationWeight) /

@@ -4,6 +4,7 @@
 #include "simulations/erosion.h"
 #include "simulations/humidity.h"
 #include "simulations/hydrology.h"
+#include "simulations/irrigation.h"
 #include "simulations/precipitation.h"
 #include "simulations/temperature.h"
 
@@ -154,7 +155,7 @@ void GenerateWorld(World& world, const Step& step)
 
    ErosionSimulation(world);
    WatermapSimulation(world);
-   // TODO: IrrigationSimulation(world);
+   IrrigationSimulation(world);
    HumiditySimulation(world);
    // TODO: PermeabilitySimulation(world);
    // TODO: BiomeSimulation(world);

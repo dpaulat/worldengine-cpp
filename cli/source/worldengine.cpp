@@ -16,6 +16,7 @@
 #include <world.h>
 
 #include <images/ocean_image.h>
+#include <images/precipitation_image.h>
 #include <images/simple_elevation_image.h>
 #include <images/temperature_image.h>
 
@@ -347,8 +348,7 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    {
       std::string precipitationFilename =
          outputDir + "/" + worldName + "_precipitation.png";
-      // PrecipitationImage().Draw(*world, precipitationFilename,
-      // blackAndWhite);
+      PrecipitationImage().Draw(*world, precipitationFilename, blackAndWhite);
       BOOST_LOG_TRIVIAL(info)
          << "Precipitation image generated in " << precipitationFilename;
 

@@ -55,7 +55,7 @@ static void PrecipitationCalculation(World& world)
 
    for (uint32_t y = 0; y < height; y++)
    {
-      for (uint32_t x = 0; x < height; x++)
+      for (uint32_t x = 0; x < width; x++)
       {
          float n = Noise(noise, //
                          x * nScale / freq,
