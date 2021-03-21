@@ -51,7 +51,10 @@ static void TemperatureCalculation(World&              world,
                                    ElevationArrayType& elevation,
                                    float               mountainLevel)
 {
-   OpenSimplexNoise::Noise noise(seed);
+   std::default_random_engine generator(seed);
+   std::uniform_int_distribution<uint32_t> distribution;
+
+   OpenSimplexNoise::Noise noise(distribution(generator));
 
    uint32_t width  = world.width();
    uint32_t height = world.height();
@@ -88,7 +91,6 @@ static void TemperatureCalculation(World&              world,
    float distanceToSunHWHM = 0.12f;
    float axialTiltHWHM     = 0.07f;
 
-   std::default_random_engine      generator;
    std::normal_distribution<float> normal;
 
    // Derive parameters

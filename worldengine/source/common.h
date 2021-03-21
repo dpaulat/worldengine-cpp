@@ -58,6 +58,19 @@ enum class SeaColor
    Brown
 };
 
+enum class Simulations
+{
+   Precipitation,
+   Erosion,
+   Watermap,
+   Irrigation,
+   Temperature,
+   Humidity,
+   Permeability,
+   Biome,
+   Icecap
+};
+
 enum class StepType
 {
    Plates,

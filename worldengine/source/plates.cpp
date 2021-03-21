@@ -115,7 +115,7 @@ std::shared_ptr<World> WorldGen(const std::string&        name,
 
    startTime = std::chrono::steady_clock::now();
 
-   std::default_random_engine              generator;
+   std::default_random_engine              generator(seed);
    std::uniform_int_distribution<uint32_t> distribution(0, UINT32_MAX);
    AddNoiseToElevation(*world, distribution(generator));
 
@@ -141,7 +141,7 @@ std::shared_ptr<World> WorldGen(const std::string&        name,
    BOOST_LOG_TRIVIAL(debug) << "WorldGen(): oceans initialized. "
                             << "Elapsed time " << elapsedTime << "ms.";
 
-   GenerateWorld(*world, step);
+   GenerateWorld(*world, step, distribution(generator));
 
    return world;
 }

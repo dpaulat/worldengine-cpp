@@ -101,7 +101,8 @@ public:
    HumidityLevels  GetHumidityLevel(uint32_t x, uint32_t y) const;
 
    void GetRandomLand(std::vector<std::pair<uint32_t, uint32_t>>& landSamples,
-                      uint32_t numSamples) const;
+                      uint32_t                                    numSamples,
+                      uint32_t                                    seed) const;
    void GetTilesAround(std::vector<std::pair<uint32_t, uint32_t>>& tiles,
                        uint32_t                                    x,
                        uint32_t                                    y) const;

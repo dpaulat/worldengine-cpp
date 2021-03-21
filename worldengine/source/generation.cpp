@@ -135,18 +135,30 @@ void CenterLand(World& world)
    BOOST_LOG_TRIVIAL(debug) << "CenterLand(): Rotate complete";
 }
 
-void GenerateWorld(World& world, const Step& step)
+void GenerateWorld(World& world, const Step& step, uint32_t seed)
 {
    if (!step.includePrecipitations_)
    {
       return;
    }
 
-   std::default_random_engine              generator;
+   std::default_random_engine              generator(seed);
    std::uniform_int_distribution<uint32_t> distribution(0, UINT32_MAX);
 
-   TemperatureSimulation(world, distribution(generator));
-   PrecipitationSimulation(world);
+   // Seed map should be appended to to maximize compatibility between versions
+   std::unordered_map<Simulations, uint32_t> seedMap;
+   seedMap.insert({Simulations::Precipitation, distribution(generator)});
+   seedMap.insert({Simulations::Erosion, distribution(generator)});
+   seedMap.insert({Simulations::Watermap, distribution(generator)});
+   seedMap.insert({Simulations::Irrigation, distribution(generator)});
+   seedMap.insert({Simulations::Temperature, distribution(generator)});
+   seedMap.insert({Simulations::Humidity, distribution(generator)});
+   seedMap.insert({Simulations::Permeability, distribution(generator)});
+   seedMap.insert({Simulations::Biome, distribution(generator)});
+   seedMap.insert({Simulations::Icecap, distribution(generator)});
+
+   TemperatureSimulation(world, seedMap[Simulations::Temperature]);
+   PrecipitationSimulation(world, seedMap[Simulations::Precipitation]);
 
    if (!step.includeErosion_)
    {
@@ -154,7 +166,7 @@ void GenerateWorld(World& world, const Step& step)
    }
 
    ErosionSimulation(world);
-   WatermapSimulation(world);
+   WatermapSimulation(world, seedMap[Simulations::Watermap]);
    IrrigationSimulation(world);
    HumiditySimulation(world);
    // TODO: PermeabilitySimulation(world);

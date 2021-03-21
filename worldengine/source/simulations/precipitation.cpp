@@ -10,16 +10,16 @@
 namespace WorldEngine
 {
 
-static void PrecipitationCalculation(World& world);
+static void PrecipitationCalculation(World& world, uint32_t seed);
 
-void PrecipitationSimulation(World& world)
+void PrecipitationSimulation(World& world, uint32_t seed)
 {
    BOOST_LOG_TRIVIAL(info) << "Precipitation simulation start";
 
    const OceanArrayType&         ocean = world.GetOceanData();
    const PrecipitationArrayType& p     = world.GetPrecipitationData();
 
-   PrecipitationCalculation(world);
+   PrecipitationCalculation(world, seed);
 
    world.SetThreshold(PrecipitationLevelType::Low,
                       FindThresholdF(p, 0.75f, &ocean));
@@ -30,10 +30,10 @@ void PrecipitationSimulation(World& world)
    BOOST_LOG_TRIVIAL(info) << "Precipitation simulation finish";
 }
 
-static void PrecipitationCalculation(World& world)
+static void PrecipitationCalculation(World& world, uint32_t seed)
 {
    // Precipitation is a value in [-1, 1]
-   std::default_random_engine              generator;
+   std::default_random_engine              generator(seed);
    std::uniform_int_distribution<uint32_t> distribution(0, UINT32_MAX);
 
    OpenSimplexNoise::Noise noise(distribution(generator));

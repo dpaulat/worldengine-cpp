@@ -5,6 +5,6 @@
 namespace WorldEngine
 {
 
-void PrecipitationSimulation(World& world);
+void PrecipitationSimulation(World& world, uint32_t seed);
 
 } // namespace WorldEngine

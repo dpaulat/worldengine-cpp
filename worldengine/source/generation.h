@@ -27,8 +27,9 @@ void CenterLand(World& world);
  * generation steps
  * @param world A world having elevation, oceans and thresholds
  * @param step Generation steps to perform
+ * @param seed Random seed value
  */
-void GenerateWorld(World& world, const Step& step);
+void GenerateWorld(World& world, const Step& step, uint32_t seed);
 
 /**
  * @brief Calculate the ocean, the sea depth and the elevation thresholds

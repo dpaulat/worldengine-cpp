@@ -385,7 +385,8 @@ HumidityLevels World::GetHumidityLevel(uint32_t x, uint32_t y) const
 
 void World::GetRandomLand(
    std::vector<std::pair<uint32_t, uint32_t>>& landSamples,
-   uint32_t                                    numSamples) const
+   uint32_t                                    numSamples,
+   uint32_t                                    seed) const
 {
    std::vector<std::pair<uint32_t, uint32_t>> land;
 
@@ -408,7 +409,7 @@ void World::GetRandomLand(
       return;
    }
 
-   std::default_random_engine              generator;
+   std::default_random_engine              generator(seed);
    std::uniform_int_distribution<uint32_t> distribution(0, land.size() - 1);
 
    for (uint32_t i = 0; i < numSamples; i++)

@@ -1,24 +1,26 @@
 #include "hydrology.h"
 #include "../basic.h"
 
+#include <random>
+
 #include <boost/log/trivial.hpp>
 
 namespace WorldEngine
 {
 
 static void Droplet(World& world, uint32_t x, uint32_t y, float q);
-static void WatermapExecute(World& world, uint32_t numSamples);
+static void WatermapExecute(World& world, uint32_t numSamples, uint32_t seed);
 
 static const uint32_t NUM_SAMPLES = 20000u;
 
-void WatermapSimulation(World& world)
+void WatermapSimulation(World& world, uint32_t seed)
 {
    BOOST_LOG_TRIVIAL(info) << "Watermap simulation start";
 
    const WaterMapArrayType& watermap = world.GetWaterMapData();
    const OceanArrayType&    ocean    = world.GetOceanData();
 
-   WatermapExecute(world, NUM_SAMPLES);
+   WatermapExecute(world, NUM_SAMPLES, seed);
 
    world.SetThreshold(WaterThresholds::Creek,
                       FindThresholdF(watermap, 0.05f, &ocean));
@@ -104,8 +106,11 @@ static void Droplet(World& world, uint32_t x, uint32_t y, float q)
    }
 }
 
-static void WatermapExecute(World& world, uint32_t numSamples)
+static void WatermapExecute(World& world, uint32_t numSamples, uint32_t seed)
 {
+   std::default_random_engine generator(seed);
+   std::uniform_int_distribution<uint32_t> distribution;
+
    uint32_t width  = world.width();
    uint32_t height = world.height();
 
@@ -125,7 +130,7 @@ static void WatermapExecute(World& world, uint32_t numSamples)
 
    std::vector<std::pair<uint32_t, uint32_t>> landSamples;
 
-   world.GetRandomLand(landSamples, numSamples);
+   world.GetRandomLand(landSamples, numSamples, distribution(generator));
 
    for (uint32_t i = 0; i < landSamples.size(); i++)
    {
