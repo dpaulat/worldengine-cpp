@@ -26,6 +26,9 @@ static void IrrigationExecute(World& world)
    IrrigationArrayType&     irrigation = world.GetIrrigationData();
    irrigation.resize(boost::extents[height][width]);
 
+   std::fill(
+      irrigation.data(), irrigation.data() + irrigation.num_elements(), 0.0f);
+
    // Create array of pre-calculated values
    boost::multi_array<float, 2> logs(
       boost::extents[radius * 2 + 1][radius * 2 + 1]);
@@ -59,13 +62,14 @@ static void IrrigationExecute(World& world)
             uint32_t brXL = std::min(radius - x + width - 1, 2 * radius);
             uint32_t brYL = std::min(radius - y + height - 1, 2 * radius);
 
-            // Values slice and logs slice should be the same size and dimensions
+            // Values slice and logs slice should be the same size and
+            // dimensions
 
-            for (int32_t vy = tlYV, ly = tlYL; //
+            for (uint32_t vy = tlYV, ly = tlYL; //
                  vy <= brYV && ly <= brYL;
                  vy++, ly++)
             {
-               for (int32_t vx = tlXV, lx = tlXL; //
+               for (uint32_t vx = tlXV, lx = tlXL; //
                     vx <= brXV && lx <= brXL;
                     vx++, lx++)
                {

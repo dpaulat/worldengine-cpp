@@ -84,7 +84,7 @@ static void Droplet(World& world, uint32_t x, uint32_t y, float q)
 
          std::tie(s, px, py) = *it;
 
-         if (!world.IsOcean(x, y))
+         if (!world.IsOcean(px, py))
          {
             float ql    = f * s;
             bool  going = ql > 0.05f;
@@ -114,6 +114,8 @@ static void WatermapExecute(World& world, uint32_t numSamples)
    WaterMapArrayType&            watermap       = world.GetWaterMapData();
    watermap.resize(boost::extents[height][width]);
 
+   std::fill(watermap.data(), watermap.data() + watermap.num_elements(), 0.0f);
+
    /*
     * This indirectly calls the global RNG. We want different implementations of
     * watermap and internally called functions (especially RandomLand) to show
@@ -125,18 +127,15 @@ static void WatermapExecute(World& world, uint32_t numSamples)
 
    world.GetRandomLand(landSamples, numSamples);
 
-   if (landSamples.size() > 0)
+   for (uint32_t i = 0; i < landSamples.size(); i++)
    {
-      for (uint32_t i = 0; i < numSamples; i++)
-      {
-         uint32_t x = landSamples[i].first;
-         uint32_t y = landSamples[i].second;
-         float    q = precipitations[y][x];
+      uint32_t x = landSamples[i].first;
+      uint32_t y = landSamples[i].second;
+      float    q = precipitations[y][x];
 
-         if (q > 0)
-         {
-            Droplet(world, x, y, q);
-         }
+      if (q > 0)
+      {
+         Droplet(world, x, y, q);
       }
    }
 }

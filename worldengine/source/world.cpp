@@ -366,7 +366,7 @@ HumidityLevels World::GetHumidityLevel(uint32_t x, uint32_t y) const
       throw std::invalid_argument("Coordinates out of bounds");
    }
 
-   float precipitation = precipitation_[y][x];
+   float humidity = humidity_[y][x];
 
    for (uint32_t i = static_cast<uint32_t>(HumidityLevels::First);
         i < static_cast<uint32_t>(HumidityLevels::Last);
@@ -374,7 +374,7 @@ HumidityLevels World::GetHumidityLevel(uint32_t x, uint32_t y) const
    {
       HumidityLevels type = static_cast<HumidityLevels>(i);
 
-      if (precipitation < GetThreshold(type))
+      if (humidity < GetThreshold(type))
       {
          return type;
       }
@@ -424,13 +424,13 @@ void World::GetTilesAround(std::vector<std::pair<uint32_t, uint32_t>>& tiles,
    int32_t radius = 1;
    for (int32_t dx = -radius; dx <= radius; dx++)
    {
-      int32_t nx = x + dx;
+      int32_t nx = static_cast<int32_t>(x) + dx;
       if (0 <= nx && nx < width())
       {
          for (int32_t dy = -radius; dy <= radius; dy++)
          {
-            int32_t ny = y + dy;
-            if (0 <= ny && ny < width())
+            int32_t ny = static_cast<int32_t>(y) + dy;
+            if (0 <= ny && ny < height())
             {
                tiles.push_back({nx, ny});
             }
