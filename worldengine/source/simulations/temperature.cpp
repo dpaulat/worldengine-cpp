@@ -51,7 +51,9 @@ static void TemperatureCalculation(World&              world,
                                    ElevationArrayType& elevation,
                                    float               mountainLevel)
 {
-   std::default_random_engine generator(seed);
+   BOOST_LOG_TRIVIAL(debug) << "Seed: " << seed;
+
+   std::default_random_engine              generator(seed);
    std::uniform_int_distribution<uint32_t> distribution;
 
    OpenSimplexNoise::Noise noise(distribution(generator));
@@ -88,25 +90,23 @@ static void TemperatureCalculation(World&              world,
     *       for a habitable planet
     */
 
-   float distanceToSunHWHM = 0.12f;
-   float axialTiltHWHM     = 0.07f;
-
-   std::normal_distribution<float> normal;
+   const float distanceToSunHWHM = 0.12f;
+   const float axialTiltHWHM     = 0.07f;
 
    // Derive parameters
-   float distanceToSun = normal(generator,
-                                std::normal_distribution<float>::param_type(
-                                   (1.0f, distanceToSunHWHM / SQRT_2XLN2)));
+   float distanceToSun = std::normal_distribution<float>(
+      1.0f, distanceToSunHWHM / SQRT_2XLN2)(generator);
    // Clamp value, no planets inside the star
-   distanceToSun = fmaxf(0.1f, distanceToSun);
+   distanceToSun = std::max(0.1f, distanceToSun);
    // Prepare for later usage, use inverse-square law
    distanceToSun *= distanceToSun;
    // An atmosphere would soften the effect of distanceToSun by *some* factor
 
-   float axialTilt = normal(generator,
-                            std::normal_distribution<float>::param_type(
-                               (0.0f, axialTiltHWHM / SQRT_2XLN2)));
-   axialTilt       = std::clamp<float>(axialTilt, -0.5f, 0.5f);
+   float axialTilt = std::normal_distribution<float>(
+      0.0f, axialTiltHWHM / SQRT_2XLN2)(generator);
+   axialTilt = std::clamp(axialTilt, -0.5f, 0.5f);
+
+   BOOST_LOG_TRIVIAL(debug) << "Axial tilt: " << axialTilt;
 
    int32_t  border  = width / 4;
    uint32_t octaves = 8; // Number of passes for noise generator
