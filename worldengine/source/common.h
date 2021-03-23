@@ -9,6 +9,69 @@
 namespace WorldEngine
 {
 
+enum class BiomeGroups
+{
+   BorealForest,
+   CoolTemperateForest,
+   WarmTemperateForest,
+   TropicalDryForest,
+   Tundra,
+   Iceland,
+   Jungle,
+   Savanna,
+   HotDesert,
+   ColdParklands,
+   Steppe,
+   CoolDesert,
+   Chaparral
+};
+
+enum class Biomes
+{
+   Ocean,
+   Sea,
+   PolarDesert,
+   Ice,
+   SubpolarDryTundra,
+   SubpolarMoistTundra,
+   SubpolarWetTundra,
+   SubpolarRainTundra,
+   BorealDesert,
+   BorealDryScrub,
+   BorealMoistForest,
+   BorealWetForest,
+   BorealRainForest,
+   CoolTemperateDesert,
+   CoolTemperateDesertScrub,
+   CoolTemperateSteppe,
+   CoolTemperateMoistForest,
+   CoolTemperateWetForest,
+   CoolTemperateRainForest,
+   WarmTemperateDesert,
+   WarmTemperateDesertScrub,
+   WarmTemperateThornScrub,
+   WarmTemperateDryForest,
+   WarmTemperateMoistForest,
+   WarmTemperateWetForest,
+   WarmTemperateRainForest,
+   SubtropicalDesert,
+   SubtropicalDesertScrub,
+   SubtropicalThornWoodland,
+   SubtropicalDryForest,
+   SubtropicalMoistForest,
+   SubtropicalWetForest,
+   SubtropicalRainForest,
+   TropicalDesert,
+   TropicalDesertScrub,
+   TropicalThornWoodland,
+   TropicalVeryDryForest,
+   TropicalDryForest,
+   TropicalMoistForest,
+   TropicalWetForest,
+   TropicalRainForest,
+   BareRock
+};
+
 enum class ElevationThresholdType : uint32_t
 {
    Sea      = 0,
@@ -190,6 +253,15 @@ const std::vector<float> DEFAULT_TEMPS {
 
 const std::vector<float> DEFAULT_HUMIDS {
    0.059, 0.222, 0.493, 0.764, 0.927, 0.986, 0.998};
+
+/**
+ * @brief Convert from a biomes enumeration to a string value
+ * @param type Biomes enumeration
+ * @return String value
+ */
+std::string BiomesToString(Biomes type);
+
+std::ostream& operator<<(std::ostream& os, const Biomes& type);
 
 /**
  * @brief Convert from an export data type enumeration to a string value

@@ -1,6 +1,6 @@
 #include "generation.h"
 #include "basic.h"
-#include "biome.h"
+#include "simulations/biome.h"
 #include "simulations/erosion.h"
 #include "simulations/humidity.h"
 #include "simulations/hydrology.h"
@@ -170,9 +170,7 @@ void GenerateWorld(World& world, const Step& step, uint32_t seed)
    IrrigationSimulation(world);
    HumiditySimulation(world);
    // TODO: PermeabilitySimulation(world);
-   // TODO: BiomeSimulation(world);
-
-   // TODO: Biome stuff
+   BiomeSimulation(world);
 
    // TODO: IcecapSimulation(world);
 }

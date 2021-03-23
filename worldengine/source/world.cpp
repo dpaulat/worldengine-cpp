@@ -74,6 +74,7 @@ World::World(const std::string&          name,
     elevation_(),
     plates_(),
     ocean_(),
+    biome_(),
     humidity_(),
     irrigation_(),
     precipitation_(),
@@ -189,6 +190,11 @@ const OceanArrayType& World::GetOceanData() const
    return ocean_;
 }
 
+const BiomeArrayType& World::GetBiomeData() const
+{
+   return biome_;
+}
+
 const HumidityArrayType& World::GetHumidityData() const
 {
    return humidity_;
@@ -237,6 +243,11 @@ OceanArrayType& World::GetOceanData()
 PlateArrayType& World::GetPlateData()
 {
    return plates_;
+}
+
+BiomeArrayType& World::GetBiomeData()
+{
+   return biome_;
 }
 
 HumidityArrayType& World::GetHumidityData()

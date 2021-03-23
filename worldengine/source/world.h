@@ -21,6 +21,7 @@ typedef float    RiverMapDataType;
 typedef float    TemperatureDataType;
 typedef float    WaterMapDataType;
 
+typedef boost::multi_array<Biomes, 2>                BiomeArrayType;
 typedef boost::multi_array<ElevationDataType, 2>     ElevationArrayType;
 typedef boost::multi_array<HumidityDataType, 2>      HumidityArrayType;
 typedef boost::multi_array<IrrigationDataType, 2>    IrrigationArrayType;
@@ -70,6 +71,7 @@ public:
 
    const ElevationArrayType&     GetElevationData() const;
    const OceanArrayType&         GetOceanData() const;
+   const BiomeArrayType&         GetBiomeData() const;
    const HumidityArrayType&      GetHumidityData() const;
    const IrrigationArrayType&    GetIrrigationData() const;
    const LakeMapArrayType&       GetLakeMapData() const;
@@ -81,6 +83,7 @@ public:
    ElevationArrayType&     GetElevationData();
    OceanArrayType&         GetOceanData();
    PlateArrayType&         GetPlateData();
+   BiomeArrayType&         GetBiomeData();
    HumidityArrayType&      GetHumidityData();
    IrrigationArrayType&    GetIrrigationData();
    LakeMapArrayType&       GetLakeMapData();
@@ -131,6 +134,7 @@ private:
    ElevationArrayType     elevation_;
    PlateArrayType         plates_;
    OceanArrayType         ocean_;
+   BiomeArrayType         biome_;
    HumidityArrayType      humidity_;
    IrrigationArrayType    irrigation_;
    LakeMapArrayType       lakeMap_;

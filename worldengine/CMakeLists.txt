@@ -7,26 +7,24 @@ find_package(Protobuf)
 find_package(ZLIB)
 
 set(SRC_MAIN source/basic.cpp
-             source/biome.cpp
              source/common.cpp
              source/draw.cpp
              source/generation.cpp
              source/plates.cpp
              source/world.cpp)
 set(HDR_MAIN source/basic.h
-             source/biome.h
              source/common.h
              source/generation.h
              source/plates.h
              source/world.h)
-set(SRC_SIMULATIONS source/simulations/biome_simulation.cpp
+set(SRC_SIMULATIONS source/simulations/biome.cpp
                     source/simulations/erosion.cpp
                     source/simulations/humidity.cpp
                     source/simulations/hydrology.cpp
                     source/simulations/irrigation.cpp
                     source/simulations/precipitation.cpp
                     source/simulations/temperature.cpp)
-set(HDR_SIMULATIONS source/simulations/biome_simulation.h
+set(HDR_SIMULATIONS source/simulations/biome.h
                     source/simulations/erosion.h
                     source/simulations/humidity.h
                     source/simulations/hydrology.h
