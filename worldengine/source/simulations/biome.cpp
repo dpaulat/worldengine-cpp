@@ -24,7 +24,7 @@ void BiomeSimulation(World& world)
    {
       for (uint32_t x = 0; x < width; x++)
       {
-         if (world.IsOcean(y, x))
+         if (world.IsOcean(x, y))
          {
             biome[y][x] = Biomes::Ocean;
          }

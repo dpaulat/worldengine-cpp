@@ -15,6 +15,7 @@
 #include <plates.h>
 #include <world.h>
 
+#include <images/biome_image.h>
 #include <images/ocean_image.h>
 #include <images/precipitation_image.h>
 #include <images/simple_elevation_image.h>
@@ -362,7 +363,7 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    if (step.includeBiome_)
    {
       std::string biomeFilename = outputDir + "/" + worldName + "_biome.png";
-      // BiomeImage().Draw(*world, biomeFilename);
+      BiomeImage().Draw(*world, biomeFilename);
       BOOST_LOG_TRIVIAL(info) << "Biome image generated in " << biomeFilename;
    }
 
