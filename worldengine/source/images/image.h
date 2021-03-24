@@ -8,14 +8,15 @@ namespace WorldEngine
 {
 /**
  * @brief Base abstract image class
-*/
+ */
 class Image
 {
 protected:
    /**
     * @brief Construct an image
-    * @param hasBlackAndWhite Derived image has a black and white option. DrawImage should be overridden for the grayscale target.
-   */
+    * @param hasBlackAndWhite Derived image has a black and white option.
+    * DrawImage should be overridden for the grayscale target.
+    */
    explicit Image(bool hasBlackAndWhite);
    virtual ~Image();
 
@@ -25,7 +26,7 @@ protected:
     * @brief Draw a grayscale image (optional)
     * @param world A world
     * @param target Target image view
-   */
+    */
    virtual void DrawImage(const World&                       world,
                           boost::gil::gray8_image_t::view_t& target) const;
 
@@ -33,9 +34,9 @@ protected:
     * @brief Draw a color image
     * @param world A world
     * @param target Target image view
-   */
-   virtual void DrawImage(const World&                       world,
-                          boost::gil::rgba8_image_t::view_t& target) const = 0;
+    */
+   virtual void DrawImage(const World&                      world,
+                          boost::gil::rgb8_image_t::view_t& target) const = 0;
 
 public:
    /**
@@ -43,7 +44,7 @@ public:
     * @param world A world
     * @param filename Destination filename
     * @param blackAndWhite Draw image in black and white
-   */
+    */
    void Draw(const World&       world,
              const std::string& filename,
              bool               blackAndWhite = false) const;

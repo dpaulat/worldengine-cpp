@@ -27,8 +27,8 @@ void TemperatureImage::DrawImage(
    }
 }
 
-void TemperatureImage::DrawImage(
-   const World& world, boost::gil::rgba8_image_t::view_t& target) const
+void TemperatureImage::DrawImage(const World&                      world,
+                                 boost::gil::rgb8_image_t::view_t& target) const
 {
    for (uint32_t y = 0; y < world.height(); y++)
    {
@@ -37,32 +37,32 @@ void TemperatureImage::DrawImage(
          switch (world.GetTemperatureType(x, y))
          {
          case TemperatureType::Polar:
-            target(x, y) = boost::gil::rgba8_pixel_t(0, 0, 255, 255);
+            target(x, y) = boost::gil::rgb8_pixel_t(0, 0, 255);
             break;
 
          case TemperatureType::Alpine:
-            target(x, y) = boost::gil::rgba8_pixel_t(42, 0, 213, 255);
+            target(x, y) = boost::gil::rgb8_pixel_t(42, 0, 213);
             break;
 
          case TemperatureType::Boreal:
-            target(x, y) = boost::gil::rgba8_pixel_t(85, 0, 170, 255);
+            target(x, y) = boost::gil::rgb8_pixel_t(85, 0, 170);
             break;
 
          case TemperatureType::Cool:
-            target(x, y) = boost::gil::rgba8_pixel_t(128, 0, 128, 255);
+            target(x, y) = boost::gil::rgb8_pixel_t(128, 0, 128);
             break;
 
          case TemperatureType::Warm:
-            target(x, y) = boost::gil::rgba8_pixel_t(170, 0, 85, 255);
+            target(x, y) = boost::gil::rgb8_pixel_t(170, 0, 85);
             break;
 
          case TemperatureType::Subtropical:
-            target(x, y) = boost::gil::rgba8_pixel_t(213, 0, 42, 255);
+            target(x, y) = boost::gil::rgb8_pixel_t(213, 0, 42);
             break;
 
          case TemperatureType::Tropical:
-         default:
-            target(x, y) = boost::gil::rgba8_pixel_t(255, 0, 0, 255);
+         default: //
+            target(x, y) = boost::gil::rgb8_pixel_t(255, 0, 0);
             break;
          }
       }

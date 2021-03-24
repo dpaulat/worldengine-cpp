@@ -5,10 +5,7 @@
 
 namespace WorldEngine
 {
-Image::Image(bool hasBlackAndWhite) :
-    hasBlackAndWhite_(hasBlackAndWhite)
-{
-}
+Image::Image(bool hasBlackAndWhite) : hasBlackAndWhite_(hasBlackAndWhite) {}
 
 Image::~Image() {}
 
@@ -24,8 +21,8 @@ void Image::Draw(const World&       world,
 {
    if (!blackAndWhite || !hasBlackAndWhite_)
    {
-      boost::gil::rgba8_image_t         image(world.width(), world.height());
-      boost::gil::rgba8_image_t::view_t view = boost::gil::view(image);
+      boost::gil::rgb8_image_t         image(world.width(), world.height());
+      boost::gil::rgb8_image_t::view_t view = boost::gil::view(image);
 
       DrawImage(world, view);
 

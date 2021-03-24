@@ -8,7 +8,7 @@ SimpleElevationImage::SimpleElevationImage() : Image(false) {}
 SimpleElevationImage::~SimpleElevationImage() {}
 
 void SimpleElevationImage::DrawImage(
-   const World& world, boost::gil::rgba8_image_t::view_t& target) const
+   const World& world, boost::gil::rgb8_image_t::view_t& target) const
 {
    const ElevationArrayType& e     = world.GetElevationData();
    const OceanArrayType&     ocean = world.GetOceanData();
@@ -81,8 +81,8 @@ void SimpleElevationImage::DrawImage(
    }
 }
 
-boost::gil::rgba8_pixel_t SimpleElevationImage::ElevationColor(float elevation,
-                                                               float seaLevel)
+boost::gil::rgb8_pixel_t SimpleElevationImage::ElevationColor(float elevation,
+                                                              float seaLevel)
 {
    float r, g, b;
    std::tie(r, g, b) = ElevationColorF(elevation, seaLevel);
@@ -90,10 +90,9 @@ boost::gil::rgba8_pixel_t SimpleElevationImage::ElevationColor(float elevation,
    SatureColorComponent(g);
    SatureColorComponent(b);
 
-   boost::gil::rgba8_pixel_t color(static_cast<uint8_t>(r * 255),
-                                   static_cast<uint8_t>(g * 255),
-                                   static_cast<uint8_t>(b * 255),
-                                   255);
+   boost::gil::rgb8_pixel_t color(static_cast<uint8_t>(r * 255),
+                                  static_cast<uint8_t>(g * 255),
+                                  static_cast<uint8_t>(b * 255));
 
    return color;
 }

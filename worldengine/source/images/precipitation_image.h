@@ -27,7 +27,7 @@ protected:
     * @param world A world
     * @param target Destination filename
     */
-   void DrawImage(const World&                       world,
-                  boost::gil::rgba8_image_t::view_t& target) const;
+   void DrawImage(const World&                      world,
+                  boost::gil::rgb8_image_t::view_t& target) const;
 };
 } // namespace WorldEngine

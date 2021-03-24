@@ -5,11 +5,11 @@ namespace WorldEngine
 OceanImage::OceanImage() : Image(false) {}
 OceanImage::~OceanImage() {}
 
-void OceanImage::DrawImage(const World&                       world,
-                           boost::gil::rgba8_image_t::view_t& target) const
+void OceanImage::DrawImage(const World&                      world,
+                           boost::gil::rgb8_image_t::view_t& target) const
 {
-   static const boost::gil::rgba8_pixel_t oceanColor(0, 0, 255, 255);
-   static const boost::gil::rgba8_pixel_t landColor(0, 255, 255, 255);
+   static const boost::gil::rgb8_pixel_t oceanColor(0, 0, 255);
+   static const boost::gil::rgb8_pixel_t landColor(0, 255, 255);
 
    const OceanArrayType& ocean = world.GetOceanData();
 
