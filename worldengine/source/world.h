@@ -61,6 +61,8 @@ public:
    float                     gammaCurve() const;
    float                     curveOffset() const;
 
+   bool Contains(int32_t x, int32_t y) const;
+
    bool HasBiome() const;
    bool HasHumidity() const;
    bool HasIrrigiation() const;
@@ -99,6 +101,7 @@ public:
    float GetThreshold(WaterThresholds type) const;
 
    bool IsOcean(uint32_t x, uint32_t y) const;
+   bool IsMountain(uint32_t x, uint32_t y) const;
 
    TemperatureType GetTemperatureType(uint32_t x, uint32_t y) const;
    HumidityLevels  GetHumidityLevel(uint32_t x, uint32_t y) const;

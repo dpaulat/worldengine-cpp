@@ -145,6 +145,11 @@ float World::curveOffset() const
    return curveOffset_;
 }
 
+bool World::Contains(int32_t x, int32_t y) const
+{
+   return (0 <= x && x < width() && 0 <= y && y < height());
+}
+
 bool World::HasBiome() const
 {
    return false;
@@ -338,6 +343,16 @@ float World::GetThreshold(WaterThresholds type) const
 bool World::IsOcean(uint32_t x, uint32_t y) const
 {
    return ocean_[y][x];
+}
+
+bool World::IsMountain(uint32_t x, uint32_t y) const
+{
+   if (IsOcean(x, y))
+   {
+      return false;
+   }
+
+   return elevation_[y][x] > GetThreshold(ElevationThresholdType::Mountain);
 }
 
 TemperatureType World::GetTemperatureType(uint32_t x, uint32_t y) const
