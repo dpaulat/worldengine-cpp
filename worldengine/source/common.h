@@ -9,6 +9,9 @@
 namespace WorldEngine
 {
 
+   
+typedef std::pair<int32_t, int32_t> Point;
+
 enum class BiomeGroups
 {
    BorealForest,

@@ -101,6 +101,7 @@ public:
    float GetThreshold(WaterThresholds type) const;
 
    bool IsOcean(uint32_t x, uint32_t y) const;
+   bool IsOcean(Point p) const;
    bool IsMountain(uint32_t x, uint32_t y) const;
 
    TemperatureType GetTemperatureType(uint32_t x, uint32_t y) const;

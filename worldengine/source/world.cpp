@@ -345,6 +345,11 @@ bool World::IsOcean(uint32_t x, uint32_t y) const
    return ocean_[y][x];
 }
 
+bool World::IsOcean(Point p) const
+{
+   return IsOcean(p.first, p.second);
+}
+
 bool World::IsMountain(uint32_t x, uint32_t y) const
 {
    if (IsOcean(x, y))

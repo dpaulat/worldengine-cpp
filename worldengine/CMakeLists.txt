@@ -10,11 +10,13 @@ set(SRC_MAIN source/basic.cpp
              source/common.cpp
              source/draw.cpp
              source/generation.cpp
+             source/path.cpp
              source/plates.cpp
              source/world.cpp)
 set(HDR_MAIN source/basic.h
              source/common.h
              source/generation.h
+             source/path.h
              source/plates.h
              source/world.h)
 set(SRC_SIMULATIONS source/simulations/biome.cpp

@@ -1,11 +1,8 @@
 #include "erosion.h"
+#include "../path.h"
 
 #include <map>
 
-#include <boost/graph/astar_search.hpp>
-#include <boost/graph/adjacency_list.hpp> //?
-#include <boost/graph/filtered_graph.hpp> //?
-#include <boost/graph/grid_graph.hpp> //?
 #include <boost/log/trivial.hpp>
 
 namespace WorldEngine
@@ -19,8 +16,6 @@ enum class Direction
    South,
    West
 };
-
-typedef std::pair<int32_t, int32_t> Point;
 
 typedef float     WaterFlowDataType;
 typedef Direction WaterPathDataType;
@@ -58,7 +53,7 @@ static const float RIVER_THRESHOLD = 0.02f;
  * @param y
  * @return
  */
-static std::tuple<bool, bool, int32_t, int32_t>
+static std::tuple<bool, bool, Point>
 FindLowerElevation(const World& world, int32_t x, int32_t y);
 
 /**
@@ -105,9 +100,9 @@ static void FindWaterFlow(const World& world, WaterPathArrayType& waterPath);
  * @param waterFlow
  * @return River sources
  */
-static std::vector<Point> RiverSources(const World&              world,
-                                       const WaterPathArrayType& waterPath,
-                                       WaterFlowArrayType&       waterFlow);
+static std::list<Point> RiverSources(const World&              world,
+                                     const WaterPathArrayType& waterPath,
+                                     WaterFlowArrayType&       waterFlow);
 
 /**
  * @brief Simulate fluid dynamics by using starting point and flowing to the
@@ -118,10 +113,40 @@ static std::vector<Point> RiverSources(const World&              world,
  * @param lakeList
  * @return River flow path
  */
-static std::vector<Point> RiverFlow(World&                           world,
-                                    Point                            source,
-                                    std::vector<std::vector<Point>>& riverList,
-                                    std::vector<Point>&              lakeList);
+static std::list<Point> RiverFlow(const World&                       world,
+                                  Point                              source,
+                                  const std::list<std::list<Point>>& riverList,
+                                  std::list<Point>&                  lakeList);
+
+/**
+ * @brief Validate that for each point in river is equal to or lower than the
+ * last
+ * @param world
+ * @param river
+ */
+static void CleanUpFlow(World& world, std::list<Point>& river);
+
+/**
+ * @brief Simulate erosion in heightmap based on river path.
+ * - Current location must be less than or equal to previous location
+ * - Riverbed is carved out by % of volume/flow
+ * - Sides of river are also eroded to slope into riverbed
+ * @param world
+ * @param river
+ */
+static void RiverErosion(World& world, std::list<Point>& river);
+
+/**
+ * @brief Update the river map with rainfall that is to become the waterflow
+ * @param waterFlow
+ * @param precipitations
+ * @param river
+ * @param riverMap
+ */
+static void RiverMapUpdate(const WaterFlowArrayType&     waterFlow,
+                           const PrecipitationArrayType& precipitations,
+                           const std::list<Point>&       river,
+                           RiverMapArrayType&            riverMap);
 
 void ErosionSimulation(World& world)
 {
@@ -130,7 +155,9 @@ void ErosionSimulation(World& world)
    uint32_t width  = world.width();
    uint32_t height = world.height();
 
-   WaterFlowArrayType waterFlow(world.GetPrecipitationData());
+   const PrecipitationArrayType& precipitations = world.GetPrecipitationData();
+
+   WaterFlowArrayType waterFlow(precipitations);
    WaterPathArrayType waterPath(boost::extents[height][width]);
 
    RiverMapArrayType& riverMap = world.GetRiverMapData();
@@ -139,10 +166,10 @@ void ErosionSimulation(World& world)
    riverMap.resize(boost::extents[height][width]);
    lakeMap.resize(boost::extents[height][width]);
 
-   std::vector<Point> riverSources;
+   std::list<Point> riverSources;
 
-   std::vector<std::vector<Point>> riverList;
-   std::vector<Point>              lakeList;
+   std::list<std::list<Point>> riverList;
+   std::list<Point>            lakeList;
 
    // Step 1: Water flow per cell based on rainfall
    FindWaterFlow(world, waterPath);
@@ -153,19 +180,41 @@ void ErosionSimulation(World& world)
    // Step 3: For each source, find a path to sea
    for (Point source : riverSources)
    {
-      std::vector<Point> river = RiverFlow(world, source, riverList, lakeList);
+      std::list<Point> river = RiverFlow(world, source, riverList, lakeList);
+      if (!river.empty())
+      {
+         riverList.push_back(river);
+         CleanUpFlow(world, river);
+
+         Point riverEnd = river.back();
+         if (!world.IsOcean(riverEnd) && lakeList.back() != riverEnd)
+         {
+            lakeList.push_back(riverEnd);
+         }
+      }
    }
 
    // Step 4: Simulate erosion and update river map
-   // TODO
+   for (std::list<Point> river : riverList)
+   {
+      RiverErosion(world, river);
+      RiverMapUpdate(waterFlow, precipitations, river, riverMap);
+   }
 
    // Step 5: Rivers with no paths to sea form lakes
-   // TODO
+   for (Point lake : lakeList)
+   {
+      int32_t lx      = lake.first;
+      int32_t ly      = lake.second;
+      lakeMap[ly][lx] = 0.1f; // TODO: Make this based on rainfall/flow
+
+      BOOST_LOG_TRIVIAL(debug) << "Found lake at (" << lx << ", " << ly << ")";
+   }
 
    BOOST_LOG_TRIVIAL(info) << "Erosion simulation finish";
 }
 
-static std::tuple<bool, bool, int32_t, int32_t>
+static std::tuple<bool, bool, Point>
 FindLowerElevation(const World& world, int32_t x, int32_t y)
 {
    const ElevationArrayType& e         = world.GetElevationData();
@@ -228,7 +277,7 @@ FindLowerElevation(const World& world, int32_t x, int32_t y)
       isWrapped = true;
    }
 
-   return std::tie(found, isWrapped, destX, destY);
+   return std::tie(found, isWrapped, std::make_pair(destX, destY));
 }
 
 static std::tuple<Direction, int32_t, int32_t>
@@ -293,9 +342,9 @@ static void FindWaterFlow(const World& world, WaterPathArrayType& waterPath)
    }
 }
 
-static std::vector<Point> RiverSources(const World&              world,
-                                       const WaterPathArrayType& waterPath,
-                                       WaterFlowArrayType&       waterFlow)
+static std::list<Point> RiverSources(const World&              world,
+                                     const WaterPathArrayType& waterPath,
+                                     WaterFlowArrayType&       waterFlow)
 {
    /*
     * Using the wind and rainfall data, create river "seeds" by flowing rainfall
@@ -305,7 +354,7 @@ static std::vector<Point> RiverSources(const World&              world,
     */
    const PrecipitationArrayType& precipitation = world.GetPrecipitationData();
 
-   std::vector<Point> riverSources;
+   std::list<Point> riverSources;
 
    // Step 1: Using flow direction, follow the path for each cell adding the
    // previous cell's flow to the current cell's flow.
@@ -380,13 +429,13 @@ static std::vector<Point> RiverSources(const World&              world,
    return riverSources;
 }
 
-static std::vector<Point> RiverFlow(World&                           world,
-                                    Point                            source,
-                                    std::vector<std::vector<Point>>& riverList,
-                                    std::vector<Point>&              lakeList)
+static std::list<Point> RiverFlow(const World&                       world,
+                                  Point                              source,
+                                  const std::list<std::list<Point>>& riverList,
+                                  std::list<Point>&                  lakeList)
 {
-   Point              currentLocation = source;
-   std::vector<Point> path;
+   Point            currentLocation = source;
+   std::list<Point> path;
 
    path.push_back(source);
 
@@ -412,7 +461,7 @@ static std::vector<Point> RiverFlow(World&                           world,
             ay %= world.height();
          }
 
-         for (std::vector<Point> river : riverList)
+         for (std::list<Point> river : riverList)
          {
             if (std::find(river.begin(), river.end(), std::make_pair(ax, ay)) !=
                 river.end())
@@ -454,24 +503,34 @@ static std::vector<Point> RiverFlow(World&                           world,
          continue;
       }
 
-      bool    foundLowerElevation;
-      bool    isWrapped;
-      int32_t lx;
-      int32_t ly;
+      bool  foundLowerElevation;
+      bool  isWrapped;
+      Point lowerElevation;
 
-      std::tie(foundLowerElevation, isWrapped, lx, ly) =
+      std::tie(foundLowerElevation, isWrapped, lowerElevation) =
          FindLowerElevation(world, x, y);
       if (foundLowerElevation && !isWrapped)
       {
-         // TODO: Finish
-         break; // TODO: Remove break
+         std::list<Point> lowerPath =
+            FindPath(world, currentLocation, lowerElevation);
+         if (!lowerPath.empty())
+         {
+            path.splice(path.end(), lowerPath);
+            currentLocation = path.back();
+         }
+         else
+         {
+            break;
+         }
       }
       else if (foundLowerElevation && isWrapped)
       {
          const int32_t maxRadius = 40;
 
-         int nx;
-         int ny;
+         int32_t lx = lowerElevation.first;
+         int32_t ly = lowerElevation.second;
+         int32_t nx;
+         int32_t ny;
 
          if (!InCircle(maxRadius, x, y, lx, y))
          {
@@ -513,11 +572,22 @@ static std::vector<Point> RiverFlow(World&                           world,
          }
 
          // Find our way to the edge
-         // TODO
+         std::list<Point> edgePath = FindPath(world, currentLocation, {lx, ly});
+         if (edgePath.empty())
+         {
+            // Can't find a path, make it a lake
+            lakeList.push_back(currentLocation);
+            break;
+         }
+         path.splice(path.end(), edgePath); // Add our newly found path
+         path.push_back({nx, ny}); // Finally add our overflow to the other side
+         currentLocation = path.back();
 
          // Find our way to the lowest position originally found
-         // TODO
-         break; // TODO: Remove break
+         std::list<Point> lowerPath =
+            FindPath(world, currentLocation, lowerElevation);
+         path.splice(path.end(), edgePath);
+         currentLocation = path.back();
       }
       else
       {
@@ -534,6 +604,130 @@ static std::vector<Point> RiverFlow(World&                           world,
    }
 
    return path;
+}
+
+static void CleanUpFlow(World& world, std::list<Point>& river)
+{
+   ElevationArrayType e = world.GetElevationData();
+
+   float cElevation = 1.0;
+
+   for (Point r : river)
+   {
+      int32_t rx         = r.first;
+      int32_t ry         = r.second;
+      float&  rElevation = e[ry][rx];
+      if (rElevation <= cElevation)
+      {
+         cElevation = rElevation;
+      }
+      else
+      {
+         rElevation = cElevation;
+      }
+   }
+}
+
+static void RiverErosion(World& world, std::list<Point>& river)
+{
+   const int32_t radius = 2;
+
+   ElevationArrayType& e = world.GetElevationData();
+
+   // Erosion around river, create river valley
+   for (Point r : river)
+   {
+      int32_t rx = r.first;
+      int32_t ry = r.second;
+
+      for (int32_t y = ry - radius; y <= ry + radius; y++)
+      {
+         for (int32_t x = rx - radius; x <= rx + radius; x++)
+         {
+            if (!wrap_ && !world.Contains(x, y))
+            {
+               // Ignore edges of map
+               continue;
+            }
+
+            int32_t wx = x % world.width();
+            int32_t wy = y % world.width();
+
+            if (std::find(river.begin(), river.end(), std::make_pair(wx, wy)) !=
+                river.end())
+            {
+               // Ignore points within the river
+               continue;
+            }
+
+            if (e[wy][wx] <= e[ry][rx])
+            {
+               // Ignore points lower than the river
+               continue;
+            }
+
+            if (!InCircle(radius, rx, ry, wx, wy))
+            {
+               // Ignore points outside a circle
+               continue;
+            }
+
+            // Determine curve
+            float   curve = 1.0f;
+            int32_t adx   = std::abs(rx - wx);
+            int32_t ady   = std::abs(ry - wy);
+            if (adx == 1 || ady == 1)
+            {
+               curve = 0.2f;
+            }
+            else if (adx == 2 || ady == 2)
+            {
+               curve = 0.05f;
+            }
+
+            // Update elevation
+            float diff         = e[ry][rx] - e[wy][wx];
+            float newElevation = e[wy][wx] + diff * curve;
+
+            if (newElevation < e[ry][rx])
+            {
+               BOOST_LOG_TRIVIAL(warning)
+                  << "RiverErosion: New elevation is lower than river, fixing";
+               newElevation = e[ry][rx];
+            }
+
+            e[wy][wx] = newElevation;
+         }
+      }
+   }
+}
+
+static void RiverMapUpdate(const WaterFlowArrayType&     waterFlow,
+                           const PrecipitationArrayType& precipitations,
+                           const std::list<Point>&       river,
+                           RiverMapArrayType&            riverMap)
+{
+   bool    isSeed = true;
+   int32_t px     = 0;
+   int32_t py     = 0;
+
+   for (Point p : river)
+   {
+      int32_t x = p.first;
+      int32_t y = p.second;
+
+      if (isSeed)
+      {
+         riverMap[y][x] = waterFlow[y][x];
+         isSeed         = false;
+      }
+      else
+      {
+         riverMap[y][x] = precipitations[y][x] + riverMap[py][px];
+      }
+      px = x;
+      py = y;
+   }
 }
 
 } // namespace WorldEngine
