@@ -9,7 +9,6 @@
 namespace WorldEngine
 {
 
-   
 typedef std::pair<int32_t, int32_t> Point;
 
 enum class BiomeGroups
@@ -250,6 +249,11 @@ const float    DEFAULT_OCEAN_LEVEL      = 1.0f;
 const Step     DEFAULT_STEP             = STEP_FULL;
 const bool     DEFAULT_FADE_BORDERS     = true;
 const bool     DEFAULT_BLACK_AND_WHITE  = false;
+const bool     DEFAULT_GS_HEIGHTMAP     = false;
+const bool     DEFAULT_RIVERS_MAP       = false;
+const bool     DEFAULT_SCATTER_PLOT     = false;
+const bool     DEFAULT_SATELLITE_MAP    = false;
+const bool     DEFAULT_ICECAPS_MAP      = false;
 
 const std::vector<float> DEFAULT_TEMPS {
    0.126f, 0.235f, 0.406f, 0.561f, 0.634f, 0.876f};

@@ -18,6 +18,7 @@
 #include <images/biome_image.h>
 #include <images/ocean_image.h>
 #include <images/precipitation_image.h>
+#include <images/river_image.h>
 #include <images/simple_elevation_image.h>
 #include <images/temperature_image.h>
 
@@ -46,7 +47,12 @@ std::shared_ptr<World>
                    float                     gammaCurve  = DEFAULT_GAMMA_CURVE,
                    float                     curveOffset = DEFAULT_CURVE_OFFSET,
                    bool                      fadeBorders = DEFAULT_FADE_BORDERS,
-                   bool blackAndWhite = DEFAULT_BLACK_AND_WHITE);
+                   bool                      blackAndWhite = DEFAULT_BLACK_AND_WHITE,
+                   bool                      gsHeightmap = DEFAULT_GS_HEIGHTMAP,
+                   bool                      rivers      = DEFAULT_RIVERS_MAP,
+                   bool                      scatterPlot = DEFAULT_SCATTER_PLOT,
+                   bool                      satelliteMap = DEFAULT_SATELLITE_MAP,
+                   bool                      icecapsMap = DEFAULT_ICECAPS_MAP);
 void PrintUsage(const std::string&             programName,
                 const po::options_description& options);
 void PrintWorldInfo(const World& world);
@@ -289,7 +295,12 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
                                      float                     gammaCurve,
                                      float                     curveOffset,
                                      bool                      fadeBorders,
-                                     bool                      blackAndWhite)
+                                     bool                      blackAndWhite,
+                                     bool                      gsHeightmap,
+                                     bool                      rivers,
+                                     bool                      scatterPlot,
+                                     bool                      satelliteMap,
+                                     bool                      icecapsMap)
 {
    std::shared_ptr<World> world = WorldGen(worldName,
                                            width,
@@ -375,6 +386,33 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
       world->GetThreshold(ElevationThresholdType::Sea));
    BOOST_LOG_TRIVIAL(info) << "Elevation image generated in "
                            << elevationFilename;
+
+   if (gsHeightmap)
+   {
+      // TODO: GenerateGrayscaleHeightmap();
+   }
+
+   if (rivers)
+   {
+      std::string riverFilename = outputDir + "/" + worldName + "_rivers.png";
+      RiverImage().Draw(*world, riverFilename);
+      BOOST_LOG_TRIVIAL(info) << "River image generated in " << riverFilename;
+   }
+
+   if (scatterPlot)
+   {
+      // TODO: DrawScatterPlot
+   }
+
+   if (satelliteMap)
+   {
+      // TODO: DrawSatelliteMap();
+   }
+
+   if (icecapsMap)
+   {
+      // TODO: DrawIcecapsMap();
+   }
 
    return world;
 }
@@ -541,32 +579,12 @@ void CliMain(int argc, const char** argv)
                                                    args.gammaValue,
                                                    args.curveOffset,
                                                    !args.notFadeBorders,
-                                                   args.blackAndWhite);
-
-      if (args.grayscaleHeightmap)
-      {
-         // TODO: GenerateGrayscaleHeightmap();
-      }
-
-      if (args.rivers)
-      {
-         // TODO: GenerateRiversMap();
-      }
-
-      if (args.scatterPlot)
-      {
-         // TODO: DrawScatterPlot
-      }
-
-      if (args.satelliteMap)
-      {
-         // TODO: DrawSatelliteMap();
-      }
-
-      if (args.icecapsMap)
-      {
-         // TODO: DrawIcecapsMap();
-      }
+                                                   args.blackAndWhite,
+                                                   args.grayscaleHeightmap,
+                                                   args.rivers,
+                                                   args.scatterPlot,
+                                                   args.satelliteMap,
+                                                   args.icecapsMap);
    }
    else if (args.operation == OperationType::Plates)
    {

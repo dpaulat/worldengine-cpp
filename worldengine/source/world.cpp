@@ -340,6 +340,11 @@ float World::GetThreshold(WaterThresholds type) const
    return waterThresholds_[static_cast<uint32_t>(type)];
 }
 
+bool World::IsLand(uint32_t x, uint32_t y) const
+{
+   return !ocean_[y][x];
+}
+
 bool World::IsOcean(uint32_t x, uint32_t y) const
 {
    return ocean_[y][x];

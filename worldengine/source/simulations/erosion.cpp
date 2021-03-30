@@ -191,6 +191,9 @@ void ErosionSimulation(World& world)
          {
             lakeList.push_back(riverEnd);
          }
+
+         BOOST_LOG_TRIVIAL(debug) << "Found river at (" << source.first << ", "
+                                  << source.second << ")";
       }
    }
 
