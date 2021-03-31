@@ -180,7 +180,6 @@ static void* GeneratePlatesSimulation(float**    heightmap,
 
    while (!platec_api_is_finished(p))
    {
-      BOOST_LOG_TRIVIAL(trace) << "platec_api_step(p)";
       platec_api_step(p);
    }
 

@@ -8,6 +8,7 @@ find_package(GTest)
 find_package(Protobuf)
 
 set(SRC_MAIN source/BasicTest.cpp
+             source/PathTest.cpp
              source/WorldEngineTest.cpp)
 set(SRC_SIMULATIONS source/simulations/TemperatureTest.cpp)
 
@@ -17,7 +18,6 @@ add_executable(worldengine-test ${SRC_MAIN}
 source_group("Source Files\\main"        FILES ${SRC_MAIN})
 source_group("Source Files\\simulations" FILES ${SRC_SIMULATIONS})
 
-message(${GTest_INCLUDE_DIRS})
 target_include_directories(worldengine-test PRIVATE ${GTest_INCLUDE_DIRS})
 
 set_target_properties(worldengine-test PROPERTIES CXX_STANDARD 17

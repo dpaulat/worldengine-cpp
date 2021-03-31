@@ -25,6 +25,8 @@ void RiverImage::DrawImage(const World&                      world,
          }
       }
    }
+
+   DrawRivers(world, target);
 }
 
 void RiverImage::DrawRivers(const World&                      world,

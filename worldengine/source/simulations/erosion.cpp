@@ -192,7 +192,7 @@ void ErosionSimulation(World& world)
             lakeList.push_back(riverEnd);
          }
 
-         BOOST_LOG_TRIVIAL(debug) << "Found river at (" << source.first << ", "
+         BOOST_LOG_TRIVIAL(trace) << "Found river at (" << source.first << ", "
                                   << source.second << ")";
       }
    }
@@ -211,8 +211,11 @@ void ErosionSimulation(World& world)
       int32_t ly      = lake.second;
       lakeMap[ly][lx] = 0.1f; // TODO: Make this based on rainfall/flow
 
-      BOOST_LOG_TRIVIAL(debug) << "Found lake at (" << lx << ", " << ly << ")";
+      BOOST_LOG_TRIVIAL(trace) << "Found lake at (" << lx << ", " << ly << ")";
    }
+
+   BOOST_LOG_TRIVIAL(debug) << "Number of rivers: " << riverList.size();
+   BOOST_LOG_TRIVIAL(debug) << "Number of lakes:  " << lakeList.size();
 
    BOOST_LOG_TRIVIAL(info) << "Erosion simulation finish";
 }
@@ -271,6 +274,8 @@ FindLowerElevation(const World& world, int32_t x, int32_t y)
             }
          }
       }
+
+      currentRadius++;
    }
 
    if (found && std::find(wrapped.begin(),
@@ -376,11 +381,13 @@ static std::list<Point> RiverSources(const World&              world,
             continue;
          }
 
+         float rainfall = precipitation[y][x];
+
          // Begin with starting location
          int32_t cx = x;
          int32_t cy = y;
 
-         float rainfall = precipitation[y][x];
+         bool neighborSeedFound = false;
 
          // Follow flow path to where it may lead
          while (true)
@@ -397,12 +404,19 @@ static std::list<Point> RiverSources(const World&              world,
 
                   if (InCircle(9, cx, cy, sx, sy))
                   {
-                     // We do not want seeds for neighbors
+                     neighborSeedFound = true;
                      break;
                   }
                }
 
+               if (neighborSeedFound)
+               {
+                  // We do not want seeds for neighbors
+                  break;
+               }
+
                riverSources.push_back({cx, cy});
+               break;
             }
 
             // No path means dead end
@@ -419,6 +433,15 @@ static std::list<Point> RiverSources(const World&              world,
             // Calculate next cell
             int32_t nx = cx + dx;
             int32_t ny = cy + dy;
+
+            // Reached the end of the world, no path
+            if (!wrap_ && !world.Contains(nx, ny))
+            {
+               break;
+            }
+
+            nx %= world.width();
+            ny %= world.height();
 
             waterFlow[ny][nx] += rainfall;
 
@@ -515,7 +538,7 @@ static std::list<Point> RiverFlow(const World&                       world,
       if (foundLowerElevation && !isWrapped)
       {
          std::list<Point> lowerPath =
-            FindPath(world, currentLocation, lowerElevation);
+            FindPath(world.GetElevationData(), currentLocation, lowerElevation);
          if (!lowerPath.empty())
          {
             path.splice(path.end(), lowerPath);
@@ -575,7 +598,8 @@ static std::list<Point> RiverFlow(const World&                       world,
          }
 
          // Find our way to the edge
-         std::list<Point> edgePath = FindPath(world, currentLocation, {lx, ly});
+         std::list<Point> edgePath =
+            FindPath(world.GetElevationData(), currentLocation, {lx, ly});
          if (edgePath.empty())
          {
             // Can't find a path, make it a lake
@@ -588,7 +612,7 @@ static std::list<Point> RiverFlow(const World&                       world,
 
          // Find our way to the lowest position originally found
          std::list<Point> lowerPath =
-            FindPath(world, currentLocation, lowerElevation);
+            FindPath(world.GetElevationData(), currentLocation, lowerElevation);
          path.splice(path.end(), edgePath);
          currentLocation = path.back();
       }

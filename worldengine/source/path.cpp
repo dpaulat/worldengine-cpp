@@ -254,14 +254,17 @@ struct AStar
    }
 };
 
-std::list<Point> FindPath(const World& world, Point source, Point destination)
+std::list<Point>
+FindPath(const ElevationArrayType& elevation, Point source, Point destination)
 {
    std::list<Point> path;
 
-   SQMapHandler mapHandler(
-      world.GetElevationData(), world.width(), world.height());
-   AStar pathFinder(mapHandler);
-   Path  p = pathFinder.FindPath(source, destination);
+   uint32_t width  = elevation.shape()[1];
+   uint32_t height = elevation.shape()[0];
+
+   SQMapHandler mapHandler(elevation, width, height);
+   AStar        pathFinder(mapHandler);
+   Path         p = pathFinder.FindPath(source, destination);
 
    for (NodePtr n : p.nodes_)
    {
