@@ -12,6 +12,7 @@ namespace WorldEngine
 
 typedef float    ElevationDataType;
 typedef float    HumidityDataType;
+typedef float    IcecapDataType;
 typedef float    IrrigationDataType;
 typedef float    LakeMapDataType;
 typedef bool     OceanDataType;
@@ -24,6 +25,7 @@ typedef float    WaterMapDataType;
 typedef boost::multi_array<Biomes, 2>                BiomeArrayType;
 typedef boost::multi_array<ElevationDataType, 2>     ElevationArrayType;
 typedef boost::multi_array<HumidityDataType, 2>      HumidityArrayType;
+typedef boost::multi_array<IcecapDataType, 2>        IcecapArrayType;
 typedef boost::multi_array<IrrigationDataType, 2>    IrrigationArrayType;
 typedef boost::multi_array<LakeMapDataType, 2>       LakeMapArrayType;
 typedef boost::multi_array<OceanDataType, 2>         OceanArrayType;
@@ -75,6 +77,7 @@ public:
    const OceanArrayType&         GetOceanData() const;
    const BiomeArrayType&         GetBiomeData() const;
    const HumidityArrayType&      GetHumidityData() const;
+   const IcecapArrayType&        GetIcecapData() const;
    const IrrigationArrayType&    GetIrrigationData() const;
    const LakeMapArrayType&       GetLakeMapData() const;
    const PrecipitationArrayType& GetPrecipitationData() const;
@@ -87,6 +90,7 @@ public:
    PlateArrayType&         GetPlateData();
    BiomeArrayType&         GetBiomeData();
    HumidityArrayType&      GetHumidityData();
+   IcecapArrayType&        GetIcecapData();
    IrrigationArrayType&    GetIrrigationData();
    LakeMapArrayType&       GetLakeMapData();
    PrecipitationArrayType& GetPrecipitationData();
@@ -141,6 +145,7 @@ private:
    OceanArrayType         ocean_;
    BiomeArrayType         biome_;
    HumidityArrayType      humidity_;
+   IcecapArrayType        icecap_;
    IrrigationArrayType    irrigation_;
    LakeMapArrayType       lakeMap_;
    PrecipitationArrayType precipitation_;
