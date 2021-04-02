@@ -39,6 +39,18 @@ protected:
                                boost::gil::gray8_image_t::view_t& target) const;
 
    /**
+    * @brief Draw a grayscale image from a multi_array
+    * @param array Array from which to draw the image
+    * @param low Minimum value to scale
+    * @param high Maximum value to scale
+    * @param target Target image view
+    */
+   void DrawGrayscaleFromArray(const boost::multi_array<float, 2>& array,
+                               const float                         low,
+                               const float                         high,
+                               boost::gil::gray8_image_t::view_t& target) const;
+
+   /**
     * @brief Draw a grayscale image (optional)
     * @param world A world
     * @param target Target image view

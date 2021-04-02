@@ -9,27 +9,7 @@ PrecipitationImage::~PrecipitationImage() {}
 void PrecipitationImage::DrawImage(
    const World& world, boost::gil::gray8_image_t::view_t& target) const
 {
-   const PrecipitationArrayType& precipitation = world.GetPrecipitationData();
-
-   auto minmax =
-      std::minmax_element(precipitation.data(),
-                          precipitation.data() + precipitation.num_elements());
-   float    low     = *minmax.first;
-   float    high    = *minmax.second;
-   uint32_t floor   = 0;
-   uint32_t ceiling = 255;
-
-   const std::vector<std::pair<float, uint32_t>> points = {{low, floor},
-                                                           {high, ceiling}};
-
-   for (uint32_t y = 0; y < world.height(); y++)
-   {
-      for (uint32_t x = 0; x < world.width(); x++)
-      {
-         uint32_t color = Interpolate(precipitation[y][x], points);
-         target(x, y)   = boost::gil::gray8_pixel_t(color);
-      }
-   }
+   DrawGrayscaleFromArray(world.GetPrecipitationData(), target);
 }
 
 void PrecipitationImage::DrawImage(

@@ -19,14 +19,24 @@ void Image::DrawGrayscaleFromArray(
    const boost::multi_array<float, 2>& array,
    boost::gil::gray8_image_t::view_t&  target) const
 {
-   const uint32_t width  = array.shape()[1];
-   const uint32_t height = array.shape()[0];
-   auto           minmax =
+   auto minmax =
       std::minmax_element(array.data(), array.data() + array.num_elements());
-   const float    low     = *minmax.first;
-   const float    high    = *minmax.second;
-   const uint32_t floor   = 0;
-   const uint32_t ceiling = 255;
+   const float low  = *minmax.first;
+   const float high = *minmax.second;
+
+   DrawGrayscaleFromArray(array, low, high, target);
+}
+
+void Image::DrawGrayscaleFromArray(
+   const boost::multi_array<float, 2>& array,
+   const float                         low,
+   const float                         high,
+   boost::gil::gray8_image_t::view_t&  target) const
+{
+   const uint32_t width   = array.shape()[1];
+   const uint32_t height  = array.shape()[0];
+   const uint32_t floor   = 0u;
+   const uint32_t ceiling = UINT8_MAX;
 
    const std::vector<std::pair<float, uint32_t>> points = {{low, floor},
                                                            {high, ceiling}};
