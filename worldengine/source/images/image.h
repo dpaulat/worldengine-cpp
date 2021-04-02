@@ -14,13 +14,29 @@ class Image
 protected:
    /**
     * @brief Construct an image
+    * @param hasColor Derived image has a color option
+    * @param hasBlackAndWhite Derived image has a black and white option.
+    */
+   explicit Image(bool hasColor, bool hasBlackAndWhite);
+
+   /**
+    * @brief Construct an image
     * @param hasBlackAndWhite Derived image has a black and white option.
     * DrawImage should be overridden for the grayscale target.
     */
    explicit Image(bool hasBlackAndWhite);
    virtual ~Image();
 
+   const bool hasColor_;
    const bool hasBlackAndWhite_;
+
+   /**
+    * @brief Draw a grayscale image from a multi_array
+    * @param array Array from which to draw the image
+    * @param target Target image view
+    */
+   void DrawGrayscaleFromArray(const boost::multi_array<float, 2>& array,
+                               boost::gil::gray8_image_t::view_t& target) const;
 
    /**
     * @brief Draw a grayscale image (optional)
@@ -36,7 +52,7 @@ protected:
     * @param target Target image view
     */
    virtual void DrawImage(const World&                      world,
-                          boost::gil::rgb8_image_t::view_t& target) const = 0;
+                          boost::gil::rgb8_image_t::view_t& target) const;
 
 public:
    /**

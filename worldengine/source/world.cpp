@@ -206,6 +206,11 @@ const HumidityArrayType& World::GetHumidityData() const
    return humidity_;
 }
 
+const IcecapArrayType& World::GetIcecapData() const
+{
+   return icecap_;
+}
+
 const IrrigationArrayType& World::GetIrrigationData() const
 {
    return irrigation_;
@@ -259,6 +264,11 @@ BiomeArrayType& World::GetBiomeData()
 HumidityArrayType& World::GetHumidityData()
 {
    return humidity_;
+}
+
+IcecapArrayType& World::GetIcecapData()
+{
+   return icecap_;
 }
 
 IrrigationArrayType& World::GetIrrigationData()

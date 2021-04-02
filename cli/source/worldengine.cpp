@@ -16,6 +16,7 @@
 #include <world.h>
 
 #include <images/biome_image.h>
+#include <images/icecap_image.h>
 #include <images/ocean_image.h>
 #include <images/precipitation_image.h>
 #include <images/river_image.h>
@@ -411,7 +412,9 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
 
    if (icecapsMap)
    {
-      // TODO: DrawIcecapsMap();
+      std::string icecapFilename = outputDir + "/" + worldName + "_icecaps.png";
+      IcecapImage().Draw(*world, icecapFilename);
+      BOOST_LOG_TRIVIAL(info) << "Icecap image generated in " << icecapFilename;
    }
 
    return world;

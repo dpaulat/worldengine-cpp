@@ -1,13 +1,45 @@
 #include "image.h"
+#include "../basic.h"
 
 #include <boost/gil/extension/io/png.hpp>
 #include <boost/log/trivial.hpp>
 
 namespace WorldEngine
 {
-Image::Image(bool hasBlackAndWhite) : hasBlackAndWhite_(hasBlackAndWhite) {}
+Image::Image(bool hasColor, bool hasBlackAndWhite) :
+    hasColor_(hasColor), hasBlackAndWhite_(hasBlackAndWhite)
+{
+}
+
+Image::Image(bool hasBlackAndWhite) : Image(true, hasBlackAndWhite) {}
 
 Image::~Image() {}
+
+void Image::DrawGrayscaleFromArray(
+   const boost::multi_array<float, 2>& array,
+   boost::gil::gray8_image_t::view_t&  target) const
+{
+   const uint32_t width  = array.shape()[1];
+   const uint32_t height = array.shape()[0];
+   auto           minmax =
+      std::minmax_element(array.data(), array.data() + array.num_elements());
+   const float    low     = *minmax.first;
+   const float    high    = *minmax.second;
+   const uint32_t floor   = 0;
+   const uint32_t ceiling = 255;
+
+   const std::vector<std::pair<float, uint32_t>> points = {{low, floor},
+                                                           {high, ceiling}};
+
+   for (uint32_t y = 0; y < height; y++)
+   {
+      for (uint32_t x = 0; x < width; x++)
+      {
+         uint32_t color = Interpolate(array[y][x], points);
+         target(x, y)   = boost::gil::gray8_pixel_t(color);
+      }
+   }
+}
 
 void Image::DrawImage(const World&                       world,
                       boost::gil::gray8_image_t::view_t& target) const
@@ -15,11 +47,17 @@ void Image::DrawImage(const World&                       world,
    // Empty grayscale implementation
 }
 
+void Image::DrawImage(const World&                      world,
+                      boost::gil::rgb8_image_t::view_t& target) const
+{
+   // Empty color implementation
+}
+
 void Image::Draw(const World&       world,
                  const std::string& filename,
                  bool               blackAndWhite) const
 {
-   if (!blackAndWhite || !hasBlackAndWhite_)
+   if ((!blackAndWhite || !hasBlackAndWhite_) && hasColor_)
    {
       boost::gil::rgb8_image_t         image(world.width(), world.height());
       boost::gil::rgb8_image_t::view_t view = boost::gil::view(image);

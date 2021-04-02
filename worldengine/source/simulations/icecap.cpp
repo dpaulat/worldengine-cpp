@@ -94,9 +94,9 @@ void IcecapSimulation(World& world, uint32_t seed)
                {
                   // Count number of frozen/solid tiles around this one
                   uint32_t frozenTiles = 0;
-                  for (int32_t ny = y - 1; ny <= y + 2; ny++)
+                  for (int32_t ny = y - 1; ny <= y + 1; ny++)
                   {
-                     for (int32_t nx = x - 1; x <= x + 2; nx++)
+                     for (int32_t nx = x - 1; nx <= x + 1; nx++)
                      {
                         if ((nx != x || ny != y) && solidMap[ny][nx])
                         {
