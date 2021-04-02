@@ -16,6 +16,7 @@
 #include <world.h>
 
 #include <images/biome_image.h>
+#include <images/heightmap_image.h>
 #include <images/icecap_image.h>
 #include <images/ocean_image.h>
 #include <images/precipitation_image.h>
@@ -391,7 +392,11 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
 
    if (gsHeightmap)
    {
-      // TODO: GenerateGrayscaleHeightmap();
+      std::string heightmapFilename =
+         outputDir + "/" + worldName + "_grayscale.png";
+      HeightmapImage().Draw(*world, heightmapFilename);
+      BOOST_LOG_TRIVIAL(info)
+         << "Grayscale heightmap image generated in " << heightmapFilename;
    }
 
    if (rivers)

@@ -37,6 +37,7 @@ set(HDR_SIMULATIONS source/simulations/biome.h
                     source/simulations/temperature.h)
 set(SRC_IMAGES source/images/image.cpp
                source/images/biome_image.cpp
+               source/images/heightmap_image.cpp
                source/images/icecap_image.cpp
                source/images/ocean_image.cpp
                source/images/precipitation_image.cpp
@@ -45,6 +46,7 @@ set(SRC_IMAGES source/images/image.cpp
                source/images/temperature_image.cpp)
 set(HDR_IMAGES source/images/image.h
                source/images/biome_image.h
+               source/images/heightmap_image.h
                source/images/icecap_image.h
                source/images/ocean_image.h
                source/images/precipitation_image.h
