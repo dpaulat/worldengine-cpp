@@ -327,7 +327,8 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
       {
          try
          {
-            std::ofstream ofs(worldFilename);
+            std::ofstream ofs(worldFilename,
+                              std::ios_base::out | std::ios_base::binary);
             ofs << data;
             ofs.close();
          }
