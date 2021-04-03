@@ -28,7 +28,7 @@ boost::gil::rgb8_pixel_t& operator+=(boost::gil::rgb8_pixel_t&  lhs,
 {
    lhs[0] = std::clamp<T>(static_cast<T>(lhs[0]) + std::get<0>(rhs), 0, 255);
    lhs[1] = std::clamp<T>(static_cast<T>(lhs[1]) + std::get<1>(rhs), 0, 255);
-   lhs[2] = std::clamp<T>(static_cast<T>(lhs[2]) + std::get<1>(rhs), 0, 255);
+   lhs[2] = std::clamp<T>(static_cast<T>(lhs[2]) + std::get<2>(rhs), 0, 255);
    return lhs;
 }
 
@@ -51,7 +51,7 @@ boost::multi_array<bool, 2> operator!(const boost::multi_array<bool, 2>& rhs)
 
    for (uint32_t y = 0; y < height; y++)
    {
-      for (uint32_t x = 0; x < height; x++)
+      for (uint32_t x = 0; x < width; x++)
       {
          result[y][x] = !rhs[y][x];
       }
@@ -229,18 +229,18 @@ void SatelliteImage::DrawImage(const World&                      world,
             std::list<uint32_t> b;
 
             // Loop through this pixel and all neighboring pixels
-            for (uint32_t j = y - 1; j <= y - 1; j++)
+            for (uint32_t j = y - 1; j <= y + 1; j++)
             {
-               for (uint32_t i = x - 1; i <= x - 1; i++)
+               for (uint32_t i = x - 1; i <= x + 1; i++)
                {
                   // Don't include ocean in smoothing, if this tile happens to
                   // border an ocean
                   if (smoothMask[j][i])
                   {
                      // Grab each RGB value and append to the list
-                     r.push_back(target(x, y)[0]);
-                     g.push_back(target(x, y)[1]);
-                     b.push_back(target(x, y)[2]);
+                     r.push_back(target(i, j)[0]);
+                     g.push_back(target(i, j)[1]);
+                     b.push_back(target(i, j)[2]);
                   }
                }
             }
