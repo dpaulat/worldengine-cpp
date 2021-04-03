@@ -21,6 +21,7 @@
 #include <images/ocean_image.h>
 #include <images/precipitation_image.h>
 #include <images/river_image.h>
+#include <images/satellite_image.h>
 #include <images/simple_elevation_image.h>
 #include <images/temperature_image.h>
 
@@ -413,7 +414,11 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
 
    if (satelliteMap)
    {
-      // TODO: DrawSatelliteMap();
+      std::string satelliteFilename =
+         outputDir + "/" + worldName + "_satellite.png";
+      SatelliteImage(seed).Draw(*world, satelliteFilename);
+      BOOST_LOG_TRIVIAL(info)
+         << "Satellite image generated in " << satelliteFilename;
    }
 
    if (icecapsMap)

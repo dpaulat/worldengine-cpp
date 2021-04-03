@@ -42,6 +42,7 @@ set(SRC_IMAGES source/images/image.cpp
                source/images/ocean_image.cpp
                source/images/precipitation_image.cpp
                source/images/river_image.cpp
+               source/images/satellite_image.cpp
                source/images/simple_elevation_image.cpp
                source/images/temperature_image.cpp)
 set(HDR_IMAGES source/images/image.h
@@ -51,6 +52,7 @@ set(HDR_IMAGES source/images/image.h
                source/images/ocean_image.h
                source/images/precipitation_image.h
                source/images/river_image.h
+               source/images/satellite_image.h
                source/images/simple_elevation_image.h
                source/images/temperature_image.h)
 set(PROTO_FILES World.proto)

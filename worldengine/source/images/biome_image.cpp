@@ -51,7 +51,7 @@ BiomeImage::BiomeImage() : Image(false) {}
 BiomeImage::~BiomeImage() {}
 
 void BiomeImage::DrawImage(const World&                      world,
-                           boost::gil::rgb8_image_t::view_t& target) const
+                           boost::gil::rgb8_image_t::view_t& target)
 {
    const BiomeArrayType& biomes = world.GetBiomeData();
 

@@ -52,20 +52,20 @@ void Image::DrawGrayscaleFromArray(
 }
 
 void Image::DrawImage(const World&                       world,
-                      boost::gil::gray8_image_t::view_t& target) const
+                      boost::gil::gray8_image_t::view_t& target)
 {
    // Empty grayscale implementation
 }
 
 void Image::DrawImage(const World&                      world,
-                      boost::gil::rgb8_image_t::view_t& target) const
+                      boost::gil::rgb8_image_t::view_t& target)
 {
    // Empty color implementation
 }
 
 void Image::Draw(const World&       world,
                  const std::string& filename,
-                 bool               blackAndWhite) const
+                 bool               blackAndWhite)
 {
    if ((!blackAndWhite || !hasBlackAndWhite_) && hasColor_)
    {

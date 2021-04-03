@@ -104,6 +104,8 @@ public:
    float GetThreshold(TemperatureType type) const;
    float GetThreshold(WaterThresholds type) const;
 
+   Biomes GetBiome(uint32_t x, uint32_t y) const;
+
    bool IsLand(uint32_t x, uint32_t y) const;
    bool IsOcean(uint32_t x, uint32_t y) const;
    bool IsOcean(Point p) const;

@@ -56,7 +56,7 @@ protected:
     * @param target Target image view
     */
    virtual void DrawImage(const World&                       world,
-                          boost::gil::gray8_image_t::view_t& target) const;
+                          boost::gil::gray8_image_t::view_t& target);
 
    /**
     * @brief Draw a color image
@@ -64,7 +64,7 @@ protected:
     * @param target Target image view
     */
    virtual void DrawImage(const World&                      world,
-                          boost::gil::rgb8_image_t::view_t& target) const;
+                          boost::gil::rgb8_image_t::view_t& target);
 
 public:
    /**
@@ -75,6 +75,6 @@ public:
     */
    void Draw(const World&       world,
              const std::string& filename,
-             bool               blackAndWhite = false) const;
+             bool               blackAndWhite = false);
 };
 } // namespace WorldEngine

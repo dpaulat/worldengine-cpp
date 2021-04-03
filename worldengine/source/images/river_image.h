@@ -20,7 +20,7 @@ protected:
     * @param target Destination filename
     */
    void DrawImage(const World&                      world,
-                  boost::gil::rgb8_image_t::view_t& target) const;
+                  boost::gil::rgb8_image_t::view_t& target);
 
    /**
     * @brief Draw rivers on top of an existing background

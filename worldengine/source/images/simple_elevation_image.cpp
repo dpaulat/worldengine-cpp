@@ -8,7 +8,7 @@ SimpleElevationImage::SimpleElevationImage() : Image(false) {}
 SimpleElevationImage::~SimpleElevationImage() {}
 
 void SimpleElevationImage::DrawImage(
-   const World& world, boost::gil::rgb8_image_t::view_t& target) const
+   const World& world, boost::gil::rgb8_image_t::view_t& target)
 {
    const ElevationArrayType& e     = world.GetElevationData();
    const OceanArrayType&     ocean = world.GetOceanData();

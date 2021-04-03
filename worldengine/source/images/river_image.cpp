@@ -6,7 +6,7 @@ RiverImage::RiverImage() : Image(false) {}
 RiverImage::~RiverImage() {}
 
 void RiverImage::DrawImage(const World&                      world,
-                           boost::gil::rgb8_image_t::view_t& target) const
+                           boost::gil::rgb8_image_t::view_t& target)
 {
    static const boost::gil::rgb8_pixel_t oceanColor(255, 255, 255);
    static const boost::gil::rgb8_pixel_t landColor(0, 0, 0);

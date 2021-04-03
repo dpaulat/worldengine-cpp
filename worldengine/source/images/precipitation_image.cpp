@@ -7,13 +7,13 @@ PrecipitationImage::PrecipitationImage() : Image(true) {}
 PrecipitationImage::~PrecipitationImage() {}
 
 void PrecipitationImage::DrawImage(
-   const World& world, boost::gil::gray8_image_t::view_t& target) const
+   const World& world, boost::gil::gray8_image_t::view_t& target)
 {
    DrawGrayscaleFromArray(world.GetPrecipitationData(), target);
 }
 
 void PrecipitationImage::DrawImage(
-   const World& world, boost::gil::rgb8_image_t::view_t& target) const
+   const World& world, boost::gil::rgb8_image_t::view_t& target)
 {
    if (!world.HasHumidity())
    {

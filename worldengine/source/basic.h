@@ -24,6 +24,8 @@ float FindThresholdF(const boost::multi_array<float, 2>& mapData,
 
 /**
  * @brief Perform a linear interpolation over the given points
+ * @tparam T
+ * @tparam U
  * @param x X coordinate to evaluate
  * @param points A list of (x, y) points, sorted along the x-axis
  * @return Evaluated y coordinate

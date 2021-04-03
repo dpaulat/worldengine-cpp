@@ -7,7 +7,7 @@ TemperatureImage::TemperatureImage() : Image(true) {}
 TemperatureImage::~TemperatureImage() {}
 
 void TemperatureImage::DrawImage(
-   const World& world, boost::gil::gray8_image_t::view_t& target) const
+   const World& world, boost::gil::gray8_image_t::view_t& target)
 {
    float low  = world.GetThreshold(TemperatureType::Polar);
    float high = world.GetThreshold(TemperatureType::Subtropical);
@@ -16,7 +16,7 @@ void TemperatureImage::DrawImage(
 }
 
 void TemperatureImage::DrawImage(const World&                      world,
-                                 boost::gil::rgb8_image_t::view_t& target) const
+                                 boost::gil::rgb8_image_t::view_t& target)
 {
    for (uint32_t y = 0; y < world.height(); y++)
    {
