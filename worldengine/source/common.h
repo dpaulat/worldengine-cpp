@@ -9,6 +9,30 @@
 namespace WorldEngine
 {
 
+template<typename T, T beginValue, T endValue>
+class Iterator
+{
+   typedef typename std::underlying_type<T>::type value_t;
+   int                                            value_;
+
+public:
+   Iterator(const T& v) : value_(static_cast<value_t>(v)) {}
+   Iterator() : value_(static_cast<value_t>(beginValue)) {}
+   Iterator operator++()
+   {
+      ++value_;
+      return *this;
+   }
+   T        operator*() { return static_cast<T>(value_); }
+   Iterator begin() { return *this; } // Default constructor
+   Iterator end()
+   {
+      static const Iterator endIterator = ++Iterator(endValue);
+      return endIterator;
+   }
+   bool operator!=(const Iterator& i) { return value_ != i.value_; }
+};
+
 typedef std::pair<int32_t, int32_t> Point;
 
 enum class BiomeGroups
@@ -106,6 +130,10 @@ enum class HumidityLevels : uint32_t
    First      = Superarid,
    Last       = Superhumid
 };
+typedef Iterator<HumidityLevels,
+                 HumidityLevels::Superarid,
+                 HumidityLevels::Superhumid>
+   HumidityIterator;
 
 enum class PrecipitationLevelType : uint32_t
 {
@@ -156,6 +184,10 @@ enum class TemperatureType : uint32_t
    First       = Polar,
    Last        = Tropical
 };
+typedef Iterator<TemperatureType,
+                 TemperatureType::Polar,
+                 TemperatureType::Tropical>
+   TemperatureIterator;
 
 enum class WaterThresholds : uint32_t
 {
@@ -236,24 +268,25 @@ const Step STEP_FULL(StepType::Full, true, true, true, true);
 const uint32_t MIN_SEED = 0u;
 const uint32_t MAX_SEED = UINT16_MAX;
 
-const float    DEFAULT_SEA_LEVEL        = 0.65f;
-const uint32_t DEFAULT_EROSION_PERIOD   = 60u;
-const float    DEFAULT_FOLDING_RATIO    = 0.02f;
-const uint32_t DEFAULT_AGGR_OVERLAP_ABS = 1000000u;
-const float    DEFAULT_AGGR_OVERLAP_REL = 0.33f;
-const uint32_t DEFAULT_CYCLE_COUNT      = 2u;
-const uint32_t DEFAULT_NUM_PLATES       = 10u;
-const float    DEFAULT_GAMMA_CURVE      = 1.25f;
-const float    DEFAULT_CURVE_OFFSET     = 0.2f;
-const float    DEFAULT_OCEAN_LEVEL      = 1.0f;
-const Step     DEFAULT_STEP             = STEP_FULL;
-const bool     DEFAULT_FADE_BORDERS     = true;
-const bool     DEFAULT_BLACK_AND_WHITE  = false;
-const bool     DEFAULT_GS_HEIGHTMAP     = false;
-const bool     DEFAULT_RIVERS_MAP       = false;
-const bool     DEFAULT_SCATTER_PLOT     = false;
-const bool     DEFAULT_SATELLITE_MAP    = false;
-const bool     DEFAULT_ICECAPS_MAP      = false;
+const float    DEFAULT_SEA_LEVEL         = 0.65f;
+const uint32_t DEFAULT_EROSION_PERIOD    = 60u;
+const float    DEFAULT_FOLDING_RATIO     = 0.02f;
+const uint32_t DEFAULT_AGGR_OVERLAP_ABS  = 1000000u;
+const float    DEFAULT_AGGR_OVERLAP_REL  = 0.33f;
+const uint32_t DEFAULT_CYCLE_COUNT       = 2u;
+const uint32_t DEFAULT_NUM_PLATES        = 10u;
+const float    DEFAULT_GAMMA_CURVE       = 1.25f;
+const float    DEFAULT_CURVE_OFFSET      = 0.2f;
+const float    DEFAULT_OCEAN_LEVEL       = 1.0f;
+const Step     DEFAULT_STEP              = STEP_FULL;
+const uint32_t DEFAULT_SCATTER_PLOT_SIZE = 512u;
+const bool     DEFAULT_FADE_BORDERS      = true;
+const bool     DEFAULT_BLACK_AND_WHITE   = false;
+const bool     DEFAULT_GS_HEIGHTMAP      = false;
+const bool     DEFAULT_RIVERS_MAP        = false;
+const bool     DEFAULT_SCATTER_PLOT      = false;
+const bool     DEFAULT_SATELLITE_MAP     = false;
+const bool     DEFAULT_ICECAPS_MAP       = false;
 
 const std::vector<float> DEFAULT_TEMPS {
    0.126f, 0.235f, 0.406f, 0.561f, 0.634f, 0.876f};

@@ -41,7 +41,8 @@ void TemperatureSimulation(World& world, uint32_t seed)
                       FindThresholdF(t, world.temps()[1], &ocean));
    world.SetThreshold(TemperatureType::Subtropical,
                       FindThresholdF(t, world.temps()[0], &ocean));
-   world.SetThreshold(TemperatureType::Tropical, 0.0f);
+   world.SetThreshold(TemperatureType::Tropical,
+                      std::numeric_limits<float>::max());
 
    BOOST_LOG_TRIVIAL(info) << "Temperature simulation finish";
 }

@@ -31,7 +31,8 @@ void HumiditySimulation(World& world)
                       FindThresholdF(h, world.humids()[1], &ocean));
    world.SetThreshold(HumidityLevels::Perhumid,
                       FindThresholdF(h, world.humids()[0], &ocean));
-   world.SetThreshold(HumidityLevels::Superhumid, 0.0f);
+   world.SetThreshold(HumidityLevels::Superhumid,
+                      std::numeric_limits<float>::max());
 
    BOOST_LOG_TRIVIAL(info) << "Humidity simulation finish";
 }

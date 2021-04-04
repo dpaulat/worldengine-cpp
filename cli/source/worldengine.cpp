@@ -22,6 +22,7 @@
 #include <images/precipitation_image.h>
 #include <images/river_image.h>
 #include <images/satellite_image.h>
+#include <images/scatter_plot_image.h>
 #include <images/simple_elevation_image.h>
 #include <images/temperature_image.h>
 
@@ -409,7 +410,12 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
 
    if (scatterPlot)
    {
-      // TODO: DrawScatterPlot
+      std::string scatterPlotFilename =
+         outputDir + "/" + worldName + "_scatter.png";
+      ScatterPlotImage(DEFAULT_SCATTER_PLOT_SIZE)
+         .Draw(*world, scatterPlotFilename);
+      BOOST_LOG_TRIVIAL(info)
+         << "Scatter plot image generated in " << scatterPlotFilename;
    }
 
    if (satelliteMap)
