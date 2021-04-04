@@ -59,11 +59,11 @@ void ScatterPlotImage::DrawImage(const World&                      world,
    }
 
    // Fill in "bad" boxes with gray
-   const std::vector<HumidityLevels>  hValues({HumidityLevels::Superarid,
-                                              HumidityLevels::Perarid,
-                                              HumidityLevels::Arid,
+   const std::vector<HumidityLevels>  hValues({HumidityLevels::Arid,
                                               HumidityLevels::Semiarid,
-                                              HumidityLevels::Subhumid});
+                                              HumidityLevels::Subhumid,
+                                              HumidityLevels::Humid,
+                                              HumidityLevels::Perhumid});
    const std::vector<TemperatureType> tValues({TemperatureType::Polar,
                                                TemperatureType::Alpine,
                                                TemperatureType::Boreal,
