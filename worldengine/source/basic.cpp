@@ -19,7 +19,7 @@ float FindThresholdF(const boost::multi_array<float, 2>& mapData,
       accumulator_t;
 
    uint32_t width    = mapData.shape()[1];
-   uint32_t height   = mapData.shape()[2];
+   uint32_t height   = mapData.shape()[0];
    float    quantile = 1.0f - landPercentage;
 
    accumulator_t accumulator(ba::quantile_probability = quantile);
