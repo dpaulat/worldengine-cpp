@@ -12,16 +12,15 @@ namespace WorldEngine
 class SatelliteImage : public Image
 {
 public:
-   SatelliteImage(uint32_t seed);
+   explicit SatelliteImage(const World& world, uint32_t seed);
    ~SatelliteImage();
 
 protected:
    /**
     * @brief Draw a satellite image
-    * @param world A world
     * @param target Destination filename
     */
-   void DrawImage(const World& world, boost::gil::rgb8_image_t::view_t& target);
+   void DrawImage(boost::gil::rgb8_image_t::view_t& target) override;
 
 private:
    std::default_random_engine generator_;
@@ -52,23 +51,20 @@ private:
     * brown color if the elevation is high enough.
     *
     * Finally, the noise plus the biome color are added and returned.
-    * @param world
     * @param normalElevation
     * @param x
     * @param y
     * @return
     */
-   boost::gil::rgb8_pixel_t GetBiomeColor(const World&   world,
-                                          const uint32_t normalElevation,
+   boost::gil::rgb8_pixel_t GetBiomeColor(const uint32_t normalElevation,
                                           const uint32_t x,
                                           const uint32_t y);
 
    /**
     * @brief Convert raw elevation into normalized values between 0 and 255
-    * @param world
     * @return
     */
    boost::multi_array<uint8_t, 2>
-   GetNormalizedElevationArray(const World& world);
+   GetNormalizedElevationArray() const;
 };
 } // namespace WorldEngine

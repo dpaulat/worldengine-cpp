@@ -10,24 +10,20 @@ namespace WorldEngine
 class TemperatureImage : public Image
 {
 public:
-   TemperatureImage();
+   explicit TemperatureImage(const World& world);
    ~TemperatureImage();
 
 protected:
    /**
     * @brief Draw a grayscale temperature image
-    * @param world A world
     * @param target Destination filename
     */
-   void DrawImage(const World&                       world,
-                  boost::gil::gray8_image_t::view_t& target);
+   void DrawImage(boost::gil::gray8_image_t::view_t& target) override;
 
    /**
     * @brief Draw a temperature image
-    * @param world A world
     * @param target Destination filename
     */
-   void DrawImage(const World&                      world,
-                  boost::gil::rgb8_image_t::view_t& target);
+   void DrawImage(boost::gil::rgb8_image_t::view_t& target) override;
 };
 } // namespace WorldEngine

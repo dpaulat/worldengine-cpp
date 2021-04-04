@@ -10,16 +10,14 @@ namespace WorldEngine
 class IcecapImage : public Image
 {
 public:
-   IcecapImage();
+   explicit IcecapImage(const World& world);
    ~IcecapImage();
 
 protected:
    /**
     * @brief Draw a grayscale icecap image
-    * @param world A world
     * @param target Destination filename
     */
-   void DrawImage(const World&                       world,
-                  boost::gil::gray8_image_t::view_t& target);
+   void DrawImage(boost::gil::gray8_image_t::view_t& target) override;
 };
 } // namespace WorldEngine

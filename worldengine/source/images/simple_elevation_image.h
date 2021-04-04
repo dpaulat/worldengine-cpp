@@ -10,17 +10,15 @@ namespace WorldEngine
 class SimpleElevationImage : public Image
 {
 public:
-   SimpleElevationImage();
+   explicit SimpleElevationImage(const World& world);
    ~SimpleElevationImage();
 
 protected:
    /**
     * @brief Draw a simple elevation image
-    * @param world A world
     * @param target Destination filename
     */
-   void DrawImage(const World&                      world,
-                  boost::gil::rgb8_image_t::view_t& target);
+   void DrawImage(boost::gil::rgb8_image_t::view_t& target) override;
 
 private:
    static boost::gil::rgb8_pixel_t ElevationColor(float elevation,

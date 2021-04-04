@@ -358,20 +358,20 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
 
    // Generate images
    std::string oceanFilename = outputDir + "/" + worldName + "_ocean.png";
-   OceanImage().Draw(*world, oceanFilename);
+   OceanImage(*world).Draw(oceanFilename);
    BOOST_LOG_TRIVIAL(info) << "Ocean image generated in " << oceanFilename;
 
    if (step.includePrecipitations_)
    {
       std::string precipitationFilename =
          outputDir + "/" + worldName + "_precipitation.png";
-      PrecipitationImage().Draw(*world, precipitationFilename, blackAndWhite);
+      PrecipitationImage(*world).Draw(precipitationFilename, blackAndWhite);
       BOOST_LOG_TRIVIAL(info)
          << "Precipitation image generated in " << precipitationFilename;
 
       std::string temperatureFilename =
          outputDir + "/" + worldName + "_temperature.png";
-      TemperatureImage().Draw(*world, temperatureFilename, blackAndWhite);
+      TemperatureImage(*world).Draw(temperatureFilename, blackAndWhite);
       BOOST_LOG_TRIVIAL(info)
          << "Temperature image generated in " << temperatureFilename;
    }
@@ -379,16 +379,14 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    if (step.includeBiome_)
    {
       std::string biomeFilename = outputDir + "/" + worldName + "_biome.png";
-      BiomeImage().Draw(*world, biomeFilename);
+      BiomeImage(*world).Draw(biomeFilename);
       BOOST_LOG_TRIVIAL(info) << "Biome image generated in " << biomeFilename;
    }
 
    std::string elevationFilename =
       outputDir + "/" + worldName + "_elevation.png";
-   SimpleElevationImage().Draw(
-      *world,
-      elevationFilename,
-      world->GetThreshold(ElevationThresholdType::Sea));
+   SimpleElevationImage(*world).Draw(
+      elevationFilename, world->GetThreshold(ElevationThresholdType::Sea));
    BOOST_LOG_TRIVIAL(info) << "Elevation image generated in "
                            << elevationFilename;
 
@@ -396,7 +394,7 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    {
       std::string heightmapFilename =
          outputDir + "/" + worldName + "_grayscale.png";
-      HeightmapImage().Draw(*world, heightmapFilename);
+      HeightmapImage(*world).Draw(heightmapFilename);
       BOOST_LOG_TRIVIAL(info)
          << "Grayscale heightmap image generated in " << heightmapFilename;
    }
@@ -404,7 +402,7 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    if (rivers)
    {
       std::string riverFilename = outputDir + "/" + worldName + "_rivers.png";
-      RiverImage().Draw(*world, riverFilename);
+      RiverImage(*world).Draw(riverFilename);
       BOOST_LOG_TRIVIAL(info) << "River image generated in " << riverFilename;
    }
 
@@ -412,8 +410,8 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    {
       std::string scatterPlotFilename =
          outputDir + "/" + worldName + "_scatter.png";
-      ScatterPlotImage(DEFAULT_SCATTER_PLOT_SIZE)
-         .Draw(*world, scatterPlotFilename);
+      ScatterPlotImage(*world, DEFAULT_SCATTER_PLOT_SIZE)
+         .Draw(scatterPlotFilename);
       BOOST_LOG_TRIVIAL(info)
          << "Scatter plot image generated in " << scatterPlotFilename;
    }
@@ -422,7 +420,7 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    {
       std::string satelliteFilename =
          outputDir + "/" + worldName + "_satellite.png";
-      SatelliteImage(seed).Draw(*world, satelliteFilename);
+      SatelliteImage(*world, seed).Draw(satelliteFilename);
       BOOST_LOG_TRIVIAL(info)
          << "Satellite image generated in " << satelliteFilename;
    }
@@ -430,7 +428,7 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    if (icecapsMap)
    {
       std::string icecapFilename = outputDir + "/" + worldName + "_icecaps.png";
-      IcecapImage().Draw(*world, icecapFilename);
+      IcecapImage(*world).Draw(icecapFilename);
       BOOST_LOG_TRIVIAL(info) << "Icecap image generated in " << icecapFilename;
    }
 

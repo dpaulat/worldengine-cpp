@@ -2,12 +2,11 @@
 
 namespace WorldEngine
 {
-IcecapImage::IcecapImage() : Image(false, true) {}
+IcecapImage::IcecapImage(const World& world) : Image(world, false, true) {}
 IcecapImage::~IcecapImage() {}
 
-void IcecapImage::DrawImage(const World&                       world,
-                            boost::gil::gray8_image_t::view_t& target)
+void IcecapImage::DrawImage(boost::gil::gray8_image_t::view_t& target)
 {
-   DrawGrayscaleFromArray(world.GetIcecapData(), target);
+   DrawGrayscaleFromArray(world_.GetIcecapData(), target);
 }
 } // namespace WorldEngine

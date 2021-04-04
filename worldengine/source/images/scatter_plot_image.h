@@ -10,16 +10,15 @@ namespace WorldEngine
 class ScatterPlotImage : public Image
 {
 public:
-   ScatterPlotImage(size_t size);
+   explicit ScatterPlotImage(const World& world, size_t size);
    ~ScatterPlotImage();
 
 protected:
    /**
     * @brief Draw a scatter plot image
-    * @param world A world
     * @param target Destination filename
     */
-   void DrawImage(const World& world, boost::gil::rgb8_image_t::view_t& target);
+   void DrawImage(boost::gil::rgb8_image_t::view_t& target) override;
 
 private:
    const size_t size_;

@@ -4,25 +4,27 @@
 
 namespace WorldEngine
 {
-SimpleElevationImage::SimpleElevationImage() : Image(false) {}
+SimpleElevationImage::SimpleElevationImage(const World& world) :
+    Image(world, false)
+{
+}
 SimpleElevationImage::~SimpleElevationImage() {}
 
-void SimpleElevationImage::DrawImage(
-   const World& world, boost::gil::rgb8_image_t::view_t& target)
+void SimpleElevationImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 {
-   const ElevationArrayType& e     = world.GetElevationData();
-   const OceanArrayType&     ocean = world.GetOceanData();
+   const ElevationArrayType& e     = world_.GetElevationData();
+   const OceanArrayType&     ocean = world_.GetOceanData();
 
-   float seaLevel    = world.oceanLevel();
+   float seaLevel    = world_.oceanLevel();
    bool  hasOcean    = (seaLevel != NAN) && (!ocean.empty());
    float minElevLand = 10.0f;
    float maxElevLand = -10.0f;
    float minElevSea  = 10.0f;
    float maxElevSea  = -10.0f;
 
-   for (uint32_t y = 0; y < world.height(); y++)
+   for (uint32_t y = 0; y < world_.height(); y++)
    {
-      for (uint32_t x = 0; x < world.width(); x++)
+      for (uint32_t x = 0; x < world_.width(); x++)
       {
          if (hasOcean && ocean[y][x])
          {
@@ -63,9 +65,9 @@ void SimpleElevationImage::DrawImage(
    float elevDeltaSea  = (maxElevSea - minElevSea);
    float elevation;
 
-   for (uint32_t y = 0; y < world.height(); y++)
+   for (uint32_t y = 0; y < world_.height(); y++)
    {
-      for (uint32_t x = 0; x < world.width(); x++)
+      for (uint32_t x = 0; x < world_.width(); x++)
       {
          if (hasOcean && ocean[y][x])
          {

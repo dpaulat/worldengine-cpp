@@ -47,13 +47,12 @@ static std::unordered_map<Biomes, boost::gil::rgb8_pixel_t> biomeColors_ = {
    {Biomes::TropicalVeryDryForest, {192, 255, 128}},
    {Biomes::BareRock, {96, 96, 96}}};
 
-BiomeImage::BiomeImage() : Image(false) {}
+BiomeImage::BiomeImage(const World& world) : Image(world, false) {}
 BiomeImage::~BiomeImage() {}
 
-void BiomeImage::DrawImage(const World&                      world,
-                           boost::gil::rgb8_image_t::view_t& target)
+void BiomeImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 {
-   const BiomeArrayType& biomes = world.GetBiomeData();
+   const BiomeArrayType& biomes = world_.GetBiomeData();
 
    const uint32_t width  = biomes.shape()[1];
    const uint32_t height = biomes.shape()[0];

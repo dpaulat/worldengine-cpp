@@ -10,16 +10,14 @@ namespace WorldEngine
 class OceanImage : public Image
 {
 public:
-   OceanImage();
+   explicit OceanImage(const World& world);
    ~OceanImage();
 
 protected:
    /**
     * @brief Draw an ocean image
-    * @param world A world
     * @param target Destination filename
     */
-   void DrawImage(const World&                      world,
-                  boost::gil::rgb8_image_t::view_t& target);
+   void DrawImage(boost::gil::rgb8_image_t::view_t& target) override;
 };
 } // namespace WorldEngine

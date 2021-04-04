@@ -10,16 +10,14 @@ namespace WorldEngine
 class HeightmapImage : public Image
 {
 public:
-   HeightmapImage();
+   explicit HeightmapImage(const World& world);
    ~HeightmapImage();
 
 protected:
    /**
     * @brief Draw a grayscale heightmap image
-    * @param world A world
     * @param target Destination filename
     */
-   void DrawImage(const World&                       world,
-                  boost::gil::gray8_image_t::view_t& target);
+   void DrawImage(boost::gil::gray8_image_t::view_t& target) override;
 };
 } // namespace WorldEngine

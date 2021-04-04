@@ -154,19 +154,19 @@ static const std::unordered_map<Biomes, boost::gil::rgb8_pixel_t>
                             {Biomes::TropicalVeryDryForest, {87, 81, 49}},
                             {Biomes::BareRock, {96, 96, 96}}};
 
-SatelliteImage::SatelliteImage(uint32_t seed) : Image(false), generator_(seed)
+SatelliteImage::SatelliteImage(const World& world, uint32_t seed) :
+    Image(world, false), generator_(seed)
 {
 }
 SatelliteImage::~SatelliteImage() {}
 
-void SatelliteImage::DrawImage(const World&                      world,
-                               boost::gil::rgb8_image_t::view_t& target)
+void SatelliteImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 {
-   const ElevationArrayType& elevation = world.GetElevationData();
-   const BiomeArrayType&     biomes    = world.GetBiomeData();
-   const IcecapArrayType&    icecap    = world.GetIcecapData();
-   const RiverMapArrayType&  rivermap  = world.GetRiverMapData();
-   const LakeMapArrayType&   lakemap   = world.GetLakeMapData();
+   const ElevationArrayType& elevation = world_.GetElevationData();
+   const BiomeArrayType&     biomes    = world_.GetBiomeData();
+   const IcecapArrayType&    icecap    = world_.GetIcecapData();
+   const RiverMapArrayType&  rivermap  = world_.GetRiverMapData();
+   const LakeMapArrayType&   lakemap   = world_.GetLakeMapData();
 
    const uint32_t width  = biomes.shape()[1];
    const uint32_t height = biomes.shape()[0];
@@ -178,18 +178,18 @@ void SatelliteImage::DrawImage(const World&                      world,
 
    // Get an elevation mask where heights are normalized between 0 and 255
    boost::multi_array<uint8_t, 2> normalElevation(
-      GetNormalizedElevationArray(world));
+      GetNormalizedElevationArray());
 
    // All land shall be smoothed (other tiles can be included by setting them to
    // true)
-   boost::multi_array<bool, 2> smoothMask(!world.GetOceanData());
+   boost::multi_array<bool, 2> smoothMask(!world_.GetOceanData());
 
    for (uint32_t y = 0; y < height; y++)
    {
       for (uint32_t x = 0; x < width; x++)
       {
          // Set the initial pixel color based on normalized elevation
-         target(x, y) = GetBiomeColor(world, normalElevation[y][x], x, y);
+         target(x, y) = GetBiomeColor(normalElevation[y][x], x, y);
       }
    }
 
@@ -266,13 +266,13 @@ void SatelliteImage::DrawImage(const World&                      world,
       for (uint32_t x = 0; x < width; x++)
       {
          // Color rivers
-         if (world.IsLand(x, y) && rivermap[y][x] > 0.0f)
+         if (world_.IsLand(x, y) && rivermap[y][x] > 0.0f)
          {
             target(x, y) += RIVER_COLOR_CHANGE;
          }
 
          // Color lakes
-         if (world.IsLand(x, y) && lakemap[y][x] > 0.0f)
+         if (world_.IsLand(x, y) && lakemap[y][x] > 0.0f)
          {
             target(x, y) += LAKE_COLOR_CHANGE;
          }
@@ -285,7 +285,7 @@ void SatelliteImage::DrawImage(const World&                      world,
    {
       for (uint32_t x = SAT_SHADOW_SIZE; x < width; x++)
       {
-         if (world.IsLand(x, y))
+         if (world_.IsLand(x, y))
          {
             std::list<float> prevElevs;
 
@@ -326,13 +326,10 @@ SatelliteImage::AverageColors(boost::gil::rgb8_pixel_t c1,
       (c1[0] + c2[0]) / 2, (c1[1] + c2[1]) / 2, (c1[2] + c2[2]) / 2);
 }
 
-boost::gil::rgb8_pixel_t
-SatelliteImage::GetBiomeColor(const World&   world,
-                              const uint32_t normalElevation,
-                              const uint32_t x,
-                              const uint32_t y)
+boost::gil::rgb8_pixel_t SatelliteImage::GetBiomeColor(
+   const uint32_t normalElevation, const uint32_t x, const uint32_t y)
 {
-   Biomes biome = world.GetBiome(x, y);
+   Biomes biome = world_.GetBiome(x, y);
 
    boost::gil::rgb8_pixel_t biomeColor = biomeSatelliteColors_.at(biome);
 
@@ -342,7 +339,7 @@ SatelliteImage::GetBiomeColor(const World&   world,
    std::uniform_int_distribution<int32_t> noiseDistribution(-NOISE_RANGE,
                                                             NOISE_RANGE);
 
-   if (world.IsLand(x, y))
+   if (world_.IsLand(x, y))
    {
       // Generate some random noise to apply to this pixel. Ther eis noise for
       // each element of the rgb value. This noise will be furhter modified by
@@ -390,19 +387,19 @@ SatelliteImage::GetBiomeColor(const World&   world,
 }
 
 boost::multi_array<uint8_t, 2>
-SatelliteImage::GetNormalizedElevationArray(const World& world)
+SatelliteImage::GetNormalizedElevationArray() const
 {
-   const ElevationArrayType& e     = world.GetElevationData();
-   const OceanArrayType&     ocean = world.GetOceanData();
+   const ElevationArrayType& e     = world_.GetElevationData();
+   const OceanArrayType&     ocean = world_.GetOceanData();
 
    float minElevLand = 10.0f;
    float maxElevLand = -10.0f;
    float minElevSea  = 10.0f;
    float maxElevSea  = -10.0f;
 
-   for (uint32_t y = 0; y < world.height(); y++)
+   for (uint32_t y = 0; y < world_.height(); y++)
    {
-      for (uint32_t x = 0; x < world.width(); x++)
+      for (uint32_t x = 0; x < world_.width(); x++)
       {
          if (ocean[y][x])
          {
@@ -434,11 +431,11 @@ SatelliteImage::GetNormalizedElevationArray(const World& world)
    float elevDeltaSea  = maxElevSea - minElevSea;
 
    boost::multi_array<uint8_t, 2> c(
-      boost::extents[world.height()][world.width()]);
+      boost::extents[world_.height()][world_.width()]);
 
-   for (uint32_t y = 0; y < world.height(); y++)
+   for (uint32_t y = 0; y < world_.height(); y++)
    {
-      for (uint32_t x = 0; x < world.width(); x++)
+      for (uint32_t x = 0; x < world_.width(); x++)
       {
          if (ocean[y][x])
          {

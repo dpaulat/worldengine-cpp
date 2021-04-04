@@ -4,14 +4,16 @@
 
 namespace WorldEngine
 {
-ScatterPlotImage::ScatterPlotImage(size_t size) : Image(false), size_(size) {}
+ScatterPlotImage::ScatterPlotImage(const World& world, size_t size) :
+    Image(world, false), size_(size)
+{
+}
 ScatterPlotImage::~ScatterPlotImage() {}
 
-void ScatterPlotImage::DrawImage(const World&                      world,
-                                 boost::gil::rgb8_image_t::view_t& target)
+void ScatterPlotImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 {
-   const HumidityArrayType&    humidity    = world.GetHumidityData();
-   const TemperatureArrayType& temperature = world.GetTemperatureData();
+   const HumidityArrayType&    humidity    = world_.GetHumidityData();
+   const TemperatureArrayType& temperature = world_.GetTemperatureData();
 
    // Find minimum and maximum values of humidity and temperature on land so we
    // can normalize temperature and humidity to the char.
@@ -20,11 +22,11 @@ void ScatterPlotImage::DrawImage(const World&                      world,
    float minTemperature = std::numeric_limits<float>::max();
    float maxTemperature = std::numeric_limits<float>::lowest();
 
-   for (uint32_t y = 0; y < world.height(); y++)
+   for (uint32_t y = 0; y < world_.height(); y++)
    {
-      for (uint32_t x = 0; x < world.width(); x++)
+      for (uint32_t x = 0; x < world_.width(); x++)
       {
-         if (world.IsLand(x, y))
+         if (world_.IsLand(x, y))
          {
             if (humidity[y][x] < minHumidity)
             {
@@ -74,17 +76,18 @@ void ScatterPlotImage::DrawImage(const World&                      world,
    {
       int32_t hMin = std::max(
          static_cast<int32_t>((size_ - 1) *
-                              (world.GetThreshold(hValues[i]) - minHumidity) /
+                              (world_.GetThreshold(hValues[i]) - minHumidity) /
                               humidityDelta),
          0);
       int32_t hMax;
       if (i != 4)
       {
-         hMax = std::min(static_cast<int32_t>(
-                            (size_ - 1) *
-                            (world.GetThreshold(hValues[i + 1]) - minHumidity) /
-                            humidityDelta),
-                         static_cast<int32_t>(size_));
+         hMax =
+            std::min(static_cast<int32_t>(
+                        (size_ - 1) *
+                        (world_.GetThreshold(hValues[i + 1]) - minHumidity) /
+                        humidityDelta),
+                     static_cast<int32_t>(size_));
       }
       else
       {
@@ -92,7 +95,7 @@ void ScatterPlotImage::DrawImage(const World&                      world,
       }
       int32_t vMax = std::clamp<int32_t>(
          static_cast<int32_t>(
-            (size_ - 1) * (world.GetThreshold(tValues[i]) - minTemperature) /
+            (size_ - 1) * (world_.GetThreshold(tValues[i]) - minTemperature) /
             temperatureDelta),
          0,
          size_ - 1);
@@ -114,7 +117,7 @@ void ScatterPlotImage::DrawImage(const World&                      world,
    for (TemperatureType t : TemperatureIterator())
    {
       int32_t v = static_cast<int32_t>(
-         (size_ - 1) * (world.GetThreshold(t) - minTemperature) /
+         (size_ - 1) * (world_.GetThreshold(t) - minTemperature) /
          temperatureDelta);
       if (0 < v && v < size_)
       {
@@ -128,7 +131,7 @@ void ScatterPlotImage::DrawImage(const World&                      world,
    for (HumidityLevels p : HumidityIterator())
    {
       int32_t h = static_cast<int32_t>(
-         (size_ - 1) * (world.GetThreshold(p) - minHumidity) / humidityDelta);
+         (size_ - 1) * (world_.GetThreshold(p) - minHumidity) / humidityDelta);
       if (0 < h && h < size_)
       {
          for (uint32_t x = 0; x < size_; x++)
@@ -139,8 +142,8 @@ void ScatterPlotImage::DrawImage(const World&                      world,
    }
 
    // Draw gamma curve
-   const float curveGamma = world.gammaCurve();
-   const float curveBonus = world.curveOffset();
+   const float curveGamma = world_.gammaCurve();
+   const float curveBonus = world_.curveOffset();
 
    for (uint32_t x = 0; x < size_; x++)
    {
@@ -154,11 +157,11 @@ void ScatterPlotImage::DrawImage(const World&                      world,
 
    // Examine all cells in the map and if it is land get the temperature and
    // humidity for the cell.
-   for (uint32_t y = 0; y < world.height(); y++)
+   for (uint32_t y = 0; y < world_.height(); y++)
    {
-      for (uint32_t x = 0; x < world.width(); x++)
+      for (uint32_t x = 0; x < world_.width(); x++)
       {
-         if (world.IsLand(x, y))
+         if (world_.IsLand(x, y))
          {
             float t = temperature[y][x];
             float p = humidity[y][x];
@@ -167,7 +170,7 @@ void ScatterPlotImage::DrawImage(const World&                      world,
             uint8_t r = 0;
             uint8_t b = 0;
 
-            switch (world.GetTemperatureType(x, y))
+            switch (world_.GetTemperatureType(x, y))
             {
             case TemperatureType::Polar:
                r = 0; //
@@ -199,7 +202,7 @@ void ScatterPlotImage::DrawImage(const World&                      world,
                break;
             }
 
-            switch (world.GetHumidityLevel(x, y))
+            switch (world_.GetHumidityLevel(x, y))
             {
             case HumidityLevels::Superarid:
                b = 32; //

@@ -6,12 +6,15 @@
 
 namespace WorldEngine
 {
-Image::Image(bool hasColor, bool hasBlackAndWhite) :
-    hasColor_(hasColor), hasBlackAndWhite_(hasBlackAndWhite)
+Image::Image(const World& world, bool hasColor, bool hasBlackAndWhite) :
+    world_(world), hasColor_(hasColor), hasBlackAndWhite_(hasBlackAndWhite)
 {
 }
 
-Image::Image(bool hasBlackAndWhite) : Image(true, hasBlackAndWhite) {}
+Image::Image(const World& world, bool hasBlackAndWhite) :
+    Image(world, true, hasBlackAndWhite)
+{
+}
 
 Image::~Image() {}
 
@@ -51,28 +54,24 @@ void Image::DrawGrayscaleFromArray(
    }
 }
 
-void Image::DrawImage(const World&                       world,
-                      boost::gil::gray8_image_t::view_t& target)
+void Image::DrawImage(boost::gil::gray8_image_t::view_t& target)
 {
    // Empty grayscale implementation
 }
 
-void Image::DrawImage(const World&                      world,
-                      boost::gil::rgb8_image_t::view_t& target)
+void Image::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 {
    // Empty color implementation
 }
 
-void Image::Draw(const World&       world,
-                 const std::string& filename,
-                 bool               blackAndWhite)
+void Image::Draw(const std::string& filename, bool blackAndWhite)
 {
    if ((!blackAndWhite || !hasBlackAndWhite_) && hasColor_)
    {
-      boost::gil::rgb8_image_t         image(world.width(), world.height());
+      boost::gil::rgb8_image_t         image(world_.width(), world_.height());
       boost::gil::rgb8_image_t::view_t view = boost::gil::view(image);
 
-      DrawImage(world, view);
+      DrawImage(view);
 
       try
       {
@@ -85,10 +84,10 @@ void Image::Draw(const World&       world,
    }
    else
    {
-      boost::gil::gray8_image_t         image(world.width(), world.height());
+      boost::gil::gray8_image_t         image(world_.width(), world_.height());
       boost::gil::gray8_image_t::view_t view = boost::gil::view(image);
 
-      DrawImage(world, view);
+      DrawImage(view);
 
       try
       {

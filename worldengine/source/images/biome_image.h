@@ -10,16 +10,14 @@ namespace WorldEngine
 class BiomeImage : public Image
 {
 public:
-   BiomeImage();
+   explicit BiomeImage(const World& world);
    ~BiomeImage();
 
 protected:
    /**
     * @brief Draw a biome image
-    * @param world A world
     * @param target Destination filename
     */
-   void DrawImage(const World&                      world,
-                  boost::gil::rgb8_image_t::view_t& target);
+   void DrawImage(boost::gil::rgb8_image_t::view_t& target) override;
 };
 } // namespace WorldEngine

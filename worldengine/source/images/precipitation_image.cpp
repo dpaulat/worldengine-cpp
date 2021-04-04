@@ -3,28 +3,28 @@
 
 namespace WorldEngine
 {
-PrecipitationImage::PrecipitationImage() : Image(true) {}
+PrecipitationImage::PrecipitationImage(const World& world) : Image(world, true)
+{
+}
 PrecipitationImage::~PrecipitationImage() {}
 
-void PrecipitationImage::DrawImage(
-   const World& world, boost::gil::gray8_image_t::view_t& target)
+void PrecipitationImage::DrawImage(boost::gil::gray8_image_t::view_t& target)
 {
-   DrawGrayscaleFromArray(world.GetPrecipitationData(), target);
+   DrawGrayscaleFromArray(world_.GetPrecipitationData(), target);
 }
 
-void PrecipitationImage::DrawImage(
-   const World& world, boost::gil::rgb8_image_t::view_t& target)
+void PrecipitationImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 {
-   if (!world.HasHumidity())
+   if (!world_.HasHumidity())
    {
       return;
    }
 
-   for (uint32_t y = 0; y < world.height(); y++)
+   for (uint32_t y = 0; y < world_.height(); y++)
    {
-      for (uint32_t x = 0; x < world.width(); x++)
+      for (uint32_t x = 0; x < world_.width(); x++)
       {
-         switch (world.GetHumidityLevel(x, y))
+         switch (world_.GetHumidityLevel(x, y))
          {
          case HumidityLevels::Superarid:
             target(x, y) = boost::gil::rgb8_pixel_t(0, 32, 32);
