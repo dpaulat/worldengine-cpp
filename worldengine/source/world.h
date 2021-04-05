@@ -163,14 +163,12 @@ private:
    TemperatureArrayType   temperature_;
    WaterMapArrayType      waterMap_;
 
-   float elevationThresholds_[static_cast<uint32_t>(
-      ElevationThresholdType::Count)];
-   float humidityThresholds_[static_cast<uint32_t>(HumidityLevels::Count)];
-   std::unordered_map<PermeabilityLevel, float> permeabilityThresholds_;
-   float precipitationThresholds_[static_cast<uint32_t>(
-      PrecipitationLevelType::Count)];
-   float temperatureThresholds_[static_cast<uint32_t>(TemperatureType::Count)];
-   float waterThresholds_[static_cast<uint32_t>(WaterThresholds::Count)];
+   std::unordered_map<ElevationThresholdType, float> elevationThresholds_;
+   std::unordered_map<HumidityLevels, float>         humidityThresholds_;
+   std::unordered_map<PermeabilityLevel, float>      permeabilityThresholds_;
+   std::unordered_map<PrecipitationLevelType, float> precipitationThresholds_;
+   std::unordered_map<TemperatureType, float>        temperatureThresholds_;
+   std::unordered_map<WaterThresholds, float>        waterThresholds_;
 
    static int32_t WorldengineTag();
    static int32_t VersionHashcode();

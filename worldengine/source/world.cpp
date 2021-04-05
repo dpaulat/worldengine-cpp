@@ -82,12 +82,12 @@ World::World(const std::string&          name,
     precipitation_(),
     temperature_(),
     waterMap_(),
-    elevationThresholds_ {0.0f, 0.0f, 0.0f},
-    humidityThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+    elevationThresholds_(),
+    humidityThresholds_(),
     permeabilityThresholds_(),
-    precipitationThresholds_ {0.0f, 0.0f, 0.0f},
-    temperatureThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-    waterThresholds_ {0.0f, 0.0f, 0.0f}
+    precipitationThresholds_(),
+    temperatureThresholds_(),
+    waterThresholds_()
 {
 }
 
@@ -315,22 +315,26 @@ WaterMapArrayType& World::GetWaterMapData()
 
 float World::GetThreshold(ElevationThresholdType type) const
 {
-   if (type > ElevationThresholdType::Last)
+   float threshold = std::numeric_limits<float>::max();
+
+   if (elevationThresholds_.find(type) != elevationThresholds_.end())
    {
-      throw std::invalid_argument("Invalid threshold type");
+      threshold = elevationThresholds_.at(type);
    }
 
-   return elevationThresholds_[static_cast<uint32_t>(type)];
+   return threshold;
 }
 
 float World::GetThreshold(HumidityLevels type) const
 {
-   if (type > HumidityLevels::Last)
+   float threshold = std::numeric_limits<float>::max();
+
+   if (humidityThresholds_.find(type) != humidityThresholds_.end())
    {
-      throw std::invalid_argument("Invalid threshold type");
+      threshold = humidityThresholds_.at(type);
    }
 
-   return humidityThresholds_[static_cast<uint32_t>(type)];
+   return threshold;
 }
 
 float World::GetThreshold(PermeabilityLevel type) const
@@ -347,32 +351,38 @@ float World::GetThreshold(PermeabilityLevel type) const
 
 float World::GetThreshold(PrecipitationLevelType type) const
 {
-   if (type > PrecipitationLevelType::Last)
+   float threshold = std::numeric_limits<float>::max();
+
+   if (precipitationThresholds_.find(type) != precipitationThresholds_.end())
    {
-      throw std::invalid_argument("Invalid threshold type");
+      threshold = precipitationThresholds_.at(type);
    }
 
-   return precipitationThresholds_[static_cast<uint32_t>(type)];
+   return threshold;
 }
 
 float World::GetThreshold(TemperatureType type) const
 {
-   if (type > TemperatureType::Last)
+   float threshold = std::numeric_limits<float>::max();
+
+   if (temperatureThresholds_.find(type) != temperatureThresholds_.end())
    {
-      throw std::invalid_argument("Invalid threshold type");
+      threshold = temperatureThresholds_.at(type);
    }
 
-   return temperatureThresholds_[static_cast<uint32_t>(type)];
+   return threshold;
 }
 
 float World::GetThreshold(WaterThresholds type) const
 {
-   if (type > WaterThresholds::Last)
+   float threshold = std::numeric_limits<float>::max();
+
+   if (waterThresholds_.find(type) != waterThresholds_.end())
    {
-      throw std::invalid_argument("Invalid threshold type");
+      threshold = waterThresholds_.at(type);
    }
 
-   return waterThresholds_[static_cast<uint32_t>(type)];
+   return threshold;
 }
 
 Biomes World::GetBiome(uint32_t x, uint32_t y) const
@@ -533,22 +543,12 @@ void World::SetPlatesData(const uint32_t* platesmap)
 
 void World::SetThreshold(ElevationThresholdType type, float value)
 {
-   if (type > ElevationThresholdType::Last)
-   {
-      throw std::invalid_argument("Invalid threshold type");
-   }
-
-   elevationThresholds_[static_cast<uint32_t>(type)] = value;
+   elevationThresholds_[type] = value;
 }
 
 void World::SetThreshold(HumidityLevels type, float value)
 {
-   if (type > HumidityLevels::Last)
-   {
-      throw std::invalid_argument("Invalid threshold type");
-   }
-
-   humidityThresholds_[static_cast<uint32_t>(type)] = value;
+   humidityThresholds_[type] = value;
 }
 
 void World::SetThreshold(PermeabilityLevel type, float value)
@@ -558,32 +558,17 @@ void World::SetThreshold(PermeabilityLevel type, float value)
 
 void World::SetThreshold(PrecipitationLevelType type, float value)
 {
-   if (type > PrecipitationLevelType::Last)
-   {
-      throw std::invalid_argument("Invalid threshold type");
-   }
-
-   precipitationThresholds_[static_cast<uint32_t>(type)] = value;
+   precipitationThresholds_[type] = value;
 }
 
 void World::SetThreshold(TemperatureType type, float value)
 {
-   if (type > TemperatureType::Last)
-   {
-      throw std::invalid_argument("Invalid threshold type");
-   }
-
-   temperatureThresholds_[static_cast<uint32_t>(type)] = value;
+   temperatureThresholds_[type] = value;
 }
 
 void World::SetThreshold(WaterThresholds type, float value)
 {
-   if (type > WaterThresholds::Last)
-   {
-      throw std::invalid_argument("Invalid threshold type");
-   }
-
-   waterThresholds_[static_cast<uint32_t>(type)] = value;
+   waterThresholds_[type] = value;
 }
 
 bool World::ProtobufSerialize(std::string& output) const
