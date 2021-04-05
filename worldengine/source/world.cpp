@@ -427,12 +427,8 @@ TemperatureType World::GetTemperatureType(uint32_t x, uint32_t y) const
 
    float temperature = temperature_[y][x];
 
-   for (uint32_t i = static_cast<uint32_t>(TemperatureType::First);
-        i < static_cast<uint32_t>(TemperatureType::Last);
-        i++)
+   for (TemperatureType type : TemperatureIterator())
    {
-      TemperatureType type = static_cast<TemperatureType>(i);
-
       if (temperature < GetThreshold(type))
       {
          return type;
@@ -454,12 +450,8 @@ HumidityLevels World::GetHumidityLevel(uint32_t x, uint32_t y) const
 
    float humidity = humidity_[y][x];
 
-   for (uint32_t i = static_cast<uint32_t>(HumidityLevels::First);
-        i < static_cast<uint32_t>(HumidityLevels::Last);
-        i++)
+   for (HumidityLevels type : HumidityIterator())
    {
-      HumidityLevels type = static_cast<HumidityLevels>(i);
-
       if (humidity < GetThreshold(type))
       {
          return type;
@@ -637,10 +629,10 @@ int32_t World::VersionHashcode()
 
    boost::char_separator<char>                   sep(".");
    boost::tokenizer<boost::char_separator<char>> t(WORLDENGINE_VERSION, sep);
-   for (auto it = t.begin(); it != t.end(); it++)
+   for (const std::string& str : t)
    {
       // 3 version components
-      hashcode = (hashcode << 8) | std::stoi(*it);
+      hashcode = (hashcode << 8) | std::stoi(str);
    }
 
    // 4th component (0)

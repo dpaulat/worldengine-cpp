@@ -52,10 +52,10 @@ static void Droplet(World& world, uint32_t x, uint32_t y, float q)
 
    world.GetTilesAround(tilesAround, x, y);
 
-   for (auto it = tilesAround.begin(); it != tilesAround.end(); it++)
+   for (const auto& p : tilesAround)
    {
-      uint32_t px = it->first;
-      uint32_t py = it->second;
+      uint32_t px = p.first;
+      uint32_t py = p.second;
       float    e  = elevation[py][px] + watermap[py][px];
 
       if (e < posElev)
@@ -78,13 +78,13 @@ static void Droplet(World& world, uint32_t x, uint32_t y, float q)
    {
       float f = q / static_cast<float>(totLowers);
 
-      for (auto it = lowers.begin(); it != lowers.end(); it++)
+      for (const auto& t : lowers)
       {
          uint32_t s;
          uint32_t px;
          uint32_t py;
 
-         std::tie(s, px, py) = *it;
+         std::tie(s, px, py) = t;
 
          if (!world.IsOcean(px, py))
          {
@@ -110,7 +110,7 @@ static void WatermapExecute(World& world, uint32_t numSamples, uint32_t seed)
 {
    BOOST_LOG_TRIVIAL(debug) << "Seed: " << seed;
 
-   std::default_random_engine generator(seed);
+   std::default_random_engine              generator(seed);
    std::uniform_int_distribution<uint32_t> distribution;
 
    uint32_t width  = world.width();

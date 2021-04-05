@@ -98,13 +98,11 @@ enum class Biomes
    BareRock
 };
 
-enum class ElevationThresholdType : uint32_t
+enum class ElevationThresholdType
 {
-   Sea      = 0,
-   Hill     = 1,
-   Mountain = 2,
-   Count    = 3,
-   Last     = Mountain
+   Sea,
+   Hill,
+   Mountain
 };
 
 enum class ExportDataType
@@ -116,19 +114,17 @@ enum class ExportDataType
    Float32
 };
 
-enum class HumidityLevels : uint32_t
+enum class HumidityLevels
 {
-   Superarid  = 0,
-   Perarid    = 1,
-   Arid       = 2,
-   Semiarid   = 3,
-   Subhumid   = 4,
-   Humid      = 5,
-   Perhumid   = 6,
-   Superhumid = 7,
-   Count      = 8,
-   First      = Superarid,
-   Last       = Superhumid
+   Superarid,
+   Perarid,
+   Arid,
+   Semiarid,
+   Subhumid,
+   Humid,
+   Perhumid,
+   Superhumid,
+   Last = Superhumid
 };
 typedef Iterator<HumidityLevels,
                  HumidityLevels::Superarid,
@@ -139,19 +135,14 @@ enum class PermeabilityLevel
 {
    Low,
    Medium,
-   High,
-   First = Low,
-   Last  = High
+   High
 };
 
-enum class PrecipitationLevelType : uint32_t
+enum class PrecipitationLevelType
 {
-   Low    = 0,
-   Medium = 1,
-   High   = 2,
-   Count  = 3,
-   First  = Low,
-   Last   = High
+   Low,
+   Medium,
+   High
 };
 
 enum class SeaColor
@@ -180,32 +171,28 @@ enum class StepType
    Full
 };
 
-enum class TemperatureType : uint32_t
+enum class TemperatureType
 {
-   Polar       = 0,
-   Alpine      = 1,
-   Boreal      = 2,
-   Cool        = 3,
-   Warm        = 4,
-   Subtropical = 5,
-   Tropical    = 6,
-   Count       = 7,
-   First       = Polar,
-   Last        = Tropical
+   Polar,
+   Alpine,
+   Boreal,
+   Cool,
+   Warm,
+   Subtropical,
+   Tropical,
+   Count,
+   Last = Tropical
 };
 typedef Iterator<TemperatureType,
                  TemperatureType::Polar,
                  TemperatureType::Tropical>
    TemperatureIterator;
 
-enum class WaterThresholds : uint32_t
+enum class WaterThresholds
 {
-   Creek     = 0,
-   River     = 1,
-   MainRiver = 2,
-   Count     = 3,
-   First     = Creek,
-   Last      = MainRiver
+   Creek,
+   River,
+   MainRiver
 };
 
 enum class WorldFormat
