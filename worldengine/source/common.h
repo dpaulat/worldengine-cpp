@@ -135,6 +135,15 @@ typedef Iterator<HumidityLevels,
                  HumidityLevels::Superhumid>
    HumidityIterator;
 
+enum class PermeabilityLevel
+{
+   Low,
+   Medium,
+   High,
+   First = Low,
+   Last  = High
+};
+
 enum class PrecipitationLevelType : uint32_t
 {
    Low    = 0,

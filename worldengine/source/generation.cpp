@@ -6,6 +6,7 @@
 #include "simulations/hydrology.h"
 #include "simulations/icecap.h"
 #include "simulations/irrigation.h"
+#include "simulations/permeability.h"
 #include "simulations/precipitation.h"
 #include "simulations/temperature.h"
 
@@ -170,7 +171,7 @@ void GenerateWorld(World& world, const Step& step, uint32_t seed)
    WatermapSimulation(world, seedMap[Simulations::Watermap]);
    IrrigationSimulation(world);
    HumiditySimulation(world);
-   // TODO: PermeabilitySimulation(world);
+   PermeabilitySimulation(world, seedMap[Simulations::Permeability]);
    BiomeSimulation(world);
    IcecapSimulation(world, seedMap[Simulations::Icecap]);
 }

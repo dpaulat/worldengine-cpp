@@ -25,6 +25,7 @@ set(SRC_SIMULATIONS source/simulations/biome.cpp
                     source/simulations/hydrology.cpp
                     source/simulations/icecap.cpp
                     source/simulations/irrigation.cpp
+                    source/simulations/permeability.cpp
                     source/simulations/precipitation.cpp
                     source/simulations/temperature.cpp)
 set(HDR_SIMULATIONS source/simulations/biome.h
@@ -33,6 +34,7 @@ set(HDR_SIMULATIONS source/simulations/biome.h
                     source/simulations/hydrology.h
                     source/simulations/icecap.h
                     source/simulations/irrigation.h
+                    source/simulations/permeability.h
                     source/simulations/precipitation.h
                     source/simulations/temperature.h)
 set(SRC_IMAGES source/images/image.cpp

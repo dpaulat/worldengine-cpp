@@ -78,11 +78,13 @@ World::World(const std::string&          name,
     humidity_(),
     icecap_(),
     irrigation_(),
+    permeability_(),
     precipitation_(),
     temperature_(),
     waterMap_(),
     elevationThresholds_ {0.0f, 0.0f, 0.0f},
     humidityThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+    permeabilityThresholds_(),
     precipitationThresholds_ {0.0f, 0.0f, 0.0f},
     temperatureThresholds_ {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
     waterThresholds_ {0.0f, 0.0f, 0.0f}
@@ -221,6 +223,11 @@ const LakeMapArrayType& World::GetLakeMapData() const
    return lakeMap_;
 }
 
+const PermeabilityArrayType& World::GetPermeabilityData() const
+{
+   return permeability_;
+}
+
 const PrecipitationArrayType& World::GetPrecipitationData() const
 {
    return precipitation_;
@@ -281,6 +288,11 @@ LakeMapArrayType& World::GetLakeMapData()
    return lakeMap_;
 }
 
+PermeabilityArrayType& World::GetPermeabilityData()
+{
+   return permeability_;
+}
+
 PrecipitationArrayType& World::GetPrecipitationData()
 {
    return precipitation_;
@@ -319,6 +331,18 @@ float World::GetThreshold(HumidityLevels type) const
    }
 
    return humidityThresholds_[static_cast<uint32_t>(type)];
+}
+
+float World::GetThreshold(PermeabilityLevel type) const
+{
+   float threshold = std::numeric_limits<float>::max();
+
+   if (permeabilityThresholds_.find(type) != permeabilityThresholds_.end())
+   {
+      threshold = permeabilityThresholds_.at(type);
+   }
+
+   return threshold;
 }
 
 float World::GetThreshold(PrecipitationLevelType type) const
@@ -525,6 +549,11 @@ void World::SetThreshold(HumidityLevels type, float value)
    }
 
    humidityThresholds_[static_cast<uint32_t>(type)] = value;
+}
+
+void World::SetThreshold(PermeabilityLevel type, float value)
+{
+   permeabilityThresholds_[type] = value;
 }
 
 void World::SetThreshold(PrecipitationLevelType type, float value)

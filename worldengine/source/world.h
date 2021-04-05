@@ -3,6 +3,7 @@
 #include "common.h"
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/multi_array.hpp>
@@ -16,6 +17,7 @@ typedef float    IcecapDataType;
 typedef float    IrrigationDataType;
 typedef float    LakeMapDataType;
 typedef bool     OceanDataType;
+typedef float    PermeabilityDataType;
 typedef uint16_t PlateDataType;
 typedef float    PrecipitationDataType;
 typedef float    RiverMapDataType;
@@ -29,6 +31,7 @@ typedef boost::multi_array<IcecapDataType, 2>        IcecapArrayType;
 typedef boost::multi_array<IrrigationDataType, 2>    IrrigationArrayType;
 typedef boost::multi_array<LakeMapDataType, 2>       LakeMapArrayType;
 typedef boost::multi_array<OceanDataType, 2>         OceanArrayType;
+typedef boost::multi_array<PermeabilityDataType, 2>  PermeabilityArrayType;
 typedef boost::multi_array<PlateDataType, 2>         PlateArrayType;
 typedef boost::multi_array<PrecipitationDataType, 2> PrecipitationArrayType;
 typedef boost::multi_array<TemperatureDataType, 2>   TemperatureArrayType;
@@ -80,6 +83,7 @@ public:
    const IcecapArrayType&        GetIcecapData() const;
    const IrrigationArrayType&    GetIrrigationData() const;
    const LakeMapArrayType&       GetLakeMapData() const;
+   const PermeabilityArrayType&  GetPermeabilityData() const;
    const PrecipitationArrayType& GetPrecipitationData() const;
    const RiverMapArrayType&      GetRiverMapData() const;
    const TemperatureArrayType&   GetTemperatureData() const;
@@ -93,6 +97,7 @@ public:
    IcecapArrayType&        GetIcecapData();
    IrrigationArrayType&    GetIrrigationData();
    LakeMapArrayType&       GetLakeMapData();
+   PermeabilityArrayType&  GetPermeabilityData();
    PrecipitationArrayType& GetPrecipitationData();
    RiverMapArrayType&      GetRiverMapData();
    TemperatureArrayType&   GetTemperatureData();
@@ -100,6 +105,7 @@ public:
 
    float GetThreshold(ElevationThresholdType type) const;
    float GetThreshold(HumidityLevels type) const;
+   float GetThreshold(PermeabilityLevel type) const;
    float GetThreshold(PrecipitationLevelType type) const;
    float GetThreshold(TemperatureType type) const;
    float GetThreshold(WaterThresholds type) const;
@@ -126,6 +132,7 @@ public:
 
    void SetThreshold(ElevationThresholdType type, float value);
    void SetThreshold(HumidityLevels type, float value);
+   void SetThreshold(PermeabilityLevel type, float value);
    void SetThreshold(PrecipitationLevelType type, float value);
    void SetThreshold(TemperatureType type, float value);
    void SetThreshold(WaterThresholds type, float value);
@@ -150,6 +157,7 @@ private:
    IcecapArrayType        icecap_;
    IrrigationArrayType    irrigation_;
    LakeMapArrayType       lakeMap_;
+   PermeabilityArrayType  permeability_;
    PrecipitationArrayType precipitation_;
    RiverMapArrayType      riverMap_;
    TemperatureArrayType   temperature_;
@@ -158,6 +166,7 @@ private:
    float elevationThresholds_[static_cast<uint32_t>(
       ElevationThresholdType::Count)];
    float humidityThresholds_[static_cast<uint32_t>(HumidityLevels::Count)];
+   std::unordered_map<PermeabilityLevel, float> permeabilityThresholds_;
    float precipitationThresholds_[static_cast<uint32_t>(
       PrecipitationLevelType::Count)];
    float temperatureThresholds_[static_cast<uint32_t>(TemperatureType::Count)];
