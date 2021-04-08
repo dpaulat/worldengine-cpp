@@ -26,35 +26,35 @@ void PrecipitationImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
       {
          switch (world_.GetHumidityLevel(x, y))
          {
-         case HumidityLevels::Superarid:
+         case HumidityLevel::Superarid:
             target(x, y) = boost::gil::rgb8_pixel_t(0, 32, 32);
             break;
 
-         case HumidityLevels::Perarid:
+         case HumidityLevel::Perarid:
             target(x, y) = boost::gil::rgb8_pixel_t(0, 64, 64);
             break;
 
-         case HumidityLevels::Arid:
+         case HumidityLevel::Arid:
             target(x, y) = boost::gil::rgb8_pixel_t(0, 96, 96);
             break;
 
-         case HumidityLevels::Semiarid:
+         case HumidityLevel::Semiarid:
             target(x, y) = boost::gil::rgb8_pixel_t(0, 128, 128);
             break;
 
-         case HumidityLevels::Subhumid:
+         case HumidityLevel::Subhumid:
             target(x, y) = boost::gil::rgb8_pixel_t(0, 160, 160);
             break;
 
-         case HumidityLevels::Humid:
+         case HumidityLevel::Humid:
             target(x, y) = boost::gil::rgb8_pixel_t(0, 192, 192);
             break;
 
-         case HumidityLevels::Perhumid:
+         case HumidityLevel::Perhumid:
             target(x, y) = boost::gil::rgb8_pixel_t(0, 224, 224);
             break;
 
-         case HumidityLevels::Superhumid:
+         case HumidityLevel::Superhumid:
          default: //
             target(x, y) = boost::gil::rgb8_pixel_t(0, 255, 255);
             break;

@@ -18,7 +18,7 @@ void BiomeSimulation(World& world)
    BiomeArrayType& biome = world.GetBiomeData();
    biome.resize(boost::extents[height][width]);
 
-   std::map<Biomes, uint32_t> biomeCounts;
+   std::map<Biome, uint32_t> biomeCounts;
 
    for (uint32_t y = 0; y < height; y++)
    {
@@ -26,176 +26,176 @@ void BiomeSimulation(World& world)
       {
          if (world.IsOcean(x, y))
          {
-            biome[y][x] = Biomes::Ocean;
+            biome[y][x] = Biome::Ocean;
          }
          else
          {
-            TemperatureType temperature   = world.GetTemperatureType(x, y);
-            HumidityLevels  humidityLevel = world.GetHumidityLevel(x, y);
+            TemperatureLevel temperature   = world.GetTemperatureLevel(x, y);
+            HumidityLevel    humidityLevel = world.GetHumidityLevel(x, y);
 
             switch (temperature)
             {
-            case TemperatureType::Polar:
+            case TemperatureLevel::Polar:
                switch (humidityLevel)
                {
-               case HumidityLevels::Superarid:
-                  biome[y][x] = Biomes::PolarDesert;
+               case HumidityLevel::Superarid:
+                  biome[y][x] = Biome::PolarDesert;
                   break;
                default: //
-                  biome[y][x] = Biomes::Ice;
+                  biome[y][x] = Biome::Ice;
                   break;
                }
                break;
 
-            case TemperatureType::Alpine:
+            case TemperatureLevel::Alpine:
                switch (humidityLevel)
                {
-               case HumidityLevels::Superarid:
-                  biome[y][x] = Biomes::SubpolarDryTundra;
+               case HumidityLevel::Superarid:
+                  biome[y][x] = Biome::SubpolarDryTundra;
                   break;
-               case HumidityLevels::Perarid:
-                  biome[y][x] = Biomes::SubpolarMoistTundra;
+               case HumidityLevel::Perarid:
+                  biome[y][x] = Biome::SubpolarMoistTundra;
                   break;
-               case HumidityLevels::Arid:
-                  biome[y][x] = Biomes::SubpolarWetTundra;
+               case HumidityLevel::Arid:
+                  biome[y][x] = Biome::SubpolarWetTundra;
                   break;
                default: //
-                  biome[y][x] = Biomes::SubpolarRainTundra;
+                  biome[y][x] = Biome::SubpolarRainTundra;
                   break;
                }
                break;
 
-            case TemperatureType::Boreal:
+            case TemperatureLevel::Boreal:
                switch (humidityLevel)
                {
-               case HumidityLevels::Superarid:
-                  biome[y][x] = Biomes::BorealDesert;
+               case HumidityLevel::Superarid:
+                  biome[y][x] = Biome::BorealDesert;
                   break;
-               case HumidityLevels::Perarid:
-                  biome[y][x] = Biomes::BorealDryScrub;
+               case HumidityLevel::Perarid:
+                  biome[y][x] = Biome::BorealDryScrub;
                   break;
-               case HumidityLevels::Arid:
-                  biome[y][x] = Biomes::BorealMoistForest;
+               case HumidityLevel::Arid:
+                  biome[y][x] = Biome::BorealMoistForest;
                   break;
-               case HumidityLevels::Semiarid:
-                  biome[y][x] = Biomes::BorealWetForest;
+               case HumidityLevel::Semiarid:
+                  biome[y][x] = Biome::BorealWetForest;
                   break;
                default: //
-                  biome[y][x] = Biomes::BorealRainForest;
+                  biome[y][x] = Biome::BorealRainForest;
                   break;
                }
                break;
 
-            case TemperatureType::Cool:
+            case TemperatureLevel::Cool:
                switch (humidityLevel)
                {
-               case HumidityLevels::Superarid:
-                  biome[y][x] = Biomes::CoolTemperateDesert;
+               case HumidityLevel::Superarid:
+                  biome[y][x] = Biome::CoolTemperateDesert;
                   break;
-               case HumidityLevels::Perarid:
-                  biome[y][x] = Biomes::CoolTemperateDesertScrub;
+               case HumidityLevel::Perarid:
+                  biome[y][x] = Biome::CoolTemperateDesertScrub;
                   break;
-               case HumidityLevels::Arid:
-                  biome[y][x] = Biomes::CoolTemperateSteppe;
+               case HumidityLevel::Arid:
+                  biome[y][x] = Biome::CoolTemperateSteppe;
                   break;
-               case HumidityLevels::Semiarid:
-                  biome[y][x] = Biomes::CoolTemperateMoistForest;
+               case HumidityLevel::Semiarid:
+                  biome[y][x] = Biome::CoolTemperateMoistForest;
                   break;
-               case HumidityLevels::Subhumid:
-                  biome[y][x] = Biomes::CoolTemperateWetForest;
+               case HumidityLevel::Subhumid:
+                  biome[y][x] = Biome::CoolTemperateWetForest;
                   break;
                default: //
-                  biome[y][x] = Biomes::CoolTemperateRainForest;
+                  biome[y][x] = Biome::CoolTemperateRainForest;
                   break;
                }
                break;
 
-            case TemperatureType::Warm:
+            case TemperatureLevel::Warm:
                switch (humidityLevel)
                {
-               case HumidityLevels::Superarid:
-                  biome[y][x] = Biomes::WarmTemperateDesert;
+               case HumidityLevel::Superarid:
+                  biome[y][x] = Biome::WarmTemperateDesert;
                   break;
-               case HumidityLevels::Perarid:
-                  biome[y][x] = Biomes::WarmTemperateDesertScrub;
+               case HumidityLevel::Perarid:
+                  biome[y][x] = Biome::WarmTemperateDesertScrub;
                   break;
-               case HumidityLevels::Arid:
-                  biome[y][x] = Biomes::WarmTemperateThornScrub;
+               case HumidityLevel::Arid:
+                  biome[y][x] = Biome::WarmTemperateThornScrub;
                   break;
-               case HumidityLevels::Semiarid:
-                  biome[y][x] = Biomes::WarmTemperateDryForest;
+               case HumidityLevel::Semiarid:
+                  biome[y][x] = Biome::WarmTemperateDryForest;
                   break;
-               case HumidityLevels::Subhumid:
-                  biome[y][x] = Biomes::WarmTemperateMoistForest;
+               case HumidityLevel::Subhumid:
+                  biome[y][x] = Biome::WarmTemperateMoistForest;
                   break;
-               case HumidityLevels::Humid:
-                  biome[y][x] = Biomes::WarmTemperateWetForest;
+               case HumidityLevel::Humid:
+                  biome[y][x] = Biome::WarmTemperateWetForest;
                   break;
                default: //
-                  biome[y][x] = Biomes::WarmTemperateRainForest;
+                  biome[y][x] = Biome::WarmTemperateRainForest;
                   break;
                }
                break;
 
-            case TemperatureType::Subtropical:
+            case TemperatureLevel::Subtropical:
                switch (humidityLevel)
                {
-               case HumidityLevels::Superarid:
-                  biome[y][x] = Biomes::SubtropicalDesert;
+               case HumidityLevel::Superarid:
+                  biome[y][x] = Biome::SubtropicalDesert;
                   break;
-               case HumidityLevels::Perarid:
-                  biome[y][x] = Biomes::SubtropicalDesertScrub;
+               case HumidityLevel::Perarid:
+                  biome[y][x] = Biome::SubtropicalDesertScrub;
                   break;
-               case HumidityLevels::Arid:
-                  biome[y][x] = Biomes::SubtropicalThornWoodland;
+               case HumidityLevel::Arid:
+                  biome[y][x] = Biome::SubtropicalThornWoodland;
                   break;
-               case HumidityLevels::Semiarid:
-                  biome[y][x] = Biomes::SubtropicalDryForest;
+               case HumidityLevel::Semiarid:
+                  biome[y][x] = Biome::SubtropicalDryForest;
                   break;
-               case HumidityLevels::Subhumid:
-                  biome[y][x] = Biomes::SubtropicalMoistForest;
+               case HumidityLevel::Subhumid:
+                  biome[y][x] = Biome::SubtropicalMoistForest;
                   break;
-               case HumidityLevels::Humid:
-                  biome[y][x] = Biomes::SubtropicalWetForest;
+               case HumidityLevel::Humid:
+                  biome[y][x] = Biome::SubtropicalWetForest;
                   break;
                default: //
-                  biome[y][x] = Biomes::SubtropicalRainForest;
+                  biome[y][x] = Biome::SubtropicalRainForest;
                   break;
                }
                break;
 
-            case TemperatureType::Tropical:
+            case TemperatureLevel::Tropical:
                switch (humidityLevel)
                {
-               case HumidityLevels::Superarid:
-                  biome[y][x] = Biomes::TropicalDesert;
+               case HumidityLevel::Superarid:
+                  biome[y][x] = Biome::TropicalDesert;
                   break;
-               case HumidityLevels::Perarid:
-                  biome[y][x] = Biomes::TropicalDesertScrub;
+               case HumidityLevel::Perarid:
+                  biome[y][x] = Biome::TropicalDesertScrub;
                   break;
-               case HumidityLevels::Arid:
-                  biome[y][x] = Biomes::TropicalThornWoodland;
+               case HumidityLevel::Arid:
+                  biome[y][x] = Biome::TropicalThornWoodland;
                   break;
-               case HumidityLevels::Semiarid:
-                  biome[y][x] = Biomes::TropicalVeryDryForest;
+               case HumidityLevel::Semiarid:
+                  biome[y][x] = Biome::TropicalVeryDryForest;
                   break;
-               case HumidityLevels::Subhumid:
-                  biome[y][x] = Biomes::TropicalDryForest;
+               case HumidityLevel::Subhumid:
+                  biome[y][x] = Biome::TropicalDryForest;
                   break;
-               case HumidityLevels::Humid:
-                  biome[y][x] = Biomes::TropicalMoistForest;
+               case HumidityLevel::Humid:
+                  biome[y][x] = Biome::TropicalMoistForest;
                   break;
-               case HumidityLevels::Perhumid:
-                  biome[y][x] = Biomes::TropicalWetForest;
+               case HumidityLevel::Perhumid:
+                  biome[y][x] = Biome::TropicalWetForest;
                   break;
                default: //
-                  biome[y][x] = Biomes::TropicalRainForest;
+                  biome[y][x] = Biome::TropicalRainForest;
                   break;
                }
                break;
 
             default: // Invalid
-               biome[y][x] = Biomes::BareRock;
+               biome[y][x] = Biome::BareRock;
                break;
             }
          }

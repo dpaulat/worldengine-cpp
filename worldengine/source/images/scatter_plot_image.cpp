@@ -61,16 +61,16 @@ void ScatterPlotImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    }
 
    // Fill in "bad" boxes with gray
-   const std::vector<HumidityLevels>  hValues({HumidityLevels::Arid,
-                                              HumidityLevels::Semiarid,
-                                              HumidityLevels::Subhumid,
-                                              HumidityLevels::Humid,
-                                              HumidityLevels::Perhumid});
-   const std::vector<TemperatureType> tValues({TemperatureType::Polar,
-                                               TemperatureType::Alpine,
-                                               TemperatureType::Boreal,
-                                               TemperatureType::Cool,
-                                               TemperatureType::Subtropical});
+   const std::vector<HumidityLevel>    hValues({HumidityLevel::Arid,
+                                             HumidityLevel::Semiarid,
+                                             HumidityLevel::Subhumid,
+                                             HumidityLevel::Humid,
+                                             HumidityLevel::Perhumid});
+   const std::vector<TemperatureLevel> tValues({TemperatureLevel::Polar,
+                                                TemperatureLevel::Alpine,
+                                                TemperatureLevel::Boreal,
+                                                TemperatureLevel::Cool,
+                                                TemperatureLevel::Subtropical});
 
    for (size_t i = 0; i < 5; i++)
    {
@@ -114,7 +114,7 @@ void ScatterPlotImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    }
 
    // Draw lines based on thresholds
-   for (TemperatureType t : TemperatureIterator())
+   for (TemperatureLevel t : TemperatureIterator())
    {
       int32_t v = static_cast<int32_t>(
          (size_ - 1) * (world_.GetThreshold(t) - minTemperature) /
@@ -128,7 +128,7 @@ void ScatterPlotImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
       }
    }
 
-   for (HumidityLevels p : HumidityIterator())
+   for (HumidityLevel p : HumidityIterator())
    {
       int32_t h = static_cast<int32_t>(
          (size_ - 1) * (world_.GetThreshold(p) - minHumidity) / humidityDelta);
@@ -170,33 +170,33 @@ void ScatterPlotImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
             uint8_t r = 0;
             uint8_t b = 0;
 
-            switch (world_.GetTemperatureType(x, y))
+            switch (world_.GetTemperatureLevel(x, y))
             {
-            case TemperatureType::Polar:
+            case TemperatureLevel::Polar:
                r = 0; //
                break;
 
-            case TemperatureType::Alpine:
+            case TemperatureLevel::Alpine:
                r = 42; //
                break;
 
-            case TemperatureType::Boreal:
+            case TemperatureLevel::Boreal:
                r = 85; //
                break;
 
-            case TemperatureType::Cool:
+            case TemperatureLevel::Cool:
                r = 128; //
                break;
 
-            case TemperatureType::Warm:
+            case TemperatureLevel::Warm:
                r = 170; //
                break;
 
-            case TemperatureType::Subtropical:
+            case TemperatureLevel::Subtropical:
                r = 213; //
                break;
 
-            case TemperatureType::Tropical:
+            case TemperatureLevel::Tropical:
             default:
                r = 255; //
                break;
@@ -204,35 +204,35 @@ void ScatterPlotImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 
             switch (world_.GetHumidityLevel(x, y))
             {
-            case HumidityLevels::Superarid:
+            case HumidityLevel::Superarid:
                b = 32; //
                break;
 
-            case HumidityLevels::Perarid:
+            case HumidityLevel::Perarid:
                b = 64; //
                break;
 
-            case HumidityLevels::Arid:
+            case HumidityLevel::Arid:
                b = 96; //
                break;
 
-            case HumidityLevels::Semiarid:
+            case HumidityLevel::Semiarid:
                b = 128; //
                break;
 
-            case HumidityLevels::Subhumid:
+            case HumidityLevel::Subhumid:
                b = 160; //
                break;
 
-            case HumidityLevels::Humid:
+            case HumidityLevel::Humid:
                b = 192; //
                break;
 
-            case HumidityLevels::Perhumid:
+            case HumidityLevel::Perhumid:
                b = 224; //
                break;
 
-            case HumidityLevels::Superhumid:
+            case HumidityLevel::Superhumid:
             default:
                b = 255; //
                break;

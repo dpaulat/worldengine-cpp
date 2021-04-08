@@ -43,7 +43,7 @@ void IcecapSimulation(World& world, uint32_t seed)
       temperature.data(), temperature.data() + temperature.num_elements());
 
    // Upper temperature-limit for freezing effects
-   const float freezeLimit = world.GetThreshold(TemperatureType::Polar);
+   const float freezeLimit = world.GetThreshold(TemperatureLevel::Polar);
 
    // Derived constants
    // Freeze threshold above minimum

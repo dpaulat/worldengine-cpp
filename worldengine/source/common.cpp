@@ -23,59 +23,59 @@ std::string Step::name() const
    return StepTypeToString(stepType_);
 }
 
-std::string BiomesToString(Biomes type)
+std::string BiomeToString(Biome type)
 {
    switch (type)
    {
-   case Biomes::Ocean: return "Ocean";
-   case Biomes::Sea: return "Sea";
-   case Biomes::PolarDesert: return "Polar Desert";
-   case Biomes::Ice: return "Ice";
-   case Biomes::SubpolarDryTundra: return "Subpolar Dry Tundra";
-   case Biomes::SubpolarMoistTundra: return "Subpolar Moist Tundra";
-   case Biomes::SubpolarWetTundra: return "Subpolar Wet Tundra";
-   case Biomes::SubpolarRainTundra: return "Subpolar Rain Tundra";
-   case Biomes::BorealDesert: return "Boreal Desert";
-   case Biomes::BorealDryScrub: return "Boreal Dry Scrub";
-   case Biomes::BorealMoistForest: return "Boreal Moist Forest";
-   case Biomes::BorealWetForest: return "Boreal Wet Forest";
-   case Biomes::BorealRainForest: return "Boreal Rain Forest";
-   case Biomes::CoolTemperateDesert: return "Cool Temperate Desert";
-   case Biomes::CoolTemperateDesertScrub: return "Cool Temperate Desert Scrub";
-   case Biomes::CoolTemperateSteppe: return "Cool Temperate Steppe";
-   case Biomes::CoolTemperateMoistForest: return "Cool Temperate Moist Forest";
-   case Biomes::CoolTemperateWetForest: return "Cool Temperate Wet Forest";
-   case Biomes::CoolTemperateRainForest: return "Cool Temperate Rain Forest";
-   case Biomes::WarmTemperateDesert: return "Warm Temperate Desert";
-   case Biomes::WarmTemperateDesertScrub: return "Warm Temperate Desert Scrub";
-   case Biomes::WarmTemperateThornScrub: return "Warm Temperate Thorn Scrub";
-   case Biomes::WarmTemperateDryForest: return "Warm Temperate Dry Forest";
-   case Biomes::WarmTemperateMoistForest: return "Warm Temperate Moist Forest";
-   case Biomes::WarmTemperateWetForest: return "Warm Temperate Wet Forest";
-   case Biomes::WarmTemperateRainForest: return "Warm Temperate Rain Forest";
-   case Biomes::SubtropicalDesert: return "Subtropical Desert";
-   case Biomes::SubtropicalDesertScrub: return "Subtropical Desert Scrub";
-   case Biomes::SubtropicalThornWoodland: return "Subtropical Thorn Woodland";
-   case Biomes::SubtropicalDryForest: return "Subtropical Dry Forest";
-   case Biomes::SubtropicalMoistForest: return "Subtropical Moist Forest";
-   case Biomes::SubtropicalWetForest: return "Subtropical Wet Forest";
-   case Biomes::SubtropicalRainForest: return "Subtropical Rain Forest";
-   case Biomes::TropicalDesert: return "Tropical Desert";
-   case Biomes::TropicalDesertScrub: return "Tropical Desert Scrub";
-   case Biomes::TropicalThornWoodland: return "Tropical Thorn Woodland";
-   case Biomes::TropicalVeryDryForest: return "Tropical Very Dry Forest";
-   case Biomes::TropicalDryForest: return "Tropical Dry Forest";
-   case Biomes::TropicalMoistForest: return "Tropical Moist Forest";
-   case Biomes::TropicalWetForest: return "Tropical Wet Forest";
-   case Biomes::TropicalRainForest: return "Tropical Rain Forest";
-   case Biomes::BareRock: return "Bare Rock";
+   case Biome::Ocean: return "Ocean";
+   case Biome::Sea: return "Sea";
+   case Biome::PolarDesert: return "Polar Desert";
+   case Biome::Ice: return "Ice";
+   case Biome::SubpolarDryTundra: return "Subpolar Dry Tundra";
+   case Biome::SubpolarMoistTundra: return "Subpolar Moist Tundra";
+   case Biome::SubpolarWetTundra: return "Subpolar Wet Tundra";
+   case Biome::SubpolarRainTundra: return "Subpolar Rain Tundra";
+   case Biome::BorealDesert: return "Boreal Desert";
+   case Biome::BorealDryScrub: return "Boreal Dry Scrub";
+   case Biome::BorealMoistForest: return "Boreal Moist Forest";
+   case Biome::BorealWetForest: return "Boreal Wet Forest";
+   case Biome::BorealRainForest: return "Boreal Rain Forest";
+   case Biome::CoolTemperateDesert: return "Cool Temperate Desert";
+   case Biome::CoolTemperateDesertScrub: return "Cool Temperate Desert Scrub";
+   case Biome::CoolTemperateSteppe: return "Cool Temperate Steppe";
+   case Biome::CoolTemperateMoistForest: return "Cool Temperate Moist Forest";
+   case Biome::CoolTemperateWetForest: return "Cool Temperate Wet Forest";
+   case Biome::CoolTemperateRainForest: return "Cool Temperate Rain Forest";
+   case Biome::WarmTemperateDesert: return "Warm Temperate Desert";
+   case Biome::WarmTemperateDesertScrub: return "Warm Temperate Desert Scrub";
+   case Biome::WarmTemperateThornScrub: return "Warm Temperate Thorn Scrub";
+   case Biome::WarmTemperateDryForest: return "Warm Temperate Dry Forest";
+   case Biome::WarmTemperateMoistForest: return "Warm Temperate Moist Forest";
+   case Biome::WarmTemperateWetForest: return "Warm Temperate Wet Forest";
+   case Biome::WarmTemperateRainForest: return "Warm Temperate Rain Forest";
+   case Biome::SubtropicalDesert: return "Subtropical Desert";
+   case Biome::SubtropicalDesertScrub: return "Subtropical Desert Scrub";
+   case Biome::SubtropicalThornWoodland: return "Subtropical Thorn Woodland";
+   case Biome::SubtropicalDryForest: return "Subtropical Dry Forest";
+   case Biome::SubtropicalMoistForest: return "Subtropical Moist Forest";
+   case Biome::SubtropicalWetForest: return "Subtropical Wet Forest";
+   case Biome::SubtropicalRainForest: return "Subtropical Rain Forest";
+   case Biome::TropicalDesert: return "Tropical Desert";
+   case Biome::TropicalDesertScrub: return "Tropical Desert Scrub";
+   case Biome::TropicalThornWoodland: return "Tropical Thorn Woodland";
+   case Biome::TropicalVeryDryForest: return "Tropical Very Dry Forest";
+   case Biome::TropicalDryForest: return "Tropical Dry Forest";
+   case Biome::TropicalMoistForest: return "Tropical Moist Forest";
+   case Biome::TropicalWetForest: return "Tropical Wet Forest";
+   case Biome::TropicalRainForest: return "Tropical Rain Forest";
+   case Biome::BareRock: return "Bare Rock";
    default: return "?";
    }
 }
 
-std::ostream& operator<<(std::ostream& os, const Biomes& type)
+std::ostream& operator<<(std::ostream& os, const Biome& type)
 {
-   os << BiomesToString(type);
+   os << BiomeToString(type);
    return os;
 }
 

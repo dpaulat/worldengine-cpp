@@ -22,11 +22,11 @@ void WatermapSimulation(World& world, uint32_t seed)
 
    WatermapExecute(world, NUM_SAMPLES, seed);
 
-   world.SetThreshold(WaterThresholds::Creek,
+   world.SetThreshold(WaterThreshold::Creek,
                       FindThresholdF(watermap, 0.05f, &ocean));
-   world.SetThreshold(WaterThresholds::River,
+   world.SetThreshold(WaterThreshold::River,
                       FindThresholdF(watermap, 0.02f, &ocean));
-   world.SetThreshold(WaterThresholds::MainRiver,
+   world.SetThreshold(WaterThreshold::MainRiver,
                       FindThresholdF(watermap, 0.007f, &ocean));
 
    BOOST_LOG_TRIVIAL(info) << "Watermap simulation finish";

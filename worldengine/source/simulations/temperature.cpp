@@ -23,25 +23,25 @@ void TemperatureSimulation(World& world, uint32_t seed)
    BOOST_LOG_TRIVIAL(info) << "Temperature simulation start";
 
    ElevationArrayType& elevation = world.GetElevationData();
-   float mountainLevel = world.GetThreshold(ElevationThresholdType::Mountain);
+   float mountainLevel = world.GetThreshold(ElevationThreshold::Mountain);
    const OceanArrayType&       ocean = world.GetOceanData();
    const TemperatureArrayType& t     = world.GetTemperatureData();
 
    TemperatureCalculation(world, seed, elevation, mountainLevel);
 
-   world.SetThreshold(TemperatureType::Polar,
+   world.SetThreshold(TemperatureLevel::Polar,
                       FindThresholdF(t, world.temps()[5], &ocean));
-   world.SetThreshold(TemperatureType::Alpine,
+   world.SetThreshold(TemperatureLevel::Alpine,
                       FindThresholdF(t, world.temps()[4], &ocean));
-   world.SetThreshold(TemperatureType::Boreal,
+   world.SetThreshold(TemperatureLevel::Boreal,
                       FindThresholdF(t, world.temps()[3], &ocean));
-   world.SetThreshold(TemperatureType::Cool,
+   world.SetThreshold(TemperatureLevel::Cool,
                       FindThresholdF(t, world.temps()[2], &ocean));
-   world.SetThreshold(TemperatureType::Warm,
+   world.SetThreshold(TemperatureLevel::Warm,
                       FindThresholdF(t, world.temps()[1], &ocean));
-   world.SetThreshold(TemperatureType::Subtropical,
+   world.SetThreshold(TemperatureLevel::Subtropical,
                       FindThresholdF(t, world.temps()[0], &ocean));
-   world.SetThreshold(TemperatureType::Tropical,
+   world.SetThreshold(TemperatureLevel::Tropical,
                       std::numeric_limits<float>::max());
 
    BOOST_LOG_TRIVIAL(info) << "Temperature simulation finish";

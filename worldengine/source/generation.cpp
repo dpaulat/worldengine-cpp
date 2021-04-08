@@ -148,19 +148,19 @@ void GenerateWorld(World& world, const Step& step, uint32_t seed)
    std::uniform_int_distribution<uint32_t> distribution(0, UINT32_MAX);
 
    // Seed map should be appended to to maximize compatibility between versions
-   std::unordered_map<Simulations, uint32_t> seedMap;
-   seedMap.insert({Simulations::Precipitation, distribution(generator)});
-   seedMap.insert({Simulations::Erosion, distribution(generator)});
-   seedMap.insert({Simulations::Watermap, distribution(generator)});
-   seedMap.insert({Simulations::Irrigation, distribution(generator)});
-   seedMap.insert({Simulations::Temperature, distribution(generator)});
-   seedMap.insert({Simulations::Humidity, distribution(generator)});
-   seedMap.insert({Simulations::Permeability, distribution(generator)});
-   seedMap.insert({Simulations::Biome, distribution(generator)});
-   seedMap.insert({Simulations::Icecap, distribution(generator)});
+   std::unordered_map<Simulation, uint32_t> seedMap;
+   seedMap.insert({Simulation::Precipitation, distribution(generator)});
+   seedMap.insert({Simulation::Erosion, distribution(generator)});
+   seedMap.insert({Simulation::Watermap, distribution(generator)});
+   seedMap.insert({Simulation::Irrigation, distribution(generator)});
+   seedMap.insert({Simulation::Temperature, distribution(generator)});
+   seedMap.insert({Simulation::Humidity, distribution(generator)});
+   seedMap.insert({Simulation::Permeability, distribution(generator)});
+   seedMap.insert({Simulation::Biome, distribution(generator)});
+   seedMap.insert({Simulation::Icecap, distribution(generator)});
 
-   TemperatureSimulation(world, seedMap[Simulations::Temperature]);
-   PrecipitationSimulation(world, seedMap[Simulations::Precipitation]);
+   TemperatureSimulation(world, seedMap[Simulation::Temperature]);
+   PrecipitationSimulation(world, seedMap[Simulation::Precipitation]);
 
    if (!step.includeErosion_)
    {
@@ -168,12 +168,12 @@ void GenerateWorld(World& world, const Step& step, uint32_t seed)
    }
 
    ErosionSimulation(world);
-   WatermapSimulation(world, seedMap[Simulations::Watermap]);
+   WatermapSimulation(world, seedMap[Simulation::Watermap]);
    IrrigationSimulation(world);
    HumiditySimulation(world);
-   PermeabilitySimulation(world, seedMap[Simulations::Permeability]);
+   PermeabilitySimulation(world, seedMap[Simulation::Permeability]);
    BiomeSimulation(world);
-   IcecapSimulation(world, seedMap[Simulations::Icecap]);
+   IcecapSimulation(world, seedMap[Simulation::Icecap]);
 }
 
 void InitializeOceanAndThresholds(World& world, float oceanLevel)
@@ -185,9 +185,9 @@ void InitializeOceanAndThresholds(World& world, float oceanLevel)
 
    float hl = FindThresholdF(e, 0.10); // Highest 10% of land is hills
    float ml = FindThresholdF(e, 0.03); // Highest 3% of land is mountains
-   world.SetThreshold(ElevationThresholdType::Sea, oceanLevel);
-   world.SetThreshold(ElevationThresholdType::Hill, hl);
-   world.SetThreshold(ElevationThresholdType::Mountain, ml);
+   world.SetThreshold(ElevationThreshold::Sea, oceanLevel);
+   world.SetThreshold(ElevationThreshold::Hill, hl);
+   world.SetThreshold(ElevationThreshold::Mountain, ml);
 
    HarmonizeOcean(ocean, e, oceanLevel);
 

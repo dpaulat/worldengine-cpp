@@ -24,7 +24,7 @@ typedef float    RiverMapDataType;
 typedef float    TemperatureDataType;
 typedef float    WaterMapDataType;
 
-typedef boost::multi_array<Biomes, 2>                BiomeArrayType;
+typedef boost::multi_array<Biome, 2>                 BiomeArrayType;
 typedef boost::multi_array<ElevationDataType, 2>     ElevationArrayType;
 typedef boost::multi_array<HumidityDataType, 2>      HumidityArrayType;
 typedef boost::multi_array<IcecapDataType, 2>        IcecapArrayType;
@@ -103,22 +103,22 @@ public:
    TemperatureArrayType&   GetTemperatureData();
    WaterMapArrayType&      GetWaterMapData();
 
-   float GetThreshold(ElevationThresholdType type) const;
-   float GetThreshold(HumidityLevels type) const;
+   float GetThreshold(ElevationThreshold type) const;
+   float GetThreshold(HumidityLevel type) const;
    float GetThreshold(PermeabilityLevel type) const;
-   float GetThreshold(PrecipitationLevelType type) const;
-   float GetThreshold(TemperatureType type) const;
-   float GetThreshold(WaterThresholds type) const;
+   float GetThreshold(PrecipitationLevel type) const;
+   float GetThreshold(TemperatureLevel type) const;
+   float GetThreshold(WaterThreshold type) const;
 
-   Biomes GetBiome(uint32_t x, uint32_t y) const;
+   Biome GetBiome(uint32_t x, uint32_t y) const;
 
    bool IsLand(uint32_t x, uint32_t y) const;
    bool IsOcean(uint32_t x, uint32_t y) const;
    bool IsOcean(Point p) const;
    bool IsMountain(uint32_t x, uint32_t y) const;
 
-   TemperatureType GetTemperatureType(uint32_t x, uint32_t y) const;
-   HumidityLevels  GetHumidityLevel(uint32_t x, uint32_t y) const;
+   TemperatureLevel GetTemperatureLevel(uint32_t x, uint32_t y) const;
+   HumidityLevel    GetHumidityLevel(uint32_t x, uint32_t y) const;
 
    void GetRandomLand(std::vector<std::pair<uint32_t, uint32_t>>& landSamples,
                       uint32_t                                    numSamples,
@@ -130,12 +130,12 @@ public:
    void SetElevationData(const float* heightmap);
    void SetPlatesData(const uint32_t* platesmap);
 
-   void SetThreshold(ElevationThresholdType type, float value);
-   void SetThreshold(HumidityLevels type, float value);
+   void SetThreshold(ElevationThreshold type, float value);
+   void SetThreshold(HumidityLevel type, float value);
    void SetThreshold(PermeabilityLevel type, float value);
-   void SetThreshold(PrecipitationLevelType type, float value);
-   void SetThreshold(TemperatureType type, float value);
-   void SetThreshold(WaterThresholds type, float value);
+   void SetThreshold(PrecipitationLevel type, float value);
+   void SetThreshold(TemperatureLevel type, float value);
+   void SetThreshold(WaterThreshold type, float value);
 
    bool ProtobufSerialize(std::string& output) const;
 
@@ -163,12 +163,12 @@ private:
    TemperatureArrayType   temperature_;
    WaterMapArrayType      waterMap_;
 
-   std::unordered_map<ElevationThresholdType, float> elevationThresholds_;
-   std::unordered_map<HumidityLevels, float>         humidityThresholds_;
-   std::unordered_map<PermeabilityLevel, float>      permeabilityThresholds_;
-   std::unordered_map<PrecipitationLevelType, float> precipitationThresholds_;
-   std::unordered_map<TemperatureType, float>        temperatureThresholds_;
-   std::unordered_map<WaterThresholds, float>        waterThresholds_;
+   std::unordered_map<ElevationThreshold, float> elevationThresholds_;
+   std::unordered_map<HumidityLevel, float>      humidityThresholds_;
+   std::unordered_map<PermeabilityLevel, float>  permeabilityThresholds_;
+   std::unordered_map<PrecipitationLevel, float> precipitationThresholds_;
+   std::unordered_map<TemperatureLevel, float>   temperatureThresholds_;
+   std::unordered_map<WaterThreshold, float>     waterThresholds_;
 
    static int32_t WorldengineTag();
    static int32_t VersionHashcode();

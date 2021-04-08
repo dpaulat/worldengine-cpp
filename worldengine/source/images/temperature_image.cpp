@@ -8,8 +8,8 @@ TemperatureImage::~TemperatureImage() {}
 
 void TemperatureImage::DrawImage(boost::gil::gray8_image_t::view_t& target)
 {
-   float low  = world_.GetThreshold(TemperatureType::Polar);
-   float high = world_.GetThreshold(TemperatureType::Subtropical);
+   float low  = world_.GetThreshold(TemperatureLevel::Polar);
+   float high = world_.GetThreshold(TemperatureLevel::Subtropical);
 
    DrawGrayscaleFromArray(world_.GetTemperatureData(), low, high, target);
 }
@@ -20,33 +20,33 @@ void TemperatureImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    {
       for (uint32_t x = 0; x < world_.width(); x++)
       {
-         switch (world_.GetTemperatureType(x, y))
+         switch (world_.GetTemperatureLevel(x, y))
          {
-         case TemperatureType::Polar:
+         case TemperatureLevel::Polar:
             target(x, y) = boost::gil::rgb8_pixel_t(0, 0, 255);
             break;
 
-         case TemperatureType::Alpine:
+         case TemperatureLevel::Alpine:
             target(x, y) = boost::gil::rgb8_pixel_t(42, 0, 213);
             break;
 
-         case TemperatureType::Boreal:
+         case TemperatureLevel::Boreal:
             target(x, y) = boost::gil::rgb8_pixel_t(85, 0, 170);
             break;
 
-         case TemperatureType::Cool:
+         case TemperatureLevel::Cool:
             target(x, y) = boost::gil::rgb8_pixel_t(128, 0, 128);
             break;
 
-         case TemperatureType::Warm:
+         case TemperatureLevel::Warm:
             target(x, y) = boost::gil::rgb8_pixel_t(170, 0, 85);
             break;
 
-         case TemperatureType::Subtropical:
+         case TemperatureLevel::Subtropical:
             target(x, y) = boost::gil::rgb8_pixel_t(213, 0, 42);
             break;
 
-         case TemperatureType::Tropical:
+         case TemperatureLevel::Tropical:
          default: //
             target(x, y) = boost::gil::rgb8_pixel_t(255, 0, 0);
             break;

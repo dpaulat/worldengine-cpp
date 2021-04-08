@@ -35,7 +35,7 @@ public:
 
 typedef std::pair<int32_t, int32_t> Point;
 
-enum class BiomeGroups
+enum class BiomeGroup
 {
    BorealForest,
    CoolTemperateForest,
@@ -52,7 +52,7 @@ enum class BiomeGroups
    Chaparral
 };
 
-enum class Biomes
+enum class Biome
 {
    Ocean,
    Sea,
@@ -98,7 +98,7 @@ enum class Biomes
    BareRock
 };
 
-enum class ElevationThresholdType
+enum class ElevationThreshold
 {
    Sea,
    Hill,
@@ -114,7 +114,7 @@ enum class ExportDataType
    Float32
 };
 
-enum class HumidityLevels
+enum class HumidityLevel
 {
    Superarid,
    Perarid,
@@ -126,9 +126,9 @@ enum class HumidityLevels
    Superhumid,
    Last = Superhumid
 };
-typedef Iterator<HumidityLevels,
-                 HumidityLevels::Superarid,
-                 HumidityLevels::Superhumid>
+typedef Iterator<HumidityLevel,
+                 HumidityLevel::Superarid,
+                 HumidityLevel::Superhumid>
    HumidityIterator;
 
 enum class PermeabilityLevel
@@ -138,7 +138,7 @@ enum class PermeabilityLevel
    High
 };
 
-enum class PrecipitationLevelType
+enum class PrecipitationLevel
 {
    Low,
    Medium,
@@ -151,7 +151,7 @@ enum class SeaColor
    Brown
 };
 
-enum class Simulations
+enum class Simulation
 {
    Precipitation,
    Erosion,
@@ -171,7 +171,7 @@ enum class StepType
    Full
 };
 
-enum class TemperatureType
+enum class TemperatureLevel
 {
    Polar,
    Alpine,
@@ -183,12 +183,12 @@ enum class TemperatureType
    Count,
    Last = Tropical
 };
-typedef Iterator<TemperatureType,
-                 TemperatureType::Polar,
-                 TemperatureType::Tropical>
+typedef Iterator<TemperatureLevel,
+                 TemperatureLevel::Polar,
+                 TemperatureLevel::Tropical>
    TemperatureIterator;
 
-enum class WaterThresholds
+enum class WaterThreshold
 {
    Creek,
    River,
@@ -292,12 +292,12 @@ const std::vector<float> DEFAULT_HUMIDS {
 
 /**
  * @brief Convert from a biomes enumeration to a string value
- * @param type Biomes enumeration
+ * @param type Biome enumeration
  * @return String value
  */
-std::string BiomesToString(Biomes type);
+std::string BiomeToString(Biome type);
 
-std::ostream& operator<<(std::ostream& os, const Biomes& type);
+std::ostream& operator<<(std::ostream& os, const Biome& type);
 
 /**
  * @brief Convert from an export data type enumeration to a string value

@@ -21,11 +21,11 @@ void PrecipitationSimulation(World& world, uint32_t seed)
 
    PrecipitationCalculation(world, seed);
 
-   world.SetThreshold(PrecipitationLevelType::Low,
+   world.SetThreshold(PrecipitationLevel::Low,
                       FindThresholdF(p, 0.75f, &ocean));
-   world.SetThreshold(PrecipitationLevelType::Medium,
+   world.SetThreshold(PrecipitationLevel::Medium,
                       FindThresholdF(p, 0.3f, &ocean));
-   world.SetThreshold(PrecipitationLevelType::High, 0.0f);
+   world.SetThreshold(PrecipitationLevel::High, 0.0f);
 
    BOOST_LOG_TRIVIAL(info) << "Precipitation simulation finish";
 }

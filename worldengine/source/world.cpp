@@ -313,7 +313,7 @@ WaterMapArrayType& World::GetWaterMapData()
    return waterMap_;
 }
 
-float World::GetThreshold(ElevationThresholdType type) const
+float World::GetThreshold(ElevationThreshold type) const
 {
    float threshold = std::numeric_limits<float>::max();
 
@@ -325,7 +325,7 @@ float World::GetThreshold(ElevationThresholdType type) const
    return threshold;
 }
 
-float World::GetThreshold(HumidityLevels type) const
+float World::GetThreshold(HumidityLevel type) const
 {
    float threshold = std::numeric_limits<float>::max();
 
@@ -349,7 +349,7 @@ float World::GetThreshold(PermeabilityLevel type) const
    return threshold;
 }
 
-float World::GetThreshold(PrecipitationLevelType type) const
+float World::GetThreshold(PrecipitationLevel type) const
 {
    float threshold = std::numeric_limits<float>::max();
 
@@ -361,7 +361,7 @@ float World::GetThreshold(PrecipitationLevelType type) const
    return threshold;
 }
 
-float World::GetThreshold(TemperatureType type) const
+float World::GetThreshold(TemperatureLevel type) const
 {
    float threshold = std::numeric_limits<float>::max();
 
@@ -373,7 +373,7 @@ float World::GetThreshold(TemperatureType type) const
    return threshold;
 }
 
-float World::GetThreshold(WaterThresholds type) const
+float World::GetThreshold(WaterThreshold type) const
 {
    float threshold = std::numeric_limits<float>::max();
 
@@ -385,7 +385,7 @@ float World::GetThreshold(WaterThresholds type) const
    return threshold;
 }
 
-Biomes World::GetBiome(uint32_t x, uint32_t y) const
+Biome World::GetBiome(uint32_t x, uint32_t y) const
 {
    return biome_[y][x];
 }
@@ -412,10 +412,10 @@ bool World::IsMountain(uint32_t x, uint32_t y) const
       return false;
    }
 
-   return elevation_[y][x] > GetThreshold(ElevationThresholdType::Mountain);
+   return elevation_[y][x] > GetThreshold(ElevationThreshold::Mountain);
 }
 
-TemperatureType World::GetTemperatureType(uint32_t x, uint32_t y) const
+TemperatureLevel World::GetTemperatureLevel(uint32_t x, uint32_t y) const
 {
    uint32_t width  = temperature_.shape()[1];
    uint32_t height = temperature_.shape()[0];
@@ -427,7 +427,7 @@ TemperatureType World::GetTemperatureType(uint32_t x, uint32_t y) const
 
    float temperature = temperature_[y][x];
 
-   for (TemperatureType type : TemperatureIterator())
+   for (TemperatureLevel type : TemperatureIterator())
    {
       if (temperature < GetThreshold(type))
       {
@@ -435,10 +435,10 @@ TemperatureType World::GetTemperatureType(uint32_t x, uint32_t y) const
       }
    }
 
-   return TemperatureType::Last;
+   return TemperatureLevel::Last;
 }
 
-HumidityLevels World::GetHumidityLevel(uint32_t x, uint32_t y) const
+HumidityLevel World::GetHumidityLevel(uint32_t x, uint32_t y) const
 {
    uint32_t width  = precipitation_.shape()[1];
    uint32_t height = precipitation_.shape()[0];
@@ -450,7 +450,7 @@ HumidityLevels World::GetHumidityLevel(uint32_t x, uint32_t y) const
 
    float humidity = humidity_[y][x];
 
-   for (HumidityLevels type : HumidityIterator())
+   for (HumidityLevel type : HumidityIterator())
    {
       if (humidity < GetThreshold(type))
       {
@@ -458,7 +458,7 @@ HumidityLevels World::GetHumidityLevel(uint32_t x, uint32_t y) const
       }
    }
 
-   return HumidityLevels::Last;
+   return HumidityLevel::Last;
 }
 
 void World::GetRandomLand(
@@ -533,12 +533,12 @@ void World::SetPlatesData(const uint32_t* platesmap)
    BOOST_LOG_TRIVIAL(debug) << "Platesmap multi_array:" << std::endl << plates_;
 }
 
-void World::SetThreshold(ElevationThresholdType type, float value)
+void World::SetThreshold(ElevationThreshold type, float value)
 {
    elevationThresholds_[type] = value;
 }
 
-void World::SetThreshold(HumidityLevels type, float value)
+void World::SetThreshold(HumidityLevel type, float value)
 {
    humidityThresholds_[type] = value;
 }
@@ -548,17 +548,17 @@ void World::SetThreshold(PermeabilityLevel type, float value)
    permeabilityThresholds_[type] = value;
 }
 
-void World::SetThreshold(PrecipitationLevelType type, float value)
+void World::SetThreshold(PrecipitationLevel type, float value)
 {
    precipitationThresholds_[type] = value;
 }
 
-void World::SetThreshold(TemperatureType type, float value)
+void World::SetThreshold(TemperatureLevel type, float value)
 {
    temperatureThresholds_[type] = value;
 }
 
-void World::SetThreshold(WaterThresholds type, float value)
+void World::SetThreshold(WaterThreshold type, float value)
 {
    waterThresholds_[type] = value;
 }
@@ -593,9 +593,9 @@ bool World::ProtobufSerialize(std::string& output) const
    // Elevation
    // TODO
    pbWorld.set_allocated_heightmapdata(pbHeightmapData);
-   pbWorld.set_heightmapth_sea(GetThreshold(ElevationThresholdType::Sea));
-   pbWorld.set_heightmapth_plain(GetThreshold(ElevationThresholdType::Hill));
-   pbWorld.set_heightmapth_hill(GetThreshold(ElevationThresholdType::Mountain));
+   pbWorld.set_heightmapth_sea(GetThreshold(ElevationThreshold::Sea));
+   pbWorld.set_heightmapth_plain(GetThreshold(ElevationThreshold::Hill));
+   pbWorld.set_heightmapth_hill(GetThreshold(ElevationThreshold::Mountain));
 
    // Plates
    // TODO
