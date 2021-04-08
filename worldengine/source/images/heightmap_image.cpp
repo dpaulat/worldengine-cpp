@@ -1,4 +1,4 @@
-#include "heightmap_image.h"
+#include "worldengine/images/heightmap_image.h"
 
 namespace WorldEngine
 {

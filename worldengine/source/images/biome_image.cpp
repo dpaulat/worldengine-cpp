@@ -1,4 +1,4 @@
-#include "biome_image.h"
+#include "worldengine/images/biome_image.h"
 
 namespace WorldEngine
 {

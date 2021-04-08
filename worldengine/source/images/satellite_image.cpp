@@ -1,4 +1,4 @@
-#include "satellite_image.h"
+#include "worldengine/images/satellite_image.h"
 #include "../basic.h"
 
 #include <algorithm>

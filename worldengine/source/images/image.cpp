@@ -1,4 +1,4 @@
-#include "image.h"
+#include "worldengine/images/image.h"
 #include "../basic.h"
 
 #include <boost/gil/extension/io/png.hpp>

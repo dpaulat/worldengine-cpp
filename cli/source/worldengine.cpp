@@ -11,20 +11,20 @@
 #include <boost/log/trivial.hpp>
 #include <boost/program_options.hpp>
 
-#include <common.h>
-#include <plates.h>
-#include <world.h>
+#include <worldengine/common.h>
+#include <worldengine/plates.h>
+#include <worldengine/world.h>
 
-#include <images/biome_image.h>
-#include <images/heightmap_image.h>
-#include <images/icecap_image.h>
-#include <images/ocean_image.h>
-#include <images/precipitation_image.h>
-#include <images/river_image.h>
-#include <images/satellite_image.h>
-#include <images/scatter_plot_image.h>
-#include <images/simple_elevation_image.h>
-#include <images/temperature_image.h>
+#include <worldengine/images/biome_image.h>
+#include <worldengine/images/heightmap_image.h>
+#include <worldengine/images/icecap_image.h>
+#include <worldengine/images/ocean_image.h>
+#include <worldengine/images/precipitation_image.h>
+#include <worldengine/images/river_image.h>
+#include <worldengine/images/satellite_image.h>
+#include <worldengine/images/scatter_plot_image.h>
+#include <worldengine/images/simple_elevation_image.h>
+#include <worldengine/images/temperature_image.h>
 
 namespace po = boost::program_options;
 

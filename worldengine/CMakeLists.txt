@@ -6,19 +6,18 @@ find_package(PNG)
 find_package(Protobuf)
 find_package(ZLIB)
 
+set(HDR_INTERFACE include/worldengine/common.h
+                  include/worldengine/plates.h
+                  include/worldengine/world.h)
 set(SRC_MAIN source/basic.cpp
              source/common.cpp
-             source/draw.cpp
              source/generation.cpp
              source/path.cpp
              source/plates.cpp
              source/world.cpp)
 set(HDR_MAIN source/basic.h
-             source/common.h
              source/generation.h
-             source/path.h
-             source/plates.h
-             source/world.h)
+             source/path.h)
 set(SRC_SIMULATIONS source/simulations/biome.cpp
                     source/simulations/erosion.cpp
                     source/simulations/humidity.cpp
@@ -48,17 +47,17 @@ set(SRC_IMAGES source/images/image.cpp
                source/images/scatter_plot_image.cpp
                source/images/simple_elevation_image.cpp
                source/images/temperature_image.cpp)
-set(HDR_IMAGES source/images/image.h
-               source/images/biome_image.h
-               source/images/heightmap_image.h
-               source/images/icecap_image.h
-               source/images/ocean_image.h
-               source/images/precipitation_image.h
-               source/images/river_image.h
-               source/images/satellite_image.h
-               source/images/scatter_plot_image.h
-               source/images/simple_elevation_image.h
-               source/images/temperature_image.h)
+set(HDR_IMAGES include/worldengine/images/image.h
+               include/worldengine/images/biome_image.h
+               include/worldengine/images/heightmap_image.h
+               include/worldengine/images/icecap_image.h
+               include/worldengine/images/ocean_image.h
+               include/worldengine/images/precipitation_image.h
+               include/worldengine/images/river_image.h
+               include/worldengine/images/satellite_image.h
+               include/worldengine/images/scatter_plot_image.h
+               include/worldengine/images/simple_elevation_image.h
+               include/worldengine/images/temperature_image.h)
 set(PROTO_FILES World.proto)
 
 add_library(worldengine STATIC ${SRC_MAIN}
@@ -67,6 +66,7 @@ add_library(worldengine STATIC ${SRC_MAIN}
                                ${HDR_IMAGES}
                                ${SRC_SIMULATIONS}
                                ${HDR_SIMULATIONS}
+                               ${HDR_INTERFACE}
                                ${PROTO_FILES})
 
 protobuf_generate(TARGET worldengine)
@@ -83,6 +83,7 @@ source_group("Header Files\\main"        FILES ${HDR_MAIN})
 source_group("Source Files\\main"        FILES ${SRC_MAIN})
 source_group("Header Files\\simulations" FILES ${HDR_SIMULATIONS})
 source_group("Source Files\\simulations" FILES ${SRC_SIMULATIONS})
+source_group("Header Files\\worldengine" FILES ${HDR_INTERFACE})
 
 target_include_directories(worldengine PRIVATE ${PLATE_TECTONICS_INCLUDE_DIR}
                                                ${OPENSIMPLEX_NOISE_INCLUDE_DIR}
@@ -90,9 +91,10 @@ target_include_directories(worldengine PRIVATE ${PLATE_TECTONICS_INCLUDE_DIR}
                                                ${PNG_INCLUDE_DIR}
                                                ${protobuf_INCLUDE_DIR}
                                                ${ZLIB_INCLUDE_DIR}
-                                               ${libworldengine_BINARY_DIR})
+                                               ${libworldengine_BINARY_DIR}
+                                               ${libworldengine_SOURCE_DIR}/include)
 
-target_include_directories(worldengine INTERFACE ${libworldengine_SOURCE_DIR}/source)
+target_include_directories(worldengine INTERFACE ${libworldengine_SOURCE_DIR}/include)
 
 set_target_properties(worldengine PROPERTIES CXX_STANDARD 17
                                              CXX_STANDARD_REQUIRED ON

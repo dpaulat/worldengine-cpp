@@ -1,4 +1,4 @@
-#include "scatter_plot_image.h"
+#include "worldengine/images/scatter_plot_image.h"
 
 #include <boost/log/trivial.hpp>
 

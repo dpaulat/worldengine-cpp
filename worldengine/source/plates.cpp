@@ -1,6 +1,6 @@
-#include "plates.h"
+#include "worldengine/plates.h"
+#include "worldengine/world.h"
 #include "generation.h"
-#include "world.h"
 
 #include <chrono>
 #include <random>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include <worldengine/common.h>
 
 #include <string>
 #include <vector>

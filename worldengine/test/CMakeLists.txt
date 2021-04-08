@@ -18,7 +18,8 @@ add_executable(worldengine-test ${SRC_MAIN}
 source_group("Source Files\\main"        FILES ${SRC_MAIN})
 source_group("Source Files\\simulations" FILES ${SRC_SIMULATIONS})
 
-target_include_directories(worldengine-test PRIVATE ${GTest_INCLUDE_DIRS})
+target_include_directories(worldengine-test PRIVATE ${GTest_INCLUDE_DIRS}
+                                                    ${libworldengine_SOURCE_DIR}/source)
 
 set_target_properties(worldengine-test PROPERTIES CXX_STANDARD 17
                                                   CXX_STANDARD_REQUIRED ON

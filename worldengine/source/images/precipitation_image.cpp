@@ -1,4 +1,4 @@
-#include "precipitation_image.h"
+#include "worldengine/images/precipitation_image.h"
 #include "../basic.h"
 
 namespace WorldEngine

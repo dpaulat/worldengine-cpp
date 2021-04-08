@@ -7,7 +7,6 @@ add_executable(worldengine-cli source/main.cpp
                                source/worldengine.cpp
                                source/worldengine.h)
 
-target_include_directories(worldengine-cli PRIVATE ${libworldengine_SOURCE_DIR}/source)
 target_link_libraries(worldengine-cli worldengine OpenSimplexNoise PlateTectonics)
 
 find_package(Boost COMPONENTS log

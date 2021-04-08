@@ -1,4 +1,4 @@
-#include "ocean_image.h"
+#include "worldengine/images/ocean_image.h"
 
 namespace WorldEngine
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../world.h"
+#include "worldengine/world.h"
 
 #include <boost/gil.hpp>
 

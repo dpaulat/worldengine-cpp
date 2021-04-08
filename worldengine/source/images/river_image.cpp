@@ -1,4 +1,4 @@
-#include "river_image.h"
+#include "worldengine/images/river_image.h"
 
 namespace WorldEngine
 {

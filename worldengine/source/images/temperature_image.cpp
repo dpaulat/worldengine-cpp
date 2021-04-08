@@ -1,4 +1,4 @@
-#include "temperature_image.h"
+#include "worldengine/images/temperature_image.h"
 #include "../basic.h"
 
 namespace WorldEngine

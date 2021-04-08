@@ -1,4 +1,4 @@
-#include "simple_elevation_image.h"
+#include "worldengine/images/simple_elevation_image.h"
 
 #include <boost/log/trivial.hpp>
 

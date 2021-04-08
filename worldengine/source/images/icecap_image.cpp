@@ -1,4 +1,4 @@
-#include "icecap_image.h"
+#include "worldengine/images/icecap_image.h"
 
 namespace WorldEngine
 {
