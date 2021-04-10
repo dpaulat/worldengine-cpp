@@ -55,6 +55,70 @@ std::ostream& operator<<(std::ostream& os, const boost::multi_array<T, 2>& a)
 namespace WorldEngine
 {
 
+template<class T, class U, class V = T>
+static void ToProtobufMatrix(
+   const boost::multi_array<T, 2>&   source,
+   U*                                pbMatrix,
+   const std::function<V(const T&)>& transform = [](const T& value) {
+      return value;
+   });
+
+static int32_t WorldengineTag();
+static int32_t VersionHashcode();
+
+static const std::unordered_map<HumidityLevel, int>
+   humidityQuantiles_({{HumidityLevel::Superarid, 12},
+                       {HumidityLevel::Perarid, 25},
+                       {HumidityLevel::Arid, 37},
+                       {HumidityLevel::Semiarid, 50},
+                       {HumidityLevel::Subhumid, 62},
+                       {HumidityLevel::Humid, 75},
+                       {HumidityLevel::Perhumid, 87}});
+
+static const std::unordered_map<Biome, int>
+   biomeIndices_({{Biome::BorealDesert, 0},
+                  {Biome::BorealDryScrub, 1},
+                  {Biome::BorealMoistForest, 2},
+                  {Biome::BorealRainForest, 3},
+                  {Biome::BorealWetForest, 4},
+                  {Biome::CoolTemperateDesert, 5},
+                  {Biome::CoolTemperateDesertScrub, 6},
+                  {Biome::CoolTemperateMoistForest, 7},
+                  {Biome::CoolTemperateRainForest, 8},
+                  {Biome::CoolTemperateSteppe, 9},
+                  {Biome::CoolTemperateWetForest, 10},
+                  {Biome::Ice, 11},
+                  {Biome::Ocean, 12},
+                  {Biome::PolarDesert, 13},
+                  {Biome::Sea, 14},
+                  {Biome::SubpolarDryTundra, 15},
+                  {Biome::SubpolarMoistTundra, 16},
+                  {Biome::SubpolarRainTundra, 17},
+                  {Biome::SubpolarWetTundra, 18},
+                  {Biome::SubtropicalDesert, 19},
+                  {Biome::SubtropicalDesertScrub, 20},
+                  {Biome::SubtropicalDryForest, 21},
+                  {Biome::SubtropicalMoistForest, 22},
+                  {Biome::SubtropicalRainForest, 23},
+                  {Biome::SubtropicalThornWoodland, 24},
+                  {Biome::SubtropicalWetForest, 25},
+                  {Biome::TropicalDesert, 26},
+                  {Biome::TropicalDesertScrub, 27},
+                  {Biome::TropicalDryForest, 28},
+                  {Biome::TropicalMoistForest, 29},
+                  {Biome::TropicalRainForest, 30},
+                  {Biome::TropicalThornWoodland, 31},
+                  {Biome::TropicalVeryDryForest, 32},
+                  {Biome::TropicalWetForest, 33},
+                  {Biome::WarmTemperateDesert, 34},
+                  {Biome::WarmTemperateDesertScrub, 35},
+                  {Biome::WarmTemperateDryForest, 36},
+                  {Biome::WarmTemperateMoistForest, 37},
+                  {Biome::WarmTemperateRainForest, 38},
+                  {Biome::WarmTemperateThornScrub, 39},
+                  {Biome::WarmTemperateWetForest, 40},
+                  {Biome::BareRock, -1}});
+
 World::World(const std::string&          name,
              Size                        size,
              uint32_t                    seed,
@@ -80,6 +144,7 @@ World::World(const std::string&          name,
     irrigation_(),
     permeability_(),
     precipitation_(),
+    seaDepth_(),
     temperature_(),
     waterMap_(),
     elevationThresholds_(),
@@ -155,7 +220,7 @@ bool World::Contains(int32_t x, int32_t y) const
 
 bool World::HasBiome() const
 {
-   return false;
+   return !biome_.empty();
 }
 
 bool World::HasHumidity() const
@@ -163,14 +228,29 @@ bool World::HasHumidity() const
    return !humidity_.empty();
 }
 
+bool World::HasIcecap() const
+{
+   return !icecap_.empty();
+}
+
 bool World::HasIrrigiation() const
 {
    return !irrigation_.empty();
 }
 
+bool World::HasLakemap() const
+{
+   return !lakeMap_.empty();
+}
+
 bool World::HasPermeability() const
 {
-   return false;
+   return !permeability_.empty();
+}
+
+bool World::HasRivermap() const
+{
+   return !riverMap_.empty();
 }
 
 bool World::HasWatermap() const
@@ -569,6 +649,8 @@ bool World::ProtobufSerialize(std::string& output) const
 
    ::World::World pbWorld;
 
+   // Protobuf takes ownership of this data, and does not need deleted
+   // manually
    ::World::World_GenerationData* pbGenerationData =
       new ::World::World_GenerationData();
    ::World::World_DoubleMatrix* pbHeightmapData =
@@ -591,20 +673,128 @@ bool World::ProtobufSerialize(std::string& output) const
    pbWorld.set_allocated_generationdata(pbGenerationData);
 
    // Elevation
-   // TODO
+   ToProtobufMatrix(elevation_, pbHeightmapData);
    pbWorld.set_allocated_heightmapdata(pbHeightmapData);
    pbWorld.set_heightmapth_sea(GetThreshold(ElevationThreshold::Sea));
    pbWorld.set_heightmapth_plain(GetThreshold(ElevationThreshold::Hill));
    pbWorld.set_heightmapth_hill(GetThreshold(ElevationThreshold::Mountain));
 
    // Plates
-   // TODO
+   ToProtobufMatrix(plates_, pbPlates);
    pbWorld.set_allocated_plates(pbPlates);
 
    // Ocean
-   // TODO
+   ToProtobufMatrix(ocean_, pbOcean);
    pbWorld.set_allocated_ocean(pbOcean);
+   ToProtobufMatrix(seaDepth_, pbSeaDepth);
    pbWorld.set_allocated_sea_depth(pbSeaDepth);
+
+   if (HasBiome())
+   {
+      ::World::World_IntegerMatrix* pbBiome =
+         new ::World::World_IntegerMatrix();
+      ToProtobufMatrix<Biome, ::World::World_IntegerMatrix, int32_t>(
+         biome_, pbBiome, [](const Biome& value) {
+            return biomeIndices_.at(value);
+         });
+      pbWorld.set_allocated_biome(pbBiome);
+   }
+
+   if (HasHumidity())
+   {
+      ::World::World_DoubleMatrixWithQuantiles* pbHumidity =
+         new ::World::World_DoubleMatrixWithQuantiles();
+      ToProtobufMatrix(humidity_, pbHumidity);
+
+      for (HumidityLevel h : HumidityIterator())
+      {
+         if (h != HumidityLevel::Last)
+         {
+            ::World::World_DoubleQuantile* entry = pbHumidity->add_quantiles();
+            entry->set_key(humidityQuantiles_.at(h));
+            entry->set_value(GetThreshold(h));
+         }
+      }
+
+      pbWorld.set_allocated_humidity(pbHumidity);
+   }
+
+   if (HasIrrigiation())
+   {
+      ::World::World_DoubleMatrix* pbIrrigation =
+         new ::World::World_DoubleMatrix();
+      ToProtobufMatrix(irrigation_, pbIrrigation);
+      pbWorld.set_allocated_irrigation(pbIrrigation);
+   }
+
+   if (HasPermeability())
+   {
+      ::World::World_DoubleMatrix* pbPermeability =
+         new ::World::World_DoubleMatrix();
+      ToProtobufMatrix(permeability_, pbPermeability);
+      pbWorld.set_allocated_permeabilitydata(pbPermeability);
+      pbWorld.set_permeability_low(GetThreshold(PermeabilityLevel::Low));
+      pbWorld.set_permeability_med(GetThreshold(PermeabilityLevel::Medium));
+   }
+
+   if (HasWatermap())
+   {
+      ::World::World_DoubleMatrix* pbWatermap =
+         new ::World::World_DoubleMatrix();
+      ToProtobufMatrix(waterMap_, pbWatermap);
+      pbWorld.set_allocated_watermapdata(pbWatermap);
+      pbWorld.set_watermap_creek(GetThreshold(WaterThreshold::Creek));
+      pbWorld.set_watermap_river(GetThreshold(WaterThreshold::River));
+      pbWorld.set_watermap_mainriver(GetThreshold(WaterThreshold::MainRiver));
+   }
+
+   if (HasLakemap())
+   {
+      ::World::World_DoubleMatrix* pbLakemap =
+         new ::World::World_DoubleMatrix();
+      ToProtobufMatrix(lakeMap_, pbLakemap);
+      pbWorld.set_allocated_lakemap(pbLakemap);
+   }
+
+   if (HasRivermap())
+   {
+      ::World::World_DoubleMatrix* pbRivermap =
+         new ::World::World_DoubleMatrix();
+      ToProtobufMatrix(riverMap_, pbRivermap);
+      pbWorld.set_allocated_rivermap(pbRivermap);
+   }
+
+   if (HasPrecipitations())
+   {
+      ::World::World_DoubleMatrix* pbPrecipitation =
+         new ::World::World_DoubleMatrix();
+      ToProtobufMatrix(precipitation_, pbPrecipitation);
+      pbWorld.set_allocated_precipitationdata(pbPrecipitation);
+      pbWorld.set_precipitation_low(GetThreshold(PrecipitationLevel::Low));
+      pbWorld.set_precipitation_med(GetThreshold(PrecipitationLevel::Medium));
+   }
+
+   if (HasTemperature())
+   {
+      ::World::World_DoubleMatrix* pbTemperature =
+         new ::World::World_DoubleMatrix();
+      ToProtobufMatrix(precipitation_, pbTemperature);
+      pbWorld.set_allocated_temperaturedata(pbTemperature);
+      pbWorld.set_temperature_polar(GetThreshold(TemperatureLevel::Polar));
+      pbWorld.set_temperature_alpine(GetThreshold(TemperatureLevel::Alpine));
+      pbWorld.set_temperature_boreal(GetThreshold(TemperatureLevel::Boreal));
+      pbWorld.set_temperature_cool(GetThreshold(TemperatureLevel::Cool));
+      pbWorld.set_temperature_warm(GetThreshold(TemperatureLevel::Warm));
+      pbWorld.set_temperature_subtropical(
+         GetThreshold(TemperatureLevel::Subtropical));
+   }
+
+   if (HasIcecap())
+   {
+      ::World::World_DoubleMatrix* pbIcecap = new ::World::World_DoubleMatrix();
+      ToProtobufMatrix(icecap_, pbIcecap);
+      pbWorld.set_allocated_rivermap(pbIcecap);
+   }
 
    try
    {
@@ -616,29 +806,6 @@ bool World::ProtobufSerialize(std::string& output) const
    }
 
    return success;
-}
-
-int32_t World::WorldengineTag()
-{
-   return ('W' << 24) | ('o' << 16) | ('e' << 8) | 'n';
-}
-
-int32_t World::VersionHashcode()
-{
-   int hashcode = 0;
-
-   boost::char_separator<char>                   sep(".");
-   boost::tokenizer<boost::char_separator<char>> t(WORLDENGINE_VERSION, sep);
-   for (const std::string& str : t)
-   {
-      // 3 version components
-      hashcode = (hashcode << 8) | std::stoi(str);
-   }
-
-   // 4th component (0)
-   hashcode <<= 8;
-
-   return hashcode;
 }
 
 template<typename T, typename U>
@@ -655,6 +822,47 @@ void World::SetArrayData(const U* source, boost::multi_array<T, 2>& dest)
          dest[y][x] = static_cast<T>(source[x + rowOffset]);
       }
    }
+}
+
+template<class T, class U, class V>
+static void ToProtobufMatrix(const boost::multi_array<T, 2>&   source,
+                             U*                                pbMatrix,
+                             const std::function<V(const T&)>& transform)
+{
+   const uint32_t width  = source.shape()[1];
+   const uint32_t height = source.shape()[0];
+
+   for (uint32_t y = 0; y < height; y++)
+   {
+      auto* row = pbMatrix->add_rows();
+      for (uint32_t x = 0; x < width; x++)
+      {
+         row->add_cells(transform(source[y][x]));
+      }
+   }
+}
+
+static int32_t WorldengineTag()
+{
+   return ('W' << 24) | ('o' << 16) | ('e' << 8) | 'n';
+}
+
+static int32_t VersionHashcode()
+{
+   int hashcode = 0;
+
+   boost::char_separator<char>                   sep(".");
+   boost::tokenizer<boost::char_separator<char>> t(WORLDENGINE_VERSION, sep);
+   for (const std::string& str : t)
+   {
+      // 3 version components
+      hashcode = (hashcode << 8) | std::stoi(str);
+   }
+
+   // 4th component (0)
+   hashcode <<= 8;
+
+   return hashcode;
 }
 
 } // namespace WorldEngine

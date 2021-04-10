@@ -21,6 +21,7 @@ typedef float    PermeabilityDataType;
 typedef uint16_t PlateDataType;
 typedef float    PrecipitationDataType;
 typedef float    RiverMapDataType;
+typedef float    SeaDepthDataType;
 typedef float    TemperatureDataType;
 typedef float    WaterMapDataType;
 
@@ -34,6 +35,7 @@ typedef boost::multi_array<OceanDataType, 2>         OceanArrayType;
 typedef boost::multi_array<PermeabilityDataType, 2>  PermeabilityArrayType;
 typedef boost::multi_array<PlateDataType, 2>         PlateArrayType;
 typedef boost::multi_array<PrecipitationDataType, 2> PrecipitationArrayType;
+typedef boost::multi_array<SeaDepthDataType, 2>      SeaDepthArrayType;
 typedef boost::multi_array<TemperatureDataType, 2>   TemperatureArrayType;
 typedef boost::multi_array<RiverMapDataType, 2>      RiverMapArrayType;
 typedef boost::multi_array<WaterMapDataType, 2>      WaterMapArrayType;
@@ -70,8 +72,11 @@ public:
 
    bool HasBiome() const;
    bool HasHumidity() const;
+   bool HasIcecap() const;
    bool HasIrrigiation() const;
+   bool HasLakemap() const;
    bool HasPermeability() const;
+   bool HasRivermap() const;
    bool HasWatermap() const;
    bool HasPrecipitations() const;
    bool HasTemperature() const;
@@ -160,6 +165,7 @@ private:
    PermeabilityArrayType  permeability_;
    PrecipitationArrayType precipitation_;
    RiverMapArrayType      riverMap_;
+   SeaDepthArrayType      seaDepth_;
    TemperatureArrayType   temperature_;
    WaterMapArrayType      waterMap_;
 
@@ -169,9 +175,6 @@ private:
    std::unordered_map<PrecipitationLevel, float> precipitationThresholds_;
    std::unordered_map<TemperatureLevel, float>   temperatureThresholds_;
    std::unordered_map<WaterThreshold, float>     waterThresholds_;
-
-   static int32_t WorldengineTag();
-   static int32_t VersionHashcode();
 
    template<typename T, typename U>
    void SetArrayData(const U* source, boost::multi_array<T, 2>& dest);
