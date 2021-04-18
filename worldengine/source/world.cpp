@@ -2,6 +2,9 @@
 
 #include <random>
 
+#include <boost/assign.hpp>
+#include <boost/bimap.hpp>
+#include <boost/bimap/unordered_set_of.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -63,61 +66,77 @@ static void ToProtobufMatrix(
       return value;
    });
 
+template<class T, class U, class V = U>
+static void FromProtobufMatrix(
+   const T&                          pbMatrix,
+   boost::multi_array<U, 2>&         dest,
+   const std::function<U(const V&)>& transform = [](const V& value) {
+      return value;
+   });
+
 static int32_t WorldengineTag();
 static int32_t VersionHashcode();
 
-static const std::unordered_map<HumidityLevel, int>
-   humidityQuantiles_({{HumidityLevel::Superarid, 12},
-                       {HumidityLevel::Perarid, 25},
-                       {HumidityLevel::Arid, 37},
-                       {HumidityLevel::Semiarid, 50},
-                       {HumidityLevel::Subhumid, 62},
-                       {HumidityLevel::Humid, 75},
-                       {HumidityLevel::Perhumid, 87}});
+typedef boost::bimap<boost::bimaps::unordered_set_of<HumidityLevel>,
+                     boost::bimaps::unordered_set_of<int>>
+                           HumidityQuantileMap;
+static HumidityQuantileMap humidityQuantiles_ =
+   boost::assign::list_of<HumidityQuantileMap::relation> //
+   (HumidityLevel::Superarid, 12)                        //
+   (HumidityLevel::Perarid, 25)                          //
+   (HumidityLevel::Arid, 37)                             //
+   (HumidityLevel::Semiarid, 50)                         //
+   (HumidityLevel::Subhumid, 62)                         //
+   (HumidityLevel::Humid, 75)                            //
+   (HumidityLevel::Perhumid, 87);
 
-static const std::unordered_map<Biome, int>
-   biomeIndices_({{Biome::BorealDesert, 0},
-                  {Biome::BorealDryScrub, 1},
-                  {Biome::BorealMoistForest, 2},
-                  {Biome::BorealRainForest, 3},
-                  {Biome::BorealWetForest, 4},
-                  {Biome::CoolTemperateDesert, 5},
-                  {Biome::CoolTemperateDesertScrub, 6},
-                  {Biome::CoolTemperateMoistForest, 7},
-                  {Biome::CoolTemperateRainForest, 8},
-                  {Biome::CoolTemperateSteppe, 9},
-                  {Biome::CoolTemperateWetForest, 10},
-                  {Biome::Ice, 11},
-                  {Biome::Ocean, 12},
-                  {Biome::PolarDesert, 13},
-                  {Biome::Sea, 14},
-                  {Biome::SubpolarDryTundra, 15},
-                  {Biome::SubpolarMoistTundra, 16},
-                  {Biome::SubpolarRainTundra, 17},
-                  {Biome::SubpolarWetTundra, 18},
-                  {Biome::SubtropicalDesert, 19},
-                  {Biome::SubtropicalDesertScrub, 20},
-                  {Biome::SubtropicalDryForest, 21},
-                  {Biome::SubtropicalMoistForest, 22},
-                  {Biome::SubtropicalRainForest, 23},
-                  {Biome::SubtropicalThornWoodland, 24},
-                  {Biome::SubtropicalWetForest, 25},
-                  {Biome::TropicalDesert, 26},
-                  {Biome::TropicalDesertScrub, 27},
-                  {Biome::TropicalDryForest, 28},
-                  {Biome::TropicalMoistForest, 29},
-                  {Biome::TropicalRainForest, 30},
-                  {Biome::TropicalThornWoodland, 31},
-                  {Biome::TropicalVeryDryForest, 32},
-                  {Biome::TropicalWetForest, 33},
-                  {Biome::WarmTemperateDesert, 34},
-                  {Biome::WarmTemperateDesertScrub, 35},
-                  {Biome::WarmTemperateDryForest, 36},
-                  {Biome::WarmTemperateMoistForest, 37},
-                  {Biome::WarmTemperateRainForest, 38},
-                  {Biome::WarmTemperateThornScrub, 39},
-                  {Biome::WarmTemperateWetForest, 40},
-                  {Biome::BareRock, -1}});
+typedef boost::bimap<boost::bimaps::unordered_set_of<Biome>,
+                     boost::bimaps::unordered_set_of<int>>
+                     BiomeIndexMap;
+static BiomeIndexMap biomeIndices_ =
+   boost::assign::list_of<BiomeIndexMap::relation> //
+   (Biome::BorealDesert, 0)                        //
+   (Biome::BorealDryScrub, 1)                      //
+   (Biome::BorealMoistForest, 2)                   //
+   (Biome::BorealRainForest, 3)                    //
+   (Biome::BorealWetForest, 4)                     //
+   (Biome::CoolTemperateDesert, 5)                 //
+   (Biome::CoolTemperateDesertScrub, 6)            //
+   (Biome::CoolTemperateMoistForest, 7)            //
+   (Biome::CoolTemperateRainForest, 8)             //
+   (Biome::CoolTemperateSteppe, 9)                 //
+   (Biome::CoolTemperateWetForest, 10)             //
+   (Biome::Ice, 11)                                //
+   (Biome::Ocean, 12)                              //
+   (Biome::PolarDesert, 13)                        //
+   (Biome::Sea, 14)                                //
+   (Biome::SubpolarDryTundra, 15)                  //
+   (Biome::SubpolarMoistTundra, 16)                //
+   (Biome::SubpolarRainTundra, 17)                 //
+   (Biome::SubpolarWetTundra, 18)                  //
+   (Biome::SubtropicalDesert, 19)                  //
+   (Biome::SubtropicalDesertScrub, 20)             //
+   (Biome::SubtropicalDryForest, 21)               //
+   (Biome::SubtropicalMoistForest, 22)             //
+   (Biome::SubtropicalRainForest, 23)              //
+   (Biome::SubtropicalThornWoodland, 24)           //
+   (Biome::SubtropicalWetForest, 25)               //
+   (Biome::TropicalDesert, 26)                     //
+   (Biome::TropicalDesertScrub, 27)                //
+   (Biome::TropicalDryForest, 28)                  //
+   (Biome::TropicalMoistForest, 29)                //
+   (Biome::TropicalRainForest, 30)                 //
+   (Biome::TropicalThornWoodland, 31)              //
+   (Biome::TropicalVeryDryForest, 32)              //
+   (Biome::TropicalWetForest, 33)                  //
+   (Biome::WarmTemperateDesert, 34)                //
+   (Biome::WarmTemperateDesertScrub, 35)           //
+   (Biome::WarmTemperateDryForest, 36)             //
+   (Biome::WarmTemperateMoistForest, 37)           //
+   (Biome::WarmTemperateRainForest, 38)            //
+   (Biome::WarmTemperateThornScrub, 39)            //
+   (Biome::WarmTemperateWetForest, 40)             //
+   (Biome::BareRock, -1);
 
 World::World(const std::string&          name,
              Size                        size,
@@ -695,7 +714,7 @@ bool World::ProtobufSerialize(std::string& output) const
          new ::World::World_IntegerMatrix();
       ToProtobufMatrix<Biome, ::World::World_IntegerMatrix, int32_t>(
          biome_, pbBiome, [](const Biome& value) {
-            return biomeIndices_.at(value);
+            return biomeIndices_.left.at(value);
          });
       pbWorld.set_allocated_biome(pbBiome);
    }
@@ -711,7 +730,7 @@ bool World::ProtobufSerialize(std::string& output) const
          if (h != HumidityLevel::Last)
          {
             ::World::World_DoubleQuantile* entry = pbHumidity->add_quantiles();
-            entry->set_key(humidityQuantiles_.at(h));
+            entry->set_key(humidityQuantiles_.left.at(h));
             entry->set_value(GetThreshold(h));
          }
       }
@@ -808,6 +827,129 @@ bool World::ProtobufSerialize(std::string& output) const
    return success;
 }
 
+bool World::ProtobufDeserialize(std::istream& input)
+{
+   ::World::World pbWorld;
+   bool           success = false;
+
+   try
+   {
+      success = pbWorld.ParseFromIstream(&input);
+   }
+   catch (const std::exception& ex)
+   {
+      BOOST_LOG_TRIVIAL(error) << ex.what();
+   }
+
+   if (success)
+   {
+      try
+      {
+         name_ = pbWorld.name();
+         size_ = {static_cast<uint32_t>(pbWorld.width()),
+                  static_cast<uint32_t>(pbWorld.height())};
+         seed_ = pbWorld.generationdata().seed();
+
+         generationParams_.numPlates_  = pbWorld.generationdata().n_plates();
+         generationParams_.oceanLevel_ = pbWorld.generationdata().ocean_level();
+         generationParams_.step_ =
+            Step::step(StepTypeFromString(pbWorld.generationdata().step()));
+
+         // Elevation
+         FromProtobufMatrix(pbWorld.heightmapdata(), elevation_);
+         SetThreshold(ElevationThreshold::Sea, pbWorld.heightmapth_sea());
+         SetThreshold(ElevationThreshold::Hill, pbWorld.heightmapth_plain());
+         SetThreshold(ElevationThreshold::Mountain, pbWorld.heightmapth_hill());
+
+         // Plates
+         FromProtobufMatrix(pbWorld.plates(), plates_);
+
+         // Ocean
+         FromProtobufMatrix(pbWorld.ocean(), ocean_);
+         FromProtobufMatrix(pbWorld.sea_depth(), seaDepth_);
+
+         // Biome
+         FromProtobufMatrix<::World::World_IntegerMatrix, Biome, int32_t>(
+            pbWorld.biome(), biome_, [](const int32_t& value) {
+               return biomeIndices_.right.at(value);
+            });
+
+         // Humidity
+         if (pbWorld.has_humidity())
+         {
+            FromProtobufMatrix(pbWorld.humidity(), humidity_);
+
+            for (const auto& quantile : pbWorld.humidity().quantiles())
+            {
+               SetThreshold(humidityQuantiles_.right.at(quantile.key()),
+                            quantile.value());
+            }
+
+            SetThreshold(HumidityLevel::Superhumid,
+                         std::numeric_limits<float>::max());
+         }
+
+         FromProtobufMatrix(pbWorld.irrigation(), irrigation_);
+
+         FromProtobufMatrix(pbWorld.permeabilitydata(), permeability_);
+         if (pbWorld.has_permeability_low())
+         {
+            SetThreshold(PermeabilityLevel::Low, pbWorld.permeability_low());
+            SetThreshold(PermeabilityLevel::Medium, pbWorld.permeability_med());
+            SetThreshold(PermeabilityLevel::High,
+                         std::numeric_limits<float>::max());
+         }
+
+         FromProtobufMatrix(pbWorld.watermapdata(), waterMap_);
+         if (pbWorld.has_watermap_creek())
+         {
+            SetThreshold(WaterThreshold::Creek, pbWorld.watermap_creek());
+            SetThreshold(WaterThreshold::River, pbWorld.watermap_river());
+            SetThreshold(WaterThreshold::MainRiver,
+                         pbWorld.watermap_mainriver());
+         }
+
+         FromProtobufMatrix(pbWorld.precipitationdata(), precipitation_);
+         if (pbWorld.has_precipitation_low())
+         {
+            SetThreshold(PrecipitationLevel::Low, pbWorld.precipitation_low());
+            SetThreshold(PrecipitationLevel::Medium,
+                         pbWorld.precipitation_med());
+            SetThreshold(PrecipitationLevel::High, 0.0f);
+         }
+
+         FromProtobufMatrix(pbWorld.temperaturedata(), temperature_);
+         if (pbWorld.has_temperature_polar())
+         {
+            SetThreshold(TemperatureLevel::Polar, pbWorld.temperature_polar());
+            SetThreshold(TemperatureLevel::Alpine,
+                         pbWorld.temperature_alpine());
+            SetThreshold(TemperatureLevel::Boreal,
+                         pbWorld.temperature_boreal());
+            SetThreshold(TemperatureLevel::Cool, pbWorld.temperature_cool());
+            SetThreshold(TemperatureLevel::Warm, pbWorld.temperature_warm());
+            SetThreshold(TemperatureLevel::Subtropical,
+                         pbWorld.temperature_subtropical());
+            SetThreshold(TemperatureLevel::Tropical,
+                         std::numeric_limits<float>::max());
+         }
+
+         FromProtobufMatrix(pbWorld.lakemap(), lakeMap_);
+
+         FromProtobufMatrix(pbWorld.rivermap(), riverMap_);
+
+         FromProtobufMatrix(pbWorld.icecap(), icecap_);
+      }
+      catch (const std::exception& ex)
+      {
+         success = false;
+         BOOST_LOG_TRIVIAL(error) << ex.what();
+      }
+   }
+
+   return success;
+}
+
 template<typename T, typename U>
 void World::SetArrayData(const U* source, boost::multi_array<T, 2>& dest)
 {
@@ -838,6 +980,27 @@ static void ToProtobufMatrix(const boost::multi_array<T, 2>&   source,
       for (uint32_t x = 0; x < width; x++)
       {
          row->add_cells(transform(source[y][x]));
+      }
+   }
+}
+
+template<class T, class U, class V>
+static void FromProtobufMatrix(const T&                          pbMatrix,
+                               boost::multi_array<U, 2>&         dest,
+                               const std::function<U(const V&)>& transform)
+{
+   // Assumes each row has the same size
+   const uint32_t height = pbMatrix.rows_size();
+   const uint32_t width  = (height > 0) ? pbMatrix.rows(0).cells_size() : 0u;
+
+   dest.resize(boost::extents[height][width]);
+
+   for (uint32_t y = 0; y < height; y++)
+   {
+      auto row = pbMatrix.rows(y);
+      for (uint32_t x = 0; x < width && x < row.cells_size(); x++)
+      {
+         dest[y][x] = transform(row.cells(x));
       }
    }
 }

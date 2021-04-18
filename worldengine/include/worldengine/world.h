@@ -143,6 +143,7 @@ public:
    void SetThreshold(WaterThreshold type, float value);
 
    bool ProtobufSerialize(std::string& output) const;
+   bool ProtobufDeserialize(std::istream& input);
 
 private:
    std::string          name_;
