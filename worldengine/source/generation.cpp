@@ -49,6 +49,19 @@ static void HarmonizeOcean(const OceanArrayType& ocean,
                            ElevationArrayType&   elevation,
                            float                 oceanLevel);
 
+/**
+ * @brief A dynamic programming approach to gather how far the next land is from
+ * a given coordinate up to a maximum distance of max_radius. Result is 0 for
+ * land coordinates and -1 for coordinates further than max_radius away from
+ * land.
+ * @param ocean
+ * @param maxRadius
+ */
+static boost::multi_array<int32_t, 2>
+NextLandDynamic(const OceanArrayType& ocean, int32_t maxRadius = 5);
+
+static void SeaDepth(World& world, float seaLevel);
+
 void AddNoiseToElevation(World& world, uint32_t seed)
 {
    uint32_t octaves = 8;
@@ -191,8 +204,7 @@ void InitializeOceanAndThresholds(World& world, float oceanLevel)
 
    HarmonizeOcean(ocean, e, oceanLevel);
 
-   // TODO: Finish
-   // SeaDepth(world, oceanLevel);
+   SeaDepth(world, oceanLevel);
 }
 
 void PlaceOceansAtMapBorders(World& world)
@@ -341,6 +353,103 @@ static void HarmonizeOcean(const OceanArrayType& ocean,
          }
       }
    }
+}
+
+static boost::multi_array<int32_t, 2>
+NextLandDynamic(const OceanArrayType& ocean, int32_t maxRadius)
+{
+   const int32_t width  = ocean.shape()[1];
+   const int32_t height = ocean.shape()[0];
+
+   boost::multi_array<int32_t, 2> nextLand(boost::extents[height][width]);
+
+   std::transform(ocean.data(),
+                  ocean.data() + ocean.num_elements(),
+                  nextLand.data(),
+                  [](const bool& ocean) -> int32_t {
+                     // Non-ocean tiles are zero distance away from next land
+                     return (ocean) ? -1 : 0;
+                  });
+
+   for (int32_t distance = 0; distance < maxRadius; distance++)
+   {
+      for (int32_t y = 0; y < height; y++)
+      {
+         for (int32_t x = 0; x < width; x++)
+         {
+            if (nextLand[y][x] != distance)
+            {
+               continue;
+            }
+
+            for (int32_t dy = -1; dy <= 1; dy++)
+            {
+               int32_t ny = y + dy;
+               if (0 <= ny && ny < height)
+               {
+                  for (int32_t dx = -1; dx <= 1; dx++)
+                  {
+                     int32_t nx = x + dx;
+                     if (0 <= nx && nx < width)
+                     {
+                        if (nextLand[ny][nx] == -1)
+                        {
+                           nextLand[ny][nx] = distance + 1;
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   return nextLand;
+}
+
+static void SeaDepth(World& world, float seaLevel)
+{
+   // We want to multiply the raw sea depth by one of these factors depending on
+   // the distance from the next land
+   const std::vector<float> factors({0.0f, 0.3f, 0.5f, 0.7f, 0.9f});
+
+   const ElevationArrayType& elevation = world.GetElevationData();
+   SeaDepthArrayType&        seaDepth  = world.GetSeaDepthData();
+
+   seaDepth.resize(boost::extents[world.height()][world.width()]);
+
+   boost::multi_array<int32_t, 2> nextLand =
+      NextLandDynamic(world.GetOceanData());
+
+   for (uint32_t y = 0; y < world.height(); y++)
+   {
+      for (uint32_t x = 0; x < world.width(); x++)
+      {
+         seaDepth[y][x] = seaLevel - elevation[y][x];
+
+         int32_t distToNextLand = nextLand[y][x];
+         if (distToNextLand > 0)
+         {
+            seaDepth[y][x] *= factors[distToNextLand - 1];
+         }
+      }
+   }
+
+   // TODO:
+   // AntiAlias(seaDepth, 10);
+
+   auto minmax = std::minmax_element(seaDepth.data(),
+                                     seaDepth.data() + seaDepth.num_elements());
+
+   const float minDepth = *minmax.first;
+   const float maxDepth = *minmax.second;
+
+   std::transform(seaDepth.data(),
+                  seaDepth.data() + seaDepth.num_elements(),
+                  seaDepth.data(),
+                  [&minDepth, &maxDepth](const float& a) -> float {
+                     return (a - minDepth) / (maxDepth - minDepth);
+                  });
 }
 
 } // namespace WorldEngine

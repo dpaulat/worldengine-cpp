@@ -91,6 +91,7 @@ public:
    const PermeabilityArrayType&  GetPermeabilityData() const;
    const PrecipitationArrayType& GetPrecipitationData() const;
    const RiverMapArrayType&      GetRiverMapData() const;
+   const SeaDepthArrayType&      GetSeaDepthData() const;
    const TemperatureArrayType&   GetTemperatureData() const;
    const WaterMapArrayType&      GetWaterMapData() const;
 
@@ -105,6 +106,7 @@ public:
    PermeabilityArrayType&  GetPermeabilityData();
    PrecipitationArrayType& GetPrecipitationData();
    RiverMapArrayType&      GetRiverMapData();
+   SeaDepthArrayType&      GetSeaDepthData();
    TemperatureArrayType&   GetTemperatureData();
    WaterMapArrayType&      GetWaterMapData();
 

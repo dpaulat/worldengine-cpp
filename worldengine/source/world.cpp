@@ -337,6 +337,11 @@ const RiverMapArrayType& World::GetRiverMapData() const
    return riverMap_;
 }
 
+const SeaDepthArrayType& World::GetSeaDepthData() const
+{
+   return seaDepth_;
+}
+
 const TemperatureArrayType& World::GetTemperatureData() const
 {
    return temperature_;
@@ -400,6 +405,11 @@ PrecipitationArrayType& World::GetPrecipitationData()
 RiverMapArrayType& World::GetRiverMapData()
 {
    return riverMap_;
+}
+
+SeaDepthArrayType& World::GetSeaDepthData()
+{
+   return seaDepth_;
 }
 
 TemperatureArrayType& World::GetTemperatureData()
