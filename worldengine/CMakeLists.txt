@@ -96,6 +96,9 @@ target_include_directories(worldengine PRIVATE ${PLATE_TECTONICS_INCLUDE_DIR}
                                                ${libworldengine_BINARY_DIR}
                                                ${libworldengine_SOURCE_DIR}/include)
 
+# Disable LGPL features in Eigen
+target_compile_definitions(worldengine PRIVATE EIGEN_MPL2_ONLY)
+
 target_include_directories(worldengine INTERFACE ${libworldengine_SOURCE_DIR}/include)
 
 set_target_properties(worldengine PROPERTIES CXX_STANDARD 17
