@@ -17,25 +17,28 @@ std::ostream& operator<<(std::ostream& os, const boost::multi_array<T, 2>& a)
 {
    boost::multi_array<T, 2>::const_iterator i;
 
+   const int32_t width  = a.shape()[1];
+   const int32_t height = a.shape()[0];
+
    os << "[";
-   for (uint32_t y = 0; y < a.shape()[0]; y++)
+   for (int32_t y = 0; y < height; y++)
    {
       if (y > 0)
       {
          os << std::endl << " ";
       }
       os << "[";
-      for (uint32_t x = 0; x < a.shape()[1]; x++)
+      for (int32_t x = 0; x < width; x++)
       {
          os << a[y][x];
 
-         if (x == 2 && x < a.shape()[1] - 4)
+         if (x == 2 && x < width - 4)
          {
-            x = a.shape()[1] - 4;
+            x = width - 4;
             os << " ...";
          }
 
-         if (x < a.shape()[1] - 1)
+         if (x < width - 1)
          {
             os << " ";
          }
@@ -43,9 +46,9 @@ std::ostream& operator<<(std::ostream& os, const boost::multi_array<T, 2>& a)
 
       os << "]";
 
-      if (y == 2 && y < a.shape()[0] - 4)
+      if (y == 2 && y < height - 4)
       {
-         y = a.shape()[0] - 4;
+         y = height - 4;
          os << std::endl << " ...";
       }
    }
