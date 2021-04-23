@@ -9,6 +9,7 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 include(${PROJECT_SOURCE_DIR}/external/cmake-conan/conan.cmake)
 
 conan_cmake_configure(REQUIRES boost/1.75.0
+                               eigen/3.3.9
                                gtest/1.10.0
                                libpng/1.6.37
                                protobuf/3.15.5
@@ -17,7 +18,8 @@ conan_cmake_configure(REQUIRES boost/1.75.0
                                  cmake_paths
                       BUILD_REQUIRES cmake/3.19.4
                       IMPORTS "bin, *.dll -> ./bin"
-                      IMPORTS "lib, *.dylib -> ./bin")
+                      IMPORTS "lib, *.dylib -> ./bin"
+                      OPTIONS eigen:MPL2_only=True)
 
 conan_cmake_autodetect(settings)
 

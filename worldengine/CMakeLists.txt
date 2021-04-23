@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.19)
 project(libworldengine CXX)
 
 find_package(Boost)
+find_package(Eigen3)
 find_package(PNG)
 find_package(Protobuf)
 find_package(ZLIB)
@@ -88,6 +89,7 @@ source_group("Header Files\\worldengine" FILES ${HDR_INTERFACE})
 target_include_directories(worldengine PRIVATE ${PLATE_TECTONICS_INCLUDE_DIR}
                                                ${OPENSIMPLEX_NOISE_INCLUDE_DIR}
                                                ${Boost_INCLUDE_DIR}
+                                               ${Eigen3_INCLUDE_DIR}
                                                ${PNG_INCLUDE_DIR}
                                                ${protobuf_INCLUDE_DIR}
                                                ${ZLIB_INCLUDE_DIR}

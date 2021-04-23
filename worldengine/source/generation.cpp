@@ -435,8 +435,7 @@ static void SeaDepth(World& world, float seaLevel)
       }
    }
 
-   // TODO:
-   // AntiAlias(seaDepth, 10);
+   AntiAlias(seaDepth, 10);
 
    auto minmax = std::minmax_element(seaDepth.data(),
                                      seaDepth.data() + seaDepth.num_elements());

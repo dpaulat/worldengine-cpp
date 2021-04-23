@@ -11,6 +11,13 @@ namespace WorldEngine
 {
 
 /**
+ * @brief Execute the anti-alias operation on the given data
+ * @param data Data to anti-alias
+ * @param steps Number of times to run the anti-alias operation
+ */
+void AntiAlias(boost::multi_array<float, 2>& data, size_t steps = 1);
+
+/**
  * @brief Estimate the elevation threshold that is lower than a given percentage
  * of land
  * @param mapData Elevation data

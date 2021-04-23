@@ -36,4 +36,30 @@ TEST(BasicTest, InterpolateFUTest)
    EXPECT_EQ(Interpolate(1.0f, points_), 255u);
 }
 
+TEST(BasicTest, AntiAliasTest)
+{
+   boost::multi_array<float, 2> map(boost::extents[3][3]);
+   map[0][0] = 0;
+   map[0][1] = 0;
+   map[0][2] = 1;
+   map[1][0] = 0;
+   map[1][1] = 1;
+   map[1][2] = 1;
+   map[2][0] = 0;
+   map[2][1] = 1;
+   map[2][2] = 2;
+
+   AntiAlias(map);
+
+   EXPECT_FLOAT_EQ(map[0][0], 0.54545455f);
+   EXPECT_FLOAT_EQ(map[0][1], 0.54545455f);
+   EXPECT_FLOAT_EQ(map[0][2], 0.72727273f);
+   EXPECT_FLOAT_EQ(map[1][0], 0.54545455f);
+   EXPECT_FLOAT_EQ(map[1][1], 0.72727273f);
+   EXPECT_FLOAT_EQ(map[1][2], 0.72727273f);
+   EXPECT_FLOAT_EQ(map[2][0], 0.54545455f);
+   EXPECT_FLOAT_EQ(map[2][1], 0.72727273f);
+   EXPECT_FLOAT_EQ(map[2][2], 0.90909091f);
+}
+
 } // namespace WorldEngine
