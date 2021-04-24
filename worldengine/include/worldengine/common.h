@@ -233,6 +233,7 @@ struct Size
    uint32_t height_;
 
    Size(uint32_t width, uint32_t height) : width_(width), height_(height) {}
+   Size() : Size(0u, 0u) {}
 };
 
 struct GenerationParameters
@@ -252,6 +253,8 @@ struct GenerationParameters
        GenerationParameters(numPlates, oceanLevel, Step::step(type))
    {
    }
+
+   GenerationParameters() : GenerationParameters(0u, 0.0f, StepType::Full) {}
 };
 
 const std::string WORLDENGINE_VERSION("0.19.0");

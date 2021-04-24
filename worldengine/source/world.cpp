@@ -141,6 +141,8 @@ static BiomeIndexMap biomeIndices_ =
    (Biome::WarmTemperateWetForest, 40)             //
    (Biome::BareRock, -1);
 
+World::World() {}
+
 World::World(const std::string&          name,
              Size                        size,
              uint32_t                    seed,

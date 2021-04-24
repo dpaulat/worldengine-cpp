@@ -42,10 +42,8 @@ typedef boost::multi_array<WaterMapDataType, 2>      WaterMapArrayType;
 
 class World
 {
-private:
-   explicit World();
-
 public:
+   explicit World();
    World(const std::string&          name,
          Size                        size,
          uint32_t                    seed,

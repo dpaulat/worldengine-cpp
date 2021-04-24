@@ -37,26 +37,29 @@ int AddOptions(int                      argc,
                po::options_description& options,
                po::variables_map&       vm);
 std::shared_ptr<World>
-     GenerateWorld(const std::string&        worldName,
-                   uint32_t                  width,
-                   uint32_t                  height,
-                   uint32_t                  seed,
-                   uint32_t                  numPlates,
-                   const std::string&        outputDir,
-                   const Step&               step,
-                   float                     oceanLevel,
-                   const std::vector<float>& temps,
-                   const std::vector<float>& humids,
-                   WorldFormat               worldFormat,
-                   float                     gammaCurve  = DEFAULT_GAMMA_CURVE,
-                   float                     curveOffset = DEFAULT_CURVE_OFFSET,
-                   bool                      fadeBorders = DEFAULT_FADE_BORDERS,
-                   bool                      blackAndWhite = DEFAULT_BLACK_AND_WHITE,
-                   bool                      gsHeightmap = DEFAULT_GS_HEIGHTMAP,
-                   bool                      rivers      = DEFAULT_RIVERS_MAP,
-                   bool                      scatterPlot = DEFAULT_SCATTER_PLOT,
-                   bool                      satelliteMap = DEFAULT_SATELLITE_MAP,
-                   bool                      icecapsMap = DEFAULT_ICECAPS_MAP);
+GenerateWorld(const std::string&        worldName,
+              uint32_t                  width,
+              uint32_t                  height,
+              uint32_t                  seed,
+              uint32_t                  numPlates,
+              const std::string&        outputDir,
+              const Step&               step,
+              float                     oceanLevel,
+              const std::vector<float>& temps,
+              const std::vector<float>& humids,
+              WorldFormat               worldFormat,
+              float                     gammaCurve    = DEFAULT_GAMMA_CURVE,
+              float                     curveOffset   = DEFAULT_CURVE_OFFSET,
+              bool                      fadeBorders   = DEFAULT_FADE_BORDERS,
+              bool                      blackAndWhite = DEFAULT_BLACK_AND_WHITE,
+              bool                      gsHeightmap   = DEFAULT_GS_HEIGHTMAP,
+              bool                      rivers        = DEFAULT_RIVERS_MAP,
+              bool                      scatterPlot   = DEFAULT_SCATTER_PLOT,
+              bool                      satelliteMap  = DEFAULT_SATELLITE_MAP,
+              bool                      icecapsMap    = DEFAULT_ICECAPS_MAP);
+
+std::shared_ptr<World> LoadWorld(const std::string& filename);
+
 void PrintUsage(const std::string&             programName,
                 const po::options_description& options);
 void PrintWorldInfo(const World& world);
@@ -435,6 +438,23 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    return world;
 }
 
+std::shared_ptr<World> LoadWorld(const std::string& worldFilename)
+{
+   std::ifstream input(worldFilename,
+                       std::ios_base::in | std::ios_base::binary);
+
+   std::shared_ptr<World> world = std::make_shared<World>();
+
+   bool success = world->ProtobufDeserialize(input);
+
+   if (!success)
+   {
+      world = nullptr;
+   }
+
+   return world;
+}
+
 void PrintArguments(const ArgumentsType& args)
 {
    std::cout << "WorldEngine - A World Generator (version 0.19.1)" << std::endl;
@@ -565,6 +585,8 @@ void CliMain(int argc, const char** argv)
    po::options_description options("Allowed options");
    po::variables_map       vm;
 
+   std::cout << std::boolalpha;
+
    status = AddOptions(argc, argv, args, options, vm);
 
    if (args.help || status != 0)
@@ -579,30 +601,32 @@ void CliMain(int argc, const char** argv)
 
    PrintArguments(args);
 
+   std::shared_ptr<World> world;
+
    if (args.operation == OperationType::World)
    {
       BOOST_LOG_TRIVIAL(info) << "Starting world generation...";
 
-      std::shared_ptr<World> world = GenerateWorld(args.worldName,
-                                                   args.width,
-                                                   args.height,
-                                                   args.seed,
-                                                   args.numPlates,
-                                                   args.outputDir,
-                                                   Step::step(args.step),
-                                                   args.oceanLevel,
-                                                   args.temps,
-                                                   args.humids,
-                                                   args.worldFormat,
-                                                   args.gammaValue,
-                                                   args.curveOffset,
-                                                   !args.notFadeBorders,
-                                                   args.blackAndWhite,
-                                                   args.grayscaleHeightmap,
-                                                   args.rivers,
-                                                   args.scatterPlot,
-                                                   args.satelliteMap,
-                                                   args.icecapsMap);
+      world = GenerateWorld(args.worldName,
+                            args.width,
+                            args.height,
+                            args.seed,
+                            args.numPlates,
+                            args.outputDir,
+                            Step::step(args.step),
+                            args.oceanLevel,
+                            args.temps,
+                            args.humids,
+                            args.worldFormat,
+                            args.gammaValue,
+                            args.curveOffset,
+                            !args.notFadeBorders,
+                            args.blackAndWhite,
+                            args.grayscaleHeightmap,
+                            args.rivers,
+                            args.scatterPlot,
+                            args.satelliteMap,
+                            args.icecapsMap);
    }
    else if (args.operation == OperationType::Plates)
    {
@@ -614,7 +638,11 @@ void CliMain(int argc, const char** argv)
    }
    else if (args.operation == OperationType::Info)
    {
-      // TODO
+      world = LoadWorld(args.file);
+      if (world != nullptr)
+      {
+         PrintWorldInfo(*world);
+      }
    }
    else if (args.operation == OperationType::Export)
    {
