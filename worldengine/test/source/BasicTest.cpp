@@ -62,4 +62,30 @@ TEST(BasicTest, AntiAliasTest)
    EXPECT_FLOAT_EQ(map[2][2], 0.90909091f);
 }
 
+TEST(BasicTest, CountNeighborsTest)
+{
+   boost::multi_array<bool, 2> map(boost::extents[3][3]);
+   map[0][0] = 0;
+   map[0][1] = 0;
+   map[0][2] = true;
+   map[1][0] = 0;
+   map[1][1] = true;
+   map[1][2] = true;
+   map[2][0] = 0;
+   map[2][1] = true;
+   map[2][2] = true;
+
+   boost::multi_array<uint32_t, 2> n = CountNeighbors(map);
+
+   EXPECT_EQ(n[0][0], 1);
+   EXPECT_EQ(n[0][1], 3);
+   EXPECT_EQ(n[0][2], 2);
+   EXPECT_EQ(n[1][0], 2);
+   EXPECT_EQ(n[1][1], 4);
+   EXPECT_EQ(n[1][2], 4);
+   EXPECT_EQ(n[2][0], 2);
+   EXPECT_EQ(n[2][1], 3);
+   EXPECT_EQ(n[2][2], 3);
+}
+
 } // namespace WorldEngine

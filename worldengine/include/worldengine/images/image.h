@@ -65,13 +65,20 @@ protected:
     */
    virtual void DrawImage(boost::gil::rgb8_image_t::view_t& target);
 
+   /**
+    * @brief Draw rivers on top of an existing background
+    * @param target
+    * @param scale
+    */
+   void DrawRivers(boost::gil::rgb8_image_t::view_t& target,
+                   uint32_t                          scale = 1u) const;
+
 public:
    /**
     * @brief Draw an image
     * @param filename Destination filename
     * @param blackAndWhite Draw image in black and white
     */
-   void Draw(const std::string& filename,
-             bool               blackAndWhite = false);
+   void Draw(const std::string& filename, bool blackAndWhite = false);
 };
 } // namespace WorldEngine

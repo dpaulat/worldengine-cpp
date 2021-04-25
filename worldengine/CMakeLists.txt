@@ -38,6 +38,7 @@ set(HDR_SIMULATIONS source/simulations/biome.h
                     source/simulations/precipitation.h
                     source/simulations/temperature.h)
 set(SRC_IMAGES source/images/image.cpp
+               source/images/ancient_map_image.cpp
                source/images/biome_image.cpp
                source/images/heightmap_image.cpp
                source/images/icecap_image.cpp
@@ -49,6 +50,7 @@ set(SRC_IMAGES source/images/image.cpp
                source/images/simple_elevation_image.cpp
                source/images/temperature_image.cpp)
 set(HDR_IMAGES include/worldengine/images/image.h
+               include/worldengine/images/ancient_map_image.h
                include/worldengine/images/biome_image.h
                include/worldengine/images/heightmap_image.h
                include/worldengine/images/icecap_image.h

@@ -18,6 +18,17 @@ namespace WorldEngine
 void AntiAlias(boost::multi_array<float, 2>& data, size_t steps = 1);
 
 /**
+ * @brief Count how many neighbors of a coordinate are set to true.
+ * @tparam T
+ * @param mask
+ * @param radius
+ * @return Map of number of neighbors
+ */
+template<typename T>
+boost::multi_array<uint32_t, 2>
+CountNeighbors(const boost::multi_array<T, 2>& mask, int32_t radius = 1);
+
+/**
  * @brief Estimate the elevation threshold that is lower than a given percentage
  * of land
  * @param mapData Elevation data

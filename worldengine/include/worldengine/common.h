@@ -49,8 +49,11 @@ enum class BiomeGroup
    ColdParklands,
    Steppe,
    CoolDesert,
-   Chaparral
+   Chaparral,
+   None
 };
+typedef Iterator<BiomeGroup, BiomeGroup::BorealForest, BiomeGroup::Chaparral>
+   BiomeGroupIterator;
 
 enum class Biome
 {

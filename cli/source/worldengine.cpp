@@ -15,6 +15,7 @@
 #include <worldengine/plates.h>
 #include <worldengine/world.h>
 
+#include <worldengine/images/ancient_map_image.h>
 #include <worldengine/images/biome_image.h>
 #include <worldengine/images/heightmap_image.h>
 #include <worldengine/images/icecap_image.h>
@@ -634,7 +635,30 @@ void CliMain(int argc, const char** argv)
    }
    else if (args.operation == OperationType::AncientMap)
    {
-      // TODO
+      world = LoadWorld(args.file);
+      if (world != nullptr)
+      {
+         if (args.generatedFile.empty())
+         {
+            args.generatedFile =
+               args.outputDir + "/ancient_map_" + world->name() + ".png";
+         }
+
+         BOOST_LOG_TRIVIAL(info) << "Generating ancient map...";
+
+         AncientMapImage(*world,
+                         0, // TODO: Seed
+                         args.resizeFactor,
+                         args.seaColor,
+                         !args.notDrawBiome,
+                         !args.notDrawRivers,
+                         !args.notDrawMountains,
+                         args.drawOuterBorder)
+            .Draw(args.generatedFile);
+
+         BOOST_LOG_TRIVIAL(info)
+            << "Ancient map image generated in " << args.generatedFile;
+      }
    }
    else if (args.operation == OperationType::Info)
    {

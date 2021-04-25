@@ -82,8 +82,8 @@ static int32_t VersionHashcode();
 
 typedef boost::bimap<boost::bimaps::unordered_set_of<HumidityLevel>,
                      boost::bimaps::unordered_set_of<int>>
-                           HumidityQuantileMap;
-static HumidityQuantileMap humidityQuantiles_ =
+                                 HumidityQuantileMap;
+static const HumidityQuantileMap humidityQuantiles_ =
    boost::assign::list_of<HumidityQuantileMap::relation> //
    (HumidityLevel::Superarid, 12)                        //
    (HumidityLevel::Perarid, 25)                          //
@@ -95,8 +95,8 @@ static HumidityQuantileMap humidityQuantiles_ =
 
 typedef boost::bimap<boost::bimaps::unordered_set_of<Biome>,
                      boost::bimaps::unordered_set_of<int>>
-                     BiomeIndexMap;
-static BiomeIndexMap biomeIndices_ =
+                           BiomeIndexMap;
+static const BiomeIndexMap biomeIndices_ =
    boost::assign::list_of<BiomeIndexMap::relation> //
    (Biome::BorealDesert, 0)                        //
    (Biome::BorealDryScrub, 1)                      //
@@ -141,7 +141,52 @@ static BiomeIndexMap biomeIndices_ =
    (Biome::WarmTemperateWetForest, 40)             //
    (Biome::BareRock, -1);
 
-World::World() {}
+static const std::unordered_map<Biome, BiomeGroup> biomeGroups_ = {
+   {Biome::Ocean, BiomeGroup::None},
+   {Biome::Sea, BiomeGroup::None},
+   {Biome::PolarDesert, BiomeGroup::Iceland},
+   {Biome::Ice, BiomeGroup::Iceland},
+   {Biome::SubpolarDryTundra, BiomeGroup::ColdParklands},
+   {Biome::SubpolarMoistTundra, BiomeGroup::Tundra},
+   {Biome::SubpolarWetTundra, BiomeGroup::Tundra},
+   {Biome::SubpolarRainTundra, BiomeGroup::Tundra},
+   {Biome::BorealDesert, BiomeGroup::ColdParklands},
+   {Biome::BorealDryScrub, BiomeGroup::ColdParklands},
+   {Biome::BorealMoistForest, BiomeGroup::BorealForest},
+   {Biome::BorealWetForest, BiomeGroup::BorealForest},
+   {Biome::BorealRainForest, BiomeGroup::BorealForest},
+   {Biome::CoolTemperateDesert, BiomeGroup::CoolDesert},
+   {Biome::CoolTemperateDesertScrub, BiomeGroup::CoolDesert},
+   {Biome::CoolTemperateSteppe, BiomeGroup::Steppe},
+   {Biome::CoolTemperateMoistForest, BiomeGroup::CoolTemperateForest},
+   {Biome::CoolTemperateWetForest, BiomeGroup::CoolTemperateForest},
+   {Biome::CoolTemperateRainForest, BiomeGroup::CoolTemperateForest},
+   {Biome::WarmTemperateDesert, BiomeGroup::HotDesert},
+   {Biome::WarmTemperateDesertScrub, BiomeGroup::HotDesert},
+   {Biome::WarmTemperateThornScrub, BiomeGroup::Chaparral},
+   {Biome::WarmTemperateDryForest, BiomeGroup::Chaparral},
+   {Biome::WarmTemperateMoistForest, BiomeGroup::WarmTemperateForest},
+   {Biome::WarmTemperateWetForest, BiomeGroup::WarmTemperateForest},
+   {Biome::WarmTemperateRainForest, BiomeGroup::WarmTemperateForest},
+   {Biome::SubtropicalDesert, BiomeGroup::HotDesert},
+   {Biome::SubtropicalDesertScrub, BiomeGroup::HotDesert},
+   {Biome::SubtropicalThornWoodland, BiomeGroup::Savanna},
+   {Biome::SubtropicalDryForest, BiomeGroup::TropicalDryForest},
+   {Biome::SubtropicalMoistForest, BiomeGroup::Jungle},
+   {Biome::SubtropicalWetForest, BiomeGroup::Jungle},
+   {Biome::SubtropicalRainForest, BiomeGroup::Jungle},
+   {Biome::TropicalDesert, BiomeGroup::HotDesert},
+   {Biome::TropicalDesertScrub, BiomeGroup::HotDesert},
+   {Biome::TropicalThornWoodland, BiomeGroup::Savanna},
+   {Biome::TropicalVeryDryForest, BiomeGroup::Savanna},
+   {Biome::TropicalDryForest, BiomeGroup::TropicalDryForest},
+   {Biome::TropicalMoistForest, BiomeGroup::Jungle},
+   {Biome::TropicalWetForest, BiomeGroup::Jungle},
+   {Biome::TropicalRainForest, BiomeGroup::Jungle},
+   {Biome::BareRock, BiomeGroup::None},
+};
+
+World::World() : seed_(0), gammaCurve_(0.0f), curveOffset_(0.0f) {}
 
 World::World(const std::string&          name,
              Size                        size,
@@ -502,6 +547,11 @@ float World::GetThreshold(WaterThreshold type) const
 Biome World::GetBiome(uint32_t x, uint32_t y) const
 {
    return biome_[y][x];
+}
+
+BiomeGroup World::GetBiomeGroup(uint32_t x, uint32_t y) const
+{
+   return biomeGroups_.at(biome_[y][x]);
 }
 
 bool World::IsLand(uint32_t x, uint32_t y) const

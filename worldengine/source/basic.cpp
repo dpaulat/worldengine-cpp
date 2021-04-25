@@ -64,6 +64,47 @@ void AntiAlias(boost::multi_array<float, 2>& mapData, size_t steps)
    }
 }
 
+template<typename T>
+boost::multi_array<uint32_t, 2>
+CountNeighbors(const boost::multi_array<T, 2>& mask, int32_t radius)
+{
+   const int32_t width  = mask.shape()[1];
+   const int32_t height = mask.shape()[0];
+
+   boost::multi_array<uint32_t, 2> neighbors(boost::extents[height][width]);
+
+   std::fill(neighbors.data(), neighbors.data() + neighbors.num_elements(), 0u);
+
+   for (int32_t y = 0; y < height; y++)
+   {
+      for (int32_t x = 0; x < width; x++)
+      {
+         for (int32_t ny = y - radius; ny <= y + radius; ny++)
+         {
+            if (0 <= ny && ny < height)
+            {
+               for (int32_t nx = x - radius; nx <= x + radius; nx++)
+               {
+                  if ((nx != x || ny != y) && 0 <= nx && nx < width)
+                  {
+                     if (mask[ny][nx])
+                     {
+                        neighbors[y][x]++;
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   return neighbors;
+}
+template boost::multi_array<uint32_t, 2>
+CountNeighbors<bool>(const boost::multi_array<bool, 2>& mask, int32_t radius);
+template boost::multi_array<uint32_t, 2>
+CountNeighbors<float>(const boost::multi_array<float, 2>& mask, int32_t radius);
+
 float FindThresholdF(const boost::multi_array<float, 2>& mapData,
                      float                               landPercentage,
                      const OceanArrayType*               ocean)

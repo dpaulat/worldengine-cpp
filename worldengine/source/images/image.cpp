@@ -64,6 +64,43 @@ void Image::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    // Empty color implementation
 }
 
+void Image::DrawRivers(boost::gil::rgb8_image_t::view_t& target,
+                       uint32_t                          scale) const
+{
+   static const boost::gil::rgb8_pixel_t riverColor(0, 0, 128);
+   static const boost::gil::rgb8_pixel_t lakeColor(0, 100, 128);
+
+   const RiverMapArrayType& riverMap = world_.GetRiverMapData();
+   const LakeMapArrayType&  lakeMap  = world_.GetLakeMapData();
+
+   for (uint32_t y = 0; y < world_.height(); y++)
+   {
+      for (uint32_t x = 0; x < world_.width(); x++)
+      {
+         if (world_.IsLand(x, y) && riverMap[y][x] > 0.0f)
+         {
+            for (uint32_t dy = 0; dy < scale; dy++)
+            {
+               for (uint32_t dx = 0; dx < scale; dx++)
+               {
+                  target(x * scale + dx, y * scale + dy) = riverColor;
+               }
+            }
+         }
+         if (world_.IsLand(x, y) && lakeMap[y][x] > 0.0f)
+         {
+            for (uint32_t dy = 0; dy < scale; dy++)
+            {
+               for (uint32_t dx = 0; dx < scale; dx++)
+               {
+                  target(x * scale + dx, y * scale + dy) = lakeColor;
+               }
+            }
+         }
+      }
+   }
+}
+
 void Image::Draw(const std::string& filename, bool blackAndWhite)
 {
    if ((!blackAndWhite || !hasBlackAndWhite_) && hasColor_)
