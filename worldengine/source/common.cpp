@@ -79,6 +79,34 @@ std::ostream& operator<<(std::ostream& os, const Biome& type)
    return os;
 }
 
+std::string BiomeGroupToString(BiomeGroup type)
+{
+   switch (type)
+   {
+   case BiomeGroup::BorealForest: return "Boreal Forest";
+   case BiomeGroup::CoolTemperateForest: return "Cool Temperate Forest";
+   case BiomeGroup::WarmTemperateForest: return "Warm Temperate Forest";
+   case BiomeGroup::TropicalDryForest: return "Tropical Dry Forest";
+   case BiomeGroup::Tundra: return "Tundra";
+   case BiomeGroup::Iceland: return "Iceland";
+   case BiomeGroup::Jungle: return "Jungle";
+   case BiomeGroup::Savanna: return "Savanna";
+   case BiomeGroup::HotDesert: return "Hot Desert";
+   case BiomeGroup::ColdParklands: return "Cold Parklands";
+   case BiomeGroup::Steppe: return "Steppe";
+   case BiomeGroup::CoolDesert: return "Cool Desert";
+   case BiomeGroup::Chaparral: return "Chaparral";
+   case BiomeGroup::None: return "None";
+   default: return "?";
+   }
+}
+
+std::ostream& operator<<(std::ostream& os, const BiomeGroup& type)
+{
+   os << BiomeGroupToString(type);
+   return os;
+}
+
 std::string ExportDataTypeToString(ExportDataType type)
 {
    switch (type)

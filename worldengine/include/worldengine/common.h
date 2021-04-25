@@ -306,6 +306,15 @@ std::string BiomeToString(Biome type);
 std::ostream& operator<<(std::ostream& os, const Biome& type);
 
 /**
+ * @brief Convert from a biome group enumeration to a string value
+ * @param type Biome group enumeration
+ * @return String value
+*/
+std::string BiomeGroupToString(BiomeGroup type);
+
+std::ostream& operator<<(std::ostream& os, const BiomeGroup& type);
+
+/**
  * @brief Convert from an export data type enumeration to a string value
  * @param type Export data type enumeration
  * @return String value
