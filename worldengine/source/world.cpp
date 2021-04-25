@@ -877,7 +877,7 @@ bool World::ProtobufSerialize(std::string& output) const
    {
       ::World::World_DoubleMatrix* pbIcecap = new ::World::World_DoubleMatrix();
       ToProtobufMatrix(icecap_, pbIcecap);
-      pbWorld.set_allocated_rivermap(pbIcecap);
+      pbWorld.set_allocated_icecap(pbIcecap);
    }
 
    try
