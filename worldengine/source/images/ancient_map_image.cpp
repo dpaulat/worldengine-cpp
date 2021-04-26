@@ -7,8 +7,11 @@
 
 namespace WorldEngine
 {
-typedef std::function<void(
-   boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)>
+typedef std::function<void(boost::gil::rgb8_image_t::view_t& target,
+                           uint32_t                          x,
+                           uint32_t                          y,
+                           uint32_t                          w,
+                           uint32_t                          h)>
    DrawFunction;
 
 static void CreateBiomeGroupMasks(
@@ -19,41 +22,82 @@ static void CreateMountainMask(const World&                  world,
                                boost::multi_array<float, 2>& mountainMask,
                                uint32_t                      scale);
 
+static void DrawShadedPixel(boost::gil::rgb8_image_t::view_t& target,
+                            uint32_t                          x,
+                            uint32_t                          y,
+                            uint8_t                           r,
+                            uint8_t                           g,
+                            uint8_t                           b);
 static void DrawBorealForest(boost::gil::rgb8_image_t::view_t& target,
                              uint32_t                          x,
-                             uint32_t                          y);
-static void
-DrawChaparral(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y);
+                             uint32_t                          y,
+                             uint32_t                          w,
+                             uint32_t                          h);
+static void DrawChaparral(boost::gil::rgb8_image_t::view_t& target,
+                          uint32_t                          x,
+                          uint32_t                          y,
+                          uint32_t                          w,
+                          uint32_t                          h);
 static void DrawCoolDesert(boost::gil::rgb8_image_t::view_t& target,
                            uint32_t                          x,
-                           uint32_t                          y);
+                           uint32_t                          y,
+                           uint32_t                          w,
+                           uint32_t                          h);
 static void DrawColdParklands(boost::gil::rgb8_image_t::view_t& target,
                               uint32_t                          x,
-                              uint32_t                          y);
-static void
-DrawGlacier(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y);
-static void
-DrawHotDesert(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y);
-static void
-DrawJungle(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y);
-static void
-DrawSavanna(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y);
-static void
-DrawSteppe(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y);
+                              uint32_t                          y,
+                              uint32_t                          w,
+                              uint32_t                          h);
+static void DrawGlacier(boost::gil::rgb8_image_t::view_t& target,
+                        uint32_t                          x,
+                        uint32_t                          y,
+                        uint32_t                          w,
+                        uint32_t                          h);
+static void DrawHotDesert(boost::gil::rgb8_image_t::view_t& target,
+                          uint32_t                          x,
+                          uint32_t                          y,
+                          uint32_t                          w,
+                          uint32_t                          h);
+static void DrawJungle(boost::gil::rgb8_image_t::view_t& target,
+                       uint32_t                          x,
+                       uint32_t                          y,
+                       uint32_t                          w,
+                       uint32_t                          h);
+static void DrawSavanna(boost::gil::rgb8_image_t::view_t& target,
+                        uint32_t                          x,
+                        uint32_t                          y,
+                        uint32_t                          w,
+                        uint32_t                          h);
+static void DrawSteppe(boost::gil::rgb8_image_t::view_t& target,
+                       uint32_t                          x,
+                       uint32_t                          y,
+                       uint32_t                          w,
+                       uint32_t                          h);
 static void DrawTemperateForest1(boost::gil::rgb8_image_t::view_t& target,
                                  uint32_t                          x,
-                                 uint32_t                          y);
+                                 uint32_t                          y,
+                                 uint32_t                          w,
+                                 uint32_t                          h);
 static void DrawTemperateForest2(boost::gil::rgb8_image_t::view_t& target,
                                  uint32_t                          x,
-                                 uint32_t                          y);
+                                 uint32_t                          y,
+                                 uint32_t                          w,
+                                 uint32_t                          h);
 static void DrawTropicalDryForest(boost::gil::rgb8_image_t::view_t& target,
                                   uint32_t                          x,
-                                  uint32_t                          y);
-static void
-DrawTundra(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y);
+                                  uint32_t                          y,
+                                  uint32_t                          w,
+                                  uint32_t                          h);
+static void DrawTundra(boost::gil::rgb8_image_t::view_t& target,
+                       uint32_t                          x,
+                       uint32_t                          y,
+                       uint32_t                          w,
+                       uint32_t                          h);
 static void DrawWarmTemperateForest(boost::gil::rgb8_image_t::view_t& target,
                                     uint32_t                          x,
-                                    uint32_t                          y);
+                                    uint32_t                          y,
+                                    uint32_t                          w,
+                                    uint32_t                          h);
 
 static boost::gil::rgb8_pixel_t Gradient(float                    value,
                                          float                    low,
@@ -118,10 +162,12 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
                   });
 
    // Cache neighbors count at different radii
-   boost::multi_array<uint32_t, 2> borderNeighbors6 =
-      CountNeighbors(borders, 6);
-   boost::multi_array<uint32_t, 2> borderNeighbors9 =
-      CountNeighbors(borders, 9);
+   std::unordered_map<uint32_t, boost::multi_array<uint32_t, 2>>
+      borderNeighbors;
+   borderNeighbors[6].resize(boost::extents[sHeight][sWidth]);
+   borderNeighbors[9].resize(boost::extents[sHeight][sWidth]);
+   borderNeighbors[6] = CountNeighbors(borders, 6);
+   borderNeighbors[9] = CountNeighbors(borders, 9);
 
    boost::multi_array<bool, 2> outerBorders;
    if (drawOuterLandBorder_)
@@ -164,39 +210,70 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    {
       CreateBiomeGroupMasks(world_, biomeMasks, scale_);
 
-      DrawBiome = [this, &target, &borders = std::as_const(borders)](
-                     BiomeGroup   group,
-                     DrawFunction Draw,
-                     uint32_t     w,
-                     uint32_t     h,
-                     uint32_t     r,
-                     DrawFunction AltDraw) {
+      DrawBiome = [this,
+                   &biomeMasks,
+                   &generator,
+                   &target,
+                   &borderNeighbors = std::as_const(borderNeighbors),
+                   &borders = std::as_const(borders)](BiomeGroup   group,
+                                                      DrawFunction Draw,
+                                                      uint32_t     w,
+                                                      uint32_t     h,
+                                                      uint32_t     r,
+                                                      DrawFunction AltDraw) {
          BOOST_LOG_TRIVIAL(debug)
             << "Ancient map: Drawing biome group " << group;
+
+         static const std::uniform_real_distribution<float> random(0.0f, 1.0f);
 
          const uint32_t width   = world_.width();
          const uint32_t height  = world_.height();
          const uint32_t sWidth  = width * scale_;
          const uint32_t sHeight = height * scale_;
 
-         if (group == BiomeGroup::Iceland)
+         for (int32_t sy = 0; sy < sHeight; sy++)
          {
-            for (uint32_t sy = 0; sy < sHeight; sy++)
+            for (int32_t sx = 0; sx < sWidth; sx++)
             {
-               uint32_t y = sy / scale_;
-               for (uint32_t sx = 0; sx < sWidth; sx++)
+               if (biomeMasks.at(group)[sy][sx])
                {
-                  uint32_t x = sx / scale_;
-                  if (!borders[sy][sx] && world_.GetBiomeGroup(x, y) == group)
+                  if (group == BiomeGroup::Iceland)
                   {
-                     Draw(target, sx, sy);
+                     if (!borders[sy][sx])
+                     {
+                        Draw(target, sx, sy, 0, 0);
+                     }
+                  }
+                  else
+                  {
+                     if (r == 0 || borderNeighbors.at(r)[sy][sx] <= 2)
+                     {
+                        if (AltDraw != nullptr && random(generator) > 0.5f)
+                        {
+                           AltDraw(target, sx, sy, w, h);
+                        }
+                        else
+                        {
+                           Draw(target, sx, sy, w, h);
+                        }
+
+                        for (int32_t dy = -r; dy <= r; dy++)
+                        {
+                           const int32_t yp = sy + dy;
+                           for (int32_t dx = -r; dx <= r; dx++)
+                           {
+                              const int32_t xp = sx + dx;
+                              if (0 <= yp && yp < sHeight && 0 <= xp &&
+                                  xp < sWidth)
+                              {
+                                 biomeMasks.at(group)[sy][sx] = false;
+                              }
+                           }
+                        }
+                     }
                   }
                }
             }
-         }
-         else
-         {
-            // TODO
          }
       };
    }
@@ -364,34 +441,64 @@ static void CreateMountainMask(const World&                  world,
    ScaleArray(mask, mask, scale);
 }
 
+static void DrawShadedPixel(boost::gil::rgb8_image_t::view_t& target,
+                            uint32_t                          x,
+                            uint32_t                          y,
+                            uint8_t                           r,
+                            uint8_t                           g,
+                            uint8_t                           b)
+{
+   const uint8_t db =
+      (static_cast<uint32_t>(pow(x, y / 5)) + x * 23 + y * 37 + (x * y) * 13) %
+      75;
+   const uint8_t nr = r - db;
+   const uint8_t ng = g - db;
+   const uint8_t nb = b - db;
+
+   target(x, y) = boost::gil::rgb8_pixel_t(nr, ng, nb);
+}
+
 static void DrawBorealForest(boost::gil::rgb8_image_t::view_t& target,
                              uint32_t                          x,
-                             uint32_t                          y)
+                             uint32_t                          y,
+                             uint32_t                          w,
+                             uint32_t                          h)
 {
    // TODO
 }
 
-static void
-DrawChaparral(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)
+static void DrawChaparral(boost::gil::rgb8_image_t::view_t& target,
+                          uint32_t                          x,
+                          uint32_t                          y,
+                          uint32_t                          w,
+                          uint32_t                          h)
 {
-   // TODO
+   DrawShadedPixel(target, x, y, 180, 171, 113);
 }
 
-static void
-DrawCoolDesert(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)
+static void DrawCoolDesert(boost::gil::rgb8_image_t::view_t& target,
+                           uint32_t                          x,
+                           uint32_t                          y,
+                           uint32_t                          w,
+                           uint32_t                          h)
 {
    // TODO
 }
 
 static void DrawColdParklands(boost::gil::rgb8_image_t::view_t& target,
                               uint32_t                          x,
-                              uint32_t                          y)
+                              uint32_t                          y,
+                              uint32_t                          w,
+                              uint32_t                          h)
 {
    // TODO
 }
 
-static void
-DrawGlacier(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)
+static void DrawGlacier(boost::gil::rgb8_image_t::view_t& target,
+                        uint32_t                          x,
+                        uint32_t                          y,
+                        uint32_t                          w,
+                        uint32_t                          h)
 {
    uint8_t rg = 255 - (static_cast<uint32_t>(pow(x, y / 5)) + x * 23 + y * 37 +
                        (x * y) * 13) %
@@ -399,60 +506,83 @@ DrawGlacier(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)
    target(x, y) = boost::gil::rgb8_pixel_t(rg, rg, 255);
 }
 
-static void
-DrawHotDesert(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)
+static void DrawHotDesert(boost::gil::rgb8_image_t::view_t& target,
+                          uint32_t                          x,
+                          uint32_t                          y,
+                          uint32_t                          w,
+                          uint32_t                          h)
 {
    // TODO
 }
 
-static void
-DrawJungle(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)
+static void DrawJungle(boost::gil::rgb8_image_t::view_t& target,
+                       uint32_t                          x,
+                       uint32_t                          y,
+                       uint32_t                          w,
+                       uint32_t                          h)
 {
    // TODO
 }
 
-static void
-DrawSavanna(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)
+static void DrawSavanna(boost::gil::rgb8_image_t::view_t& target,
+                        uint32_t                          x,
+                        uint32_t                          y,
+                        uint32_t                          w,
+                        uint32_t                          h)
 {
-   // TODO
+   DrawShadedPixel(target, x, y, 255, 246, 188);
 }
 
-static void
-DrawSteppe(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)
+static void DrawSteppe(boost::gil::rgb8_image_t::view_t& target,
+                       uint32_t                          x,
+                       uint32_t                          y,
+                       uint32_t                          w,
+                       uint32_t                          h)
 {
-   // TODO
+   DrawShadedPixel(target, x, y, 96, 192, 96);
 }
 
 static void DrawTemperateForest1(boost::gil::rgb8_image_t::view_t& target,
                                  uint32_t                          x,
-                                 uint32_t                          y)
+                                 uint32_t                          y,
+                                 uint32_t                          w,
+                                 uint32_t                          h)
 {
    // TODO
 }
 
 static void DrawTemperateForest2(boost::gil::rgb8_image_t::view_t& target,
                                  uint32_t                          x,
-                                 uint32_t                          y)
+                                 uint32_t                          y,
+                                 uint32_t                          w,
+                                 uint32_t                          h)
 {
    // TODO
 }
 
 static void DrawTropicalDryForest(boost::gil::rgb8_image_t::view_t& target,
                                   uint32_t                          x,
-                                  uint32_t                          y)
+                                  uint32_t                          y,
+                                  uint32_t                          w,
+                                  uint32_t                          h)
 {
    // TODO
 }
 
-static void
-DrawTundra(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)
+static void DrawTundra(boost::gil::rgb8_image_t::view_t& target,
+                       uint32_t                          x,
+                       uint32_t                          y,
+                       uint32_t                          w,
+                       uint32_t                          h)
 {
-   // TODO
+   DrawShadedPixel(target, x, y, 166, 148, 75);
 }
 
 static void DrawWarmTemperateForest(boost::gil::rgb8_image_t::view_t& target,
                                     uint32_t                          x,
-                                    uint32_t                          y)
+                                    uint32_t                          y,
+                                    uint32_t                          w,
+                                    uint32_t                          h)
 {
    // TODO
 }
