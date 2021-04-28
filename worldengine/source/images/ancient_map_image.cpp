@@ -181,8 +181,7 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
                   });
 
    // Cache neighbors count at different radii
-   std::unordered_map<uint32_t, boost::multi_array<uint32_t, 2>>
-      borderNeighbors;
+   std::unordered_map<int32_t, boost::multi_array<int32_t, 2>> borderNeighbors;
    borderNeighbors[6].resize(boost::extents[sHeight][sWidth]);
    borderNeighbors[9].resize(boost::extents[sHeight][sWidth]);
    borderNeighbors[6] = CountNeighbors(borders, 6);
@@ -223,7 +222,7 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    std::unordered_map<BiomeGroup, boost::multi_array<bool, 2>> biomeMasks;
 
    std::function<void(
-      BiomeGroup, DrawFunction, uint32_t, uint32_t, uint32_t, DrawFunction)>
+      BiomeGroup, DrawFunction, uint32_t, uint32_t, int32_t, DrawFunction)>
       DrawBiome;
    if (drawBiome_)
    {
@@ -238,7 +237,7 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
                                                       DrawFunction Draw,
                                                       uint32_t     w,
                                                       uint32_t     h,
-                                                      uint32_t     r,
+                                                      int32_t      r,
                                                       DrawFunction AltDraw) {
          BOOST_LOG_TRIVIAL(debug)
             << "Ancient map: Drawing biome group " << group;
@@ -285,7 +284,7 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
                               if (0 <= yp && yp < sHeight && 0 <= xp &&
                                   xp < sWidth)
                               {
-                                 biomeMasks.at(group)[sy][sx] = false;
+                                 biomeMasks.at(group)[yp][xp] = false;
                               }
                            }
                         }
