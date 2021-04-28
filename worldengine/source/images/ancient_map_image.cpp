@@ -4,6 +4,9 @@
 #include <random>
 
 #include <boost/log/trivial.hpp>
+#include <boost/multiprecision/integer.hpp>
+
+namespace bm = boost::multiprecision;
 
 namespace WorldEngine
 {
@@ -559,8 +562,7 @@ static void DrawShadedPixel(boost::gil::rgb8_image_t::view_t& target,
                             uint8_t                           b)
 {
    const uint8_t db =
-      (static_cast<uint32_t>(pow(x, y / 5)) + x * 23 + y * 37 + (x * y) * 13) %
-      75;
+      (bm::powm(x, y / 5, 75) + x * 23 + y * 37 + (x * y) * 13) % 75;
    const uint8_t nr = r - db;
    const uint8_t ng = g - db;
    const uint8_t nb = b - db;
@@ -605,8 +607,7 @@ static void DrawColdParklands(boost::gil::rgb8_image_t::view_t& target,
                               uint32_t                          h)
 {
    const uint8_t db =
-      (static_cast<uint32_t>(pow(x, y / 5)) + x * 23 + y * 37 + (x * y) * 13) %
-      75;
+      (bm::powm(x, y / 5, 75) + x * 23 + y * 37 + (x * y) * 13) % 75;
    const uint8_t r = 105 - db;
    const uint8_t g = 96 - db;
    const uint8_t b = 38 - db / 2;
@@ -619,9 +620,8 @@ static void DrawGlacier(boost::gil::rgb8_image_t::view_t& target,
                         uint32_t                          w,
                         uint32_t                          h)
 {
-   const uint8_t rg = 255 - (static_cast<uint32_t>(pow(x, y / 5)) + x * 23 +
-                             y * 37 + (x * y) * 13) %
-                               75;
+   const uint8_t rg =
+      255 - (bm::powm(x, y / 5, 75) + x * 23 + y * 37 + (x * y) * 13) % 75;
    target(x, y) = boost::gil::rgb8_pixel_t(rg, rg, 255);
 }
 
