@@ -701,7 +701,7 @@ static void DrawTemperateForest2(boost::gil::rgb8_image_t::view_t& target,
                                  uint32_t                          x,
                                  uint32_t                          y)
 {
-   const boost::gil::rgb8_pixel_t c1(0, 32, 0);
+   const boost::gil::rgb8_pixel_t c1(0, 64, 0);
    const boost::gil::rgb8_pixel_t c2(0, 112, 0);
    DrawForestPattern2(target, x, y, c1, c2);
 }
