@@ -554,6 +554,19 @@ BiomeGroup World::GetBiomeGroup(uint32_t x, uint32_t y) const
    return biomeGroups_.at(biome_[y][x]);
 }
 
+float World::GetLevelOfMountain(uint32_t x, uint32_t y) const
+{
+   float mountainLevel = GetThreshold(ElevationThreshold::Mountain);
+   if (elevation_[y][x] <= mountainLevel)
+   {
+      return 0.0f;
+   }
+   else
+   {
+      return elevation_[y][x] - mountainLevel;
+   }
+}
+
 bool World::IsLand(uint32_t x, uint32_t y) const
 {
    return !ocean_[y][x];

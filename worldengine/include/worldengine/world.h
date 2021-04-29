@@ -118,6 +118,8 @@ public:
    Biome      GetBiome(uint32_t x, uint32_t y) const;
    BiomeGroup GetBiomeGroup(uint32_t x, uint32_t y) const;
 
+   float GetLevelOfMountain(uint32_t x, uint32_t y) const;
+
    bool IsLand(uint32_t x, uint32_t y) const;
    bool IsOcean(uint32_t x, uint32_t y) const;
    bool IsOcean(Point p) const;

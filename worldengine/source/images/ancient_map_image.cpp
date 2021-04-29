@@ -14,6 +14,9 @@ typedef std::function<void(
    boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)>
    DrawFunction;
 
+static const boost::gil::rgb8_pixel_t LAND_COLOR =
+   boost::gil::rgb8_pixel_t(181, 166, 127);
+
 static void CreateBiomeGroupMasks(
    const World&                                                 world,
    std::unordered_map<BiomeGroup, boost::multi_array<bool, 2>>& biomeMasks,
@@ -22,6 +25,11 @@ static void CreateMountainMask(const World&                  world,
                                boost::multi_array<float, 2>& mountainMask,
                                uint32_t                      scale);
 
+static void DrawAMountain(boost::gil::rgb8_image_t::view_t& target,
+                          int32_t                           x,
+                          int32_t                           y,
+                          int32_t                           w,
+                          int32_t                           h);
 static void DrawDesertPattern(boost::gil::rgb8_image_t::view_t& target,
                               int32_t                           x,
                               int32_t                           y,
@@ -129,8 +137,6 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    const boost::gil::rgb8_pixel_t seaColor =
       (seaColor_ == SeaColor::Blue) ? boost::gil::rgb8_pixel_t(142, 162, 179) :
                                       boost::gil::rgb8_pixel_t(212, 198, 169);
-   static const boost::gil::rgb8_pixel_t landColor =
-      boost::gil::rgb8_pixel_t(181, 166, 127);
 
    OceanArrayType scaledOcean;
    ScaleArray(world_.GetOceanData(), scaledOcean, scale_);
@@ -282,7 +288,7 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
          }
          else
          {
-            target(x, y) = landColor;
+            target(x, y) = LAND_COLOR;
          }
       }
    }
@@ -322,7 +328,46 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    if (drawMountains_)
    {
       BOOST_LOG_TRIVIAL(debug) << "Ancient map: Drawing mountains";
-      // TODO
+
+      for (uint32_t sy = 0; sy < sHeight; sy++)
+      {
+         uint32_t y = sy / scale_;
+         for (uint32_t sx = 0; sx < sWidth; sx++)
+         {
+            uint32_t x = sx / scale_;
+
+            float w = mountainMask[sy][sx];
+            if (w > 0.0f)
+            {
+               uint32_t h = 3 + world_.GetLevelOfMountain(x, y);
+               int32_t  r = std::max<int32_t>(w * 2 / 3, h);
+
+               if (borderNeighbors.find(r) == borderNeighbors.end())
+               {
+                  borderNeighbors[r].resize(boost::extents[sHeight][sWidth]);
+                  borderNeighbors[r] = CountNeighbors(borders, r);
+               }
+
+               if (borderNeighbors[r][sy][sx] <= 2)
+               {
+                  DrawAMountain(target, sx, sy, w, h);
+
+                  for (int32_t dy = -r; dy <= r; dy++)
+                  {
+                     const int32_t yp = sy + dy;
+                     for (int32_t dx = -r; dx <= r; dx++)
+                     {
+                        const int32_t xp = sx + dx;
+                        if (0 <= yp && yp < sHeight && 0 <= xp && xp < sWidth)
+                        {
+                           mountainMask[yp][xp] = 0.0;
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
    }
 
    BOOST_LOG_TRIVIAL(debug) << "Ancient map: Complete";
@@ -411,6 +456,59 @@ static void CreateMountainMask(const World&                  world,
                   });
 
    ScaleArray(mask, mask, scale);
+}
+
+static void DrawAMountain(boost::gil::rgb8_image_t::view_t& target,
+                          int32_t                           x,
+                          int32_t                           y,
+                          int32_t                           w,
+                          int32_t                           h)
+{
+   const boost::gil::rgb8_pixel_t mcr(75, 75, 75);
+
+   // Left edge
+   for (int32_t mody = -h; mody <= h; mody++)
+   {
+      const float   bottomness = (mody + h) / 2.0f;
+      const int32_t leftBorder = static_cast<int32_t>(bottomness);
+      const int32_t darkArea   = static_cast<int32_t>(bottomness / 2.0f);
+      const int32_t lightArea  = darkArea;
+
+      for (int32_t itx = darkArea; itx <= leftBorder; itx++)
+      {
+         DrawPixelCheck(target,
+                        x - itx,
+                        y + mody,
+                        Gradient(itx,
+                                 darkArea,
+                                 leftBorder,
+                                 boost::gil::rgb8_pixel_t(0, 0, 0),
+                                 boost::gil::rgb8_pixel_t(64, 64, 64)));
+      }
+      for (int32_t itx = -darkArea; itx <= lightArea; itx++)
+      {
+         DrawPixelCheck(target,
+                        x + itx,
+                        y + mody,
+                        Gradient(itx,
+                                 -darkArea,
+                                 lightArea,
+                                 boost::gil::rgb8_pixel_t(64, 64, 64),
+                                 boost::gil::rgb8_pixel_t(128, 128, 128)));
+      }
+      for (int32_t itx = lightArea; itx < leftBorder; itx++)
+      {
+         DrawPixelCheck(target, x + itx, y + mody, LAND_COLOR);
+      }
+   }
+
+   // Right edge
+   for (int32_t mody = -h; mody <= h; mody++)
+   {
+      float    bottomness = (mody + h) / 2.0f;
+      uint32_t modx       = static_cast<uint32_t>(bottomness);
+      DrawPixelCheck(target, x + modx, y + mody, mcr);
+   }
 }
 
 static void DrawDesertPattern(boost::gil::rgb8_image_t::view_t& target,
