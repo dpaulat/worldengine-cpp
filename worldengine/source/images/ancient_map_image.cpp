@@ -406,13 +406,15 @@ static void CreateBiomeGroupMasks(
 
       const boost::multi_array<uint32_t, 2> neighbors = CountNeighbors(mask);
 
-      std::transform(mask.data(),
-                     mask.data() + mask.num_elements(),
-                     neighbors.data(),
-                     mask.data(),
-                     [](const bool& mask, const uint32_t& neighbors) -> bool {
-                        return (mask && neighbors > 5);
-                     });
+      std::transform(
+         mask.data(),
+         mask.data() + mask.num_elements(),
+         neighbors.data(),
+         mask.data(),
+         [&group = std::as_const(group)](const bool&     mask,
+                                         const uint32_t& neighbors) -> bool {
+            return (mask && (neighbors > 5 || group == BiomeGroup::Iceland));
+         });
 
       ScaleArray(mask, mask, scale);
    }
