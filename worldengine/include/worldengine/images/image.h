@@ -11,7 +11,31 @@ namespace WorldEngine
  */
 class Image
 {
+private:
+   explicit Image();
+
 protected:
+   /**
+    * @brief Construct an image
+    * @param world A world
+    */
+   explicit Image(const World& world);
+
+   /**
+    * @brief Construct an image
+    * @param world A world
+    * @param scale Image scale
+    */
+   explicit Image(const World& world, size_t scale);
+
+   /**
+    * @brief Construct an image
+    * @param world A world
+    * @param hasBlackAndWhite Derived image has a black and white option.
+    * DrawImage should be overridden for the grayscale target.
+    */
+   explicit Image(const World& world, bool hasBlackAndWhite);
+
    /**
     * @brief Construct an image
     * @param world A world
@@ -23,15 +47,20 @@ protected:
    /**
     * @brief Construct an image
     * @param world A world
+    * @param hasColor Derived image has a color option
     * @param hasBlackAndWhite Derived image has a black and white option.
-    * DrawImage should be overridden for the grayscale target.
+    * @param scale Image scale
     */
-   explicit Image(const World& world, bool hasBlackAndWhite);
+   explicit Image(const World& world,
+                  bool         hasColor,
+                  bool         hasBlackAndWhite,
+                  size_t       scale);
    virtual ~Image();
 
    const World& world_;
    const bool   hasColor_;
    const bool   hasBlackAndWhite_;
+   const size_t scale_;
 
    /**
     * @brief Draw a grayscale image from a multi_array
@@ -68,10 +97,8 @@ protected:
    /**
     * @brief Draw rivers on top of an existing background
     * @param target
-    * @param scale
     */
-   void DrawRivers(boost::gil::rgb8_image_t::view_t& target,
-                   uint32_t                          scale = 1u) const;
+   void DrawRivers(boost::gil::rgb8_image_t::view_t& target) const;
 
 public:
    /**

@@ -101,26 +101,24 @@ static boost::gil::rgb8_pixel_t Gradient(float                    value,
 template<typename T>
 static void ScaleArray(const boost::multi_array<T, 2>& input,
                        boost::multi_array<T, 2>&       output,
-                       uint32_t                        scale);
+                       size_t                          scale);
 
 AncientMapImage::AncientMapImage(const World& world,
                                  uint32_t     seed,
-                                 uint32_t     scale,
+                                 size_t       scale,
                                  SeaColor     seaColor,
                                  bool         drawBiome,
                                  bool         drawRivers,
                                  bool         drawMountains,
                                  bool         drawOuterLandBorder) :
-    Image(world, false),
+    Image(world, scale),
     seed_(seed),
-    scale_(scale),
     seaColor_(seaColor),
     drawBiome_(drawBiome),
     drawRivers_(drawRivers),
     drawMountains_(drawMountains),
     drawOuterLandBorder_(drawOuterLandBorder)
 {
-   // TODO: Resize factor should change the image size
 }
 
 AncientMapImage::~AncientMapImage() {}
@@ -349,7 +347,7 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    if (drawRivers_)
    {
       BOOST_LOG_TRIVIAL(debug) << "Ancient map: Drawing rivers";
-      DrawRivers(target, scale_);
+      DrawRivers(target);
    }
 
    if (drawMountains_)
@@ -789,7 +787,7 @@ static boost::gil::rgb8_pixel_t Gradient(float                    value,
 template<typename T>
 static void ScaleArray(const boost::multi_array<T, 2>& input,
                        boost::multi_array<T, 2>&       output,
-                       uint32_t                        scale)
+                       size_t                          scale)
 {
    const uint32_t width   = input.shape()[1];
    const uint32_t height  = input.shape()[0];

@@ -6,13 +6,35 @@
 
 namespace WorldEngine
 {
-Image::Image(const World& world, bool hasColor, bool hasBlackAndWhite) :
-    world_(world), hasColor_(hasColor), hasBlackAndWhite_(hasBlackAndWhite)
+static const bool   DEFAULT_HAS_COLOR           = true;
+static const bool   DEFAULT_HAS_BLACK_AND_WHITE = false;
+static const size_t DEFAULT_SCALE               = 1u;
+
+Image::Image(const World& world) : Image(world, DEFAULT_SCALE) {}
+
+Image::Image(const World& world, size_t scale) :
+    Image(world, DEFAULT_HAS_COLOR, DEFAULT_HAS_BLACK_AND_WHITE, scale)
 {
 }
 
 Image::Image(const World& world, bool hasBlackAndWhite) :
-    Image(world, true, hasBlackAndWhite)
+    Image(world, DEFAULT_HAS_COLOR, hasBlackAndWhite)
+{
+}
+
+Image::Image(const World& world, bool hasColor, bool hasBlackAndWhite) :
+    Image(world, hasColor, hasBlackAndWhite, DEFAULT_SCALE)
+{
+}
+
+Image::Image(const World& world,
+             bool         hasColor,
+             bool         hasBlackAndWhite,
+             size_t       scale) :
+    world_(world),
+    hasColor_(hasColor),
+    hasBlackAndWhite_(hasBlackAndWhite),
+    scale_(scale)
 {
 }
 
@@ -49,7 +71,15 @@ void Image::DrawGrayscaleFromArray(
       for (uint32_t x = 0; x < width; x++)
       {
          uint32_t color = Interpolate(array[y][x], points);
-         target(x, y)   = boost::gil::gray8_pixel_t(color);
+
+         for (uint32_t dy = 0; dy < scale_; dy++)
+         {
+            for (uint32_t dx = 0; dx < scale_; dx++)
+            {
+               target(x * scale_ + dx, y * scale_ + dy) =
+                  boost::gil::gray8_pixel_t(color);
+            }
+         }
       }
    }
 }
@@ -64,8 +94,7 @@ void Image::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    // Empty color implementation
 }
 
-void Image::DrawRivers(boost::gil::rgb8_image_t::view_t& target,
-                       uint32_t                          scale) const
+void Image::DrawRivers(boost::gil::rgb8_image_t::view_t& target) const
 {
    static const boost::gil::rgb8_pixel_t riverColor(0, 0, 128);
    static const boost::gil::rgb8_pixel_t lakeColor(0, 100, 128);
@@ -79,21 +108,21 @@ void Image::DrawRivers(boost::gil::rgb8_image_t::view_t& target,
       {
          if (world_.IsLand(x, y) && riverMap[y][x] > 0.0f)
          {
-            for (uint32_t dy = 0; dy < scale; dy++)
+            for (uint32_t dy = 0; dy < scale_; dy++)
             {
-               for (uint32_t dx = 0; dx < scale; dx++)
+               for (uint32_t dx = 0; dx < scale_; dx++)
                {
-                  target(x * scale + dx, y * scale + dy) = riverColor;
+                  target(x * scale_ + dx, y * scale_ + dy) = riverColor;
                }
             }
          }
          if (world_.IsLand(x, y) && lakeMap[y][x] > 0.0f)
          {
-            for (uint32_t dy = 0; dy < scale; dy++)
+            for (uint32_t dy = 0; dy < scale_; dy++)
             {
-               for (uint32_t dx = 0; dx < scale; dx++)
+               for (uint32_t dx = 0; dx < scale_; dx++)
                {
-                  target(x * scale + dx, y * scale + dy) = lakeColor;
+                  target(x * scale_ + dx, y * scale_ + dy) = lakeColor;
                }
             }
          }
@@ -105,7 +134,8 @@ void Image::Draw(const std::string& filename, bool blackAndWhite)
 {
    if ((!blackAndWhite || !hasBlackAndWhite_) && hasColor_)
    {
-      boost::gil::rgb8_image_t         image(world_.width(), world_.height());
+      boost::gil::rgb8_image_t         image(world_.width() * scale_,
+                                     world_.height() * scale_);
       boost::gil::rgb8_image_t::view_t view = boost::gil::view(image);
 
       DrawImage(view);
@@ -121,7 +151,8 @@ void Image::Draw(const std::string& filename, bool blackAndWhite)
    }
    else
    {
-      boost::gil::gray8_image_t         image(world_.width(), world_.height());
+      boost::gil::gray8_image_t         image(world_.width() * scale_,
+                                      world_.height() * scale_);
       boost::gil::gray8_image_t::view_t view = boost::gil::view(image);
 
       DrawImage(view);
