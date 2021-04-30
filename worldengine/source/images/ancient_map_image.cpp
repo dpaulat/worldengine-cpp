@@ -14,6 +14,8 @@ typedef std::function<void(
    boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)>
    DrawFunction;
 
+static const size_t NUM_COLOR_CHANNELS = 3;
+
 static const boost::gil::rgb8_pixel_t LAND_COLOR =
    boost::gil::rgb8_pixel_t(181, 166, 127);
 
@@ -270,32 +272,57 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    const boost::gil::rgb8_pixel_t        outerBorderColor =
       Gradient(0.5f, 0.0f, 1.0f, borderColor, seaColor);
 
+   std::vector<boost::multi_array<float, 2>> channels;
+   for (size_t c = 0; c < NUM_COLOR_CHANNELS; c++)
+   {
+      channels.push_back(
+         boost::multi_array<float, 2>(boost::extents[sHeight][sWidth]));
+   }
+
    for (uint32_t y = 0; y < sHeight; y++)
    {
       for (uint32_t x = 0; x < sWidth; x++)
       {
+         boost::gil::rgb8_pixel_t color;
+
          if (borders[y][x])
          {
-            target(x, y) = borderColor;
+            color = borderColor;
          }
          else if (drawOuterLandBorder_ && outerBorders[y][x])
          {
-            target(x, y) = outerBorderColor;
+            color = outerBorderColor;
          }
          else if (scaledOcean[y][x])
          {
-            target(x, y) = seaColor;
+            color = seaColor;
          }
          else
          {
-            target(x, y) = LAND_COLOR;
+            color = LAND_COLOR;
+         }
+
+         for (size_t c = 0; c < NUM_COLOR_CHANNELS; c++)
+         {
+            channels[c][y][x] = color[c];
          }
       }
    }
 
    BOOST_LOG_TRIVIAL(debug) << "Ancient map: Anti-aliasing image";
+   for (size_t c = 0; c < NUM_COLOR_CHANNELS; c++)
+   {
+      AntiAlias(channels[c]);
+   }
 
-   // TODO: Anti-alias channel
+   for (uint32_t y = 0; y < sHeight; y++)
+   {
+      for (uint32_t x = 0; x < sWidth; x++)
+      {
+         target(x, y) = boost::gil::rgb8_pixel_t(
+            channels[0][y][x], channels[1][y][x], channels[2][y][x]);
+      }
+   }
 
    if (drawBiome_)
    {
