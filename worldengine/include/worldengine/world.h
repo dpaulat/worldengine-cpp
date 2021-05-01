@@ -148,6 +148,8 @@ public:
    bool ProtobufSerialize(std::string& output) const;
    bool ProtobufDeserialize(std::istream& input);
 
+   bool ReadHdf5(const std::string& filename);
+
 private:
    std::string          name_;
    Size                 size_;

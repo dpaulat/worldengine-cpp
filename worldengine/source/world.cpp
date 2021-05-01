@@ -8,6 +8,8 @@
 #include <boost/log/trivial.hpp>
 #include <boost/tokenizer.hpp>
 
+#include <hdf5/H5Cpp.h>
+
 #include <World.pb.h>
 
 namespace std
@@ -1023,6 +1025,259 @@ bool World::ProtobufDeserialize(std::istream& input)
          success = false;
          BOOST_LOG_TRIVIAL(error) << ex.what();
       }
+   }
+
+   return success;
+}
+
+bool World::ReadHdf5(const std::string& filename)
+{
+   static const H5::StrType stringType(0, H5T_VARIABLE);
+
+   bool success = false;
+
+   try
+   {
+      H5::H5File file(filename, H5F_ACC_RDONLY, H5P_DEFAULT, H5P_DEFAULT);
+
+      H5::Group generalGroup = file.openGroup("general");
+      generalGroup.openDataSet("name").read(name_, stringType);
+      generalGroup.openDataSet("width").read(&size_.width_,
+                                             H5::PredType::NATIVE_UINT32);
+      generalGroup.openDataSet("height").read(&size_.height_,
+                                              H5::PredType::NATIVE_UINT32);
+
+      // Generation Parameters
+      std::string step;
+
+      H5::Group generationParamsGroup = file.openGroup("generation_params");
+      generationParamsGroup.openDataSet("seed").read(
+         &seed_, H5::PredType::NATIVE_UINT32);
+      generationParamsGroup.openDataSet("n_plates")
+         .read(&generationParams_.numPlates_, H5::PredType::NATIVE_UINT32);
+      generationParamsGroup.openDataSet("ocean_level")
+         .read(&generationParams_.oceanLevel_, H5::PredType::NATIVE_FLOAT);
+      generationParamsGroup.openDataSet("step").read(step, stringType);
+
+      generationParams_.step_ = Step::step(StepTypeFromString(step));
+
+      // Elevation
+      elevation_.resize(boost::extents[height()][width()]);
+
+      H5::Group elevationGroup = file.openGroup("elevation");
+      elevationGroup.openDataSet("data").read(elevation_.data(),
+                                              H5::PredType::NATIVE_FLOAT);
+
+      H5::Group elevationThsGroup = elevationGroup.openGroup("thresholds");
+      elevationThsGroup.openDataSet("sea").read(
+         &elevationThresholds_[ElevationThreshold::Sea],
+         H5::PredType::NATIVE_FLOAT);
+      elevationThsGroup.openDataSet("plain").read(
+         &elevationThresholds_[ElevationThreshold::Hill],
+         H5::PredType::NATIVE_FLOAT);
+      elevationThsGroup.openDataSet("hill").read(
+         &elevationThresholds_[ElevationThreshold::Mountain],
+         H5::PredType::NATIVE_FLOAT);
+
+      // Plates
+      plates_.resize(boost::extents[height()][width()]);
+      file.openDataSet("plates").read(plates_.data(),
+                                      H5::PredType::NATIVE_UINT16);
+
+      // Ocean
+      ocean_.resize(boost::extents[height()][width()]);
+      seaDepth_.resize(boost::extents[height()][width()]);
+      file.openDataSet("ocean").read(ocean_.data(), H5::PredType::NATIVE_HBOOL);
+      file.openDataSet("sea_depth")
+         .read(seaDepth_.data(), H5::PredType::NATIVE_FLOAT);
+
+      // Biome
+      if (file.nameExists("biome"))
+      {
+         boost::multi_array<int, 2> biomeIndex(
+            boost::extents[height()][width()]);
+         biome_.resize(boost::extents[height()][width()]);
+         file.openDataSet("biome").read(biomeIndex.data(),
+                                        H5::PredType::NATIVE_INT);
+
+         std::transform(biomeIndex.data(),
+                        biomeIndex.data() + biomeIndex.num_elements(),
+                        biome_.data(),
+                        [](const int& index) -> Biome {
+                           return biomeIndices_.right.at(index);
+                        });
+      }
+
+      // Humidity
+      if (file.nameExists("humidity"))
+      {
+         humidity_.resize(boost::extents[height()][width()]);
+
+         H5::Group group = file.openGroup("humidity");
+         group.openDataSet("data").read(humidity_.data(),
+                                        H5::PredType::NATIVE_FLOAT);
+
+         H5::Group quantileGroup = group.openGroup("quantiles");
+         quantileGroup.openDataSet("12").read(
+            &humidityThresholds_[HumidityLevel::Superarid],
+            H5::PredType::NATIVE_FLOAT);
+         quantileGroup.openDataSet("25").read(
+            &humidityThresholds_[HumidityLevel::Perarid],
+            H5::PredType::NATIVE_FLOAT);
+         quantileGroup.openDataSet("37").read(
+            &humidityThresholds_[HumidityLevel::Arid],
+            H5::PredType::NATIVE_FLOAT);
+         quantileGroup.openDataSet("50").read(
+            &humidityThresholds_[HumidityLevel::Semiarid],
+            H5::PredType::NATIVE_FLOAT);
+         quantileGroup.openDataSet("62").read(
+            &humidityThresholds_[HumidityLevel::Subhumid],
+            H5::PredType::NATIVE_FLOAT);
+         quantileGroup.openDataSet("75").read(
+            &humidityThresholds_[HumidityLevel::Humid],
+            H5::PredType::NATIVE_FLOAT);
+         quantileGroup.openDataSet("87").read(
+            &humidityThresholds_[HumidityLevel::Perhumid],
+            H5::PredType::NATIVE_FLOAT);
+
+         SetThreshold(HumidityLevel::Superhumid,
+                      std::numeric_limits<float>::max());
+      }
+
+      // Irrigation
+      if (file.nameExists("irrigation"))
+      {
+         irrigation_.resize(boost::extents[height()][width()]);
+         file.openDataSet("irrigation")
+            .read(irrigation_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      // Permeability
+      if (file.nameExists("permeability"))
+      {
+         permeability_.resize(boost::extents[height()][width()]);
+
+         H5::Group group = file.openGroup("permeability");
+         group.openDataSet("data").read(permeability_.data(),
+                                        H5::PredType::NATIVE_FLOAT);
+
+         H5::Group thresholdGroup = group.openGroup("thresholds");
+         thresholdGroup.openDataSet("low").read(
+            &permeabilityThresholds_[PermeabilityLevel::Low],
+            H5::PredType::NATIVE_FLOAT);
+         thresholdGroup.openDataSet("med").read(
+            &permeabilityThresholds_[PermeabilityLevel::Medium],
+            H5::PredType::NATIVE_FLOAT);
+
+         SetThreshold(PermeabilityLevel::High,
+                      std::numeric_limits<float>::max());
+      }
+
+      // Water Map
+      if (file.nameExists("watermap"))
+      {
+         waterMap_.resize(boost::extents[height()][width()]);
+
+         H5::Group group = file.openGroup("watermap");
+         group.openDataSet("data").read(waterMap_.data(),
+                                        H5::PredType::NATIVE_FLOAT);
+
+         H5::Group thresholdGroup = group.openGroup("thresholds");
+         thresholdGroup.openDataSet("creek").read(
+            &waterThresholds_[WaterThreshold::Creek],
+            H5::PredType::NATIVE_FLOAT);
+         thresholdGroup.openDataSet("river").read(
+            &waterThresholds_[WaterThreshold::River],
+            H5::PredType::NATIVE_FLOAT);
+         thresholdGroup.openDataSet("mainriver")
+            .read(&waterThresholds_[WaterThreshold::MainRiver],
+                  H5::PredType::NATIVE_FLOAT);
+      }
+
+      // Precipitation
+      if (file.nameExists("precipitation"))
+      {
+         precipitation_.resize(boost::extents[height()][width()]);
+
+         H5::Group group = file.openGroup("precipitation");
+         group.openDataSet("data").read(precipitation_.data(),
+                                        H5::PredType::NATIVE_FLOAT);
+
+         H5::Group thresholdGroup = group.openGroup("thresholds");
+         thresholdGroup.openDataSet("low").read(
+            &precipitationThresholds_[PrecipitationLevel::Low],
+            H5::PredType::NATIVE_FLOAT);
+         thresholdGroup.openDataSet("med").read(
+            &precipitationThresholds_[PrecipitationLevel::Medium],
+            H5::PredType::NATIVE_FLOAT);
+
+         SetThreshold(PrecipitationLevel::High, 0.0f);
+      }
+
+      // Temperature
+      if (file.nameExists("temperature"))
+      {
+         temperature_.resize(boost::extents[height()][width()]);
+
+         H5::Group group = file.openGroup("temperature");
+         group.openDataSet("data").read(temperature_.data(),
+                                        H5::PredType::NATIVE_FLOAT);
+
+         H5::Group thresholdGroup = group.openGroup("thresholds");
+         thresholdGroup.openDataSet("polar").read(
+            &temperatureThresholds_[TemperatureLevel::Polar],
+            H5::PredType::NATIVE_FLOAT);
+         thresholdGroup.openDataSet("alpine").read(
+            &temperatureThresholds_[TemperatureLevel::Alpine],
+            H5::PredType::NATIVE_FLOAT);
+         thresholdGroup.openDataSet("boreal").read(
+            &temperatureThresholds_[TemperatureLevel::Boreal],
+            H5::PredType::NATIVE_FLOAT);
+         thresholdGroup.openDataSet("cool").read(
+            &temperatureThresholds_[TemperatureLevel::Cool],
+            H5::PredType::NATIVE_FLOAT);
+         thresholdGroup.openDataSet("warm").read(
+            &temperatureThresholds_[TemperatureLevel::Warm],
+            H5::PredType::NATIVE_FLOAT);
+         thresholdGroup.openDataSet("subtropical")
+            .read(&temperatureThresholds_[TemperatureLevel::Subtropical],
+                  H5::PredType::NATIVE_FLOAT);
+
+         SetThreshold(TemperatureLevel::Tropical,
+                      std::numeric_limits<float>::max());
+      }
+
+      // Icecap
+      if (file.nameExists("icecap"))
+      {
+         icecap_.resize(boost::extents[height()][width()]);
+         file.openDataSet("icecap").read(icecap_.data(),
+                                         H5::PredType::NATIVE_FLOAT);
+      }
+
+      // Lake Map
+      if (file.nameExists("lake_map"))
+      {
+         lakeMap_.resize(boost::extents[height()][width()]);
+         file.openDataSet("lake_map")
+            .read(lakeMap_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      // River Map
+      if (file.nameExists("river_map"))
+      {
+         riverMap_.resize(boost::extents[height()][width()]);
+         file.openDataSet("river_map")
+            .read(riverMap_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      file.close();
+
+      success = true;
+   }
+   catch (const std::exception& ex)
+   {
+      BOOST_LOG_TRIVIAL(error) << ex.what();
    }
 
    return success;

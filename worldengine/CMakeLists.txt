@@ -3,6 +3,7 @@ project(libworldengine CXX)
 
 find_package(Boost)
 find_package(Eigen3)
+find_package(HDF5)
 find_package(PNG)
 find_package(Protobuf)
 find_package(ZLIB)
@@ -92,6 +93,7 @@ target_include_directories(worldengine PRIVATE ${PLATE_TECTONICS_INCLUDE_DIR}
                                                ${OPENSIMPLEX_NOISE_INCLUDE_DIR}
                                                ${Boost_INCLUDE_DIR}
                                                ${Eigen3_INCLUDE_DIR}
+                                               ${HDF5_INCLUDE_DIRS}
                                                ${PNG_INCLUDE_DIR}
                                                ${protobuf_INCLUDE_DIR}
                                                ${ZLIB_INCLUDE_DIR}

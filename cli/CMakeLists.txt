@@ -11,11 +11,13 @@ target_link_libraries(worldengine-cli worldengine OpenSimplexNoise PlateTectonic
 
 find_package(Boost COMPONENTS log
                               program_options REQUIRED)
+find_package(HDF5)
 find_package(PNG)
 find_package(Protobuf)
 
 target_link_libraries(worldengine-cli Boost::log
                                       Boost::program_options
+                                      HDF5::HDF5
                                       PNG::PNG
                                       protobuf::protobuf)
 

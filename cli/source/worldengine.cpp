@@ -439,14 +439,24 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    return world;
 }
 
-std::shared_ptr<World> LoadWorld(const std::string& worldFilename)
+std::shared_ptr<World> LoadWorld(const std::string& worldFilename,
+                                 WorldFormat        format)
 {
-   std::ifstream input(worldFilename,
-                       std::ios_base::in | std::ios_base::binary);
-
    std::shared_ptr<World> world = std::make_shared<World>();
 
-   bool success = world->ProtobufDeserialize(input);
+   bool success = false;
+
+   if (format == WorldFormat::Protobuf)
+   {
+
+      std::ifstream input(worldFilename,
+                          std::ios_base::in | std::ios_base::binary);
+      success = world->ProtobufDeserialize(input);
+   }
+   else if (format == WorldFormat::HDF5)
+   {
+      success = world->ReadHdf5(worldFilename);
+   }
 
    if (!success)
    {
@@ -635,7 +645,7 @@ void CliMain(int argc, const char** argv)
    }
    else if (args.operation == OperationType::AncientMap)
    {
-      world = LoadWorld(args.file);
+      world = LoadWorld(args.file, args.worldFormat);
       if (world != nullptr)
       {
          if (args.generatedFile.empty())
@@ -662,7 +672,7 @@ void CliMain(int argc, const char** argv)
    }
    else if (args.operation == OperationType::Info)
    {
-      world = LoadWorld(args.file);
+      world = LoadWorld(args.file, args.worldFormat);
       if (world != nullptr)
       {
          PrintWorldInfo(*world);
