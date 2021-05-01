@@ -71,7 +71,7 @@ public:
    bool HasBiome() const;
    bool HasHumidity() const;
    bool HasIcecap() const;
-   bool HasIrrigiation() const;
+   bool HasIrrigation() const;
    bool HasLakemap() const;
    bool HasPermeability() const;
    bool HasRivermap() const;
@@ -149,6 +149,7 @@ public:
    bool ProtobufDeserialize(std::istream& input);
 
    bool ReadHdf5(const std::string& filename);
+   bool SaveHdf5(const std::string& filename) const;
 
 private:
    std::string          name_;

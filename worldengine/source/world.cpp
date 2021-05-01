@@ -304,7 +304,7 @@ bool World::HasIcecap() const
    return !icecap_.empty();
 }
 
-bool World::HasIrrigiation() const
+bool World::HasIrrigation() const
 {
    return !irrigation_.empty();
 }
@@ -818,7 +818,7 @@ bool World::ProtobufSerialize(std::string& output) const
       pbWorld.set_allocated_humidity(pbHumidity);
    }
 
-   if (HasIrrigiation())
+   if (HasIrrigation())
    {
       ::World::World_DoubleMatrix* pbIrrigation =
          new ::World::World_DoubleMatrix();
@@ -1118,27 +1118,16 @@ bool World::ReadHdf5(const std::string& filename)
                                         H5::PredType::NATIVE_FLOAT);
 
          H5::Group quantileGroup = group.openGroup("quantiles");
-         quantileGroup.openDataSet("12").read(
-            &humidityThresholds_[HumidityLevel::Superarid],
-            H5::PredType::NATIVE_FLOAT);
-         quantileGroup.openDataSet("25").read(
-            &humidityThresholds_[HumidityLevel::Perarid],
-            H5::PredType::NATIVE_FLOAT);
-         quantileGroup.openDataSet("37").read(
-            &humidityThresholds_[HumidityLevel::Arid],
-            H5::PredType::NATIVE_FLOAT);
-         quantileGroup.openDataSet("50").read(
-            &humidityThresholds_[HumidityLevel::Semiarid],
-            H5::PredType::NATIVE_FLOAT);
-         quantileGroup.openDataSet("62").read(
-            &humidityThresholds_[HumidityLevel::Subhumid],
-            H5::PredType::NATIVE_FLOAT);
-         quantileGroup.openDataSet("75").read(
-            &humidityThresholds_[HumidityLevel::Humid],
-            H5::PredType::NATIVE_FLOAT);
-         quantileGroup.openDataSet("87").read(
-            &humidityThresholds_[HumidityLevel::Perhumid],
-            H5::PredType::NATIVE_FLOAT);
+
+         for (HumidityLevel h : HumidityIterator())
+         {
+            if (h != HumidityLevel::Last)
+            {
+               int quantile = humidityQuantiles_.left.at(h);
+               quantileGroup.openDataSet(std::to_string(quantile))
+                  .read(&humidityThresholds_[h], H5::PredType::NATIVE_FLOAT);
+            }
+         }
 
          SetThreshold(HumidityLevel::Superhumid,
                       std::numeric_limits<float>::max());
@@ -1270,6 +1259,247 @@ bool World::ReadHdf5(const std::string& filename)
          file.openDataSet("river_map")
             .read(riverMap_.data(), H5::PredType::NATIVE_FLOAT);
       }
+
+      file.close();
+
+      success = true;
+   }
+   catch (const std::exception& ex)
+   {
+      BOOST_LOG_TRIVIAL(error) << ex.what();
+   }
+
+   return success;
+}
+
+bool World::SaveHdf5(const std::string& filename) const
+{
+   static const H5::DataSpace dsScalar(H5S_SCALAR);
+   static const H5::StrType   stringType(0, H5T_VARIABLE);
+
+   const hsize_t       dimensions2D[2] = {height(), width()};
+   const H5::DataSpace dataspace2D(2, dimensions2D);
+
+   bool success = false;
+
+   try
+   {
+      H5::H5File file(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+
+      // General
+      H5::Group generalGroup = file.createGroup("general");
+      generalGroup.createDataSet("worldengine_version", stringType, dsScalar)
+         .write(WORLDENGINE_VERSION, stringType);
+      generalGroup.createDataSet("name", stringType, dsScalar)
+         .write(name_, stringType);
+      generalGroup.createDataSet("width", H5::PredType::STD_I32LE, dsScalar)
+         .write(&size_.width_, H5::PredType::NATIVE_UINT32);
+      generalGroup.createDataSet("height", H5::PredType::STD_I32LE, dsScalar)
+         .write(&size_.height_, H5::PredType::NATIVE_UINT32);
+
+      // Elevation
+      H5::Group elevationGroup    = file.createGroup("elevation");
+      H5::Group elevationThsGroup = elevationGroup.createGroup("thresholds");
+      elevationGroup
+         .createDataSet("data", H5::PredType::IEEE_F64LE, dataspace2D)
+         .write(elevation_.data(), H5::PredType::NATIVE_FLOAT);
+      elevationThsGroup.createDataSet("sea", H5::PredType::IEEE_F64LE, dsScalar)
+         .write(&elevationThresholds_.at(ElevationThreshold::Sea),
+                H5::PredType::NATIVE_FLOAT);
+      elevationThsGroup
+         .createDataSet("plain", H5::PredType::IEEE_F64LE, dsScalar)
+         .write(&elevationThresholds_.at(ElevationThreshold::Hill),
+                H5::PredType::NATIVE_FLOAT);
+      elevationThsGroup
+         .createDataSet("hill", H5::PredType::IEEE_F64LE, dsScalar)
+         .write(&elevationThresholds_.at(ElevationThreshold::Mountain),
+                H5::PredType::NATIVE_FLOAT);
+
+      // Plates
+      file.createDataSet("plates", H5::PredType::STD_U16LE, dataspace2D)
+         .write(plates_.data(), H5::PredType::NATIVE_UINT16);
+
+      // Ocean
+      file.createDataSet("ocean", H5::PredType::NATIVE_HBOOL, dataspace2D)
+         .write(ocean_.data(), H5::PredType::NATIVE_HBOOL);
+
+      // Sea Depth
+      file.createDataSet("sea_depth", H5::PredType::IEEE_F64LE, dataspace2D)
+         .write(seaDepth_.data(), H5::PredType::NATIVE_FLOAT);
+
+      // Biome
+      if (HasBiome())
+      {
+         boost::multi_array<uint16_t, 2> biomeIndex(
+            boost::extents[height()][width()]);
+
+         std::transform(biome_.data(),
+                        biome_.data() + biome_.num_elements(),
+                        biomeIndex.data(),
+                        [](const Biome& biome) -> uint16_t {
+                           return biomeIndices_.left.at(biome);
+                        });
+
+         file.createDataSet("biome", H5::PredType::STD_U16LE, dataspace2D)
+            .write(biomeIndex.data(), H5::PredType::NATIVE_UINT16);
+      }
+
+      // Humidity
+      if (HasHumidity())
+      {
+         H5::Group group         = file.createGroup("humidity");
+         H5::Group quantileGroup = group.createGroup("quantiles");
+
+         for (HumidityLevel h : HumidityIterator())
+         {
+            if (h != HumidityLevel::Last)
+            {
+               int quantile = humidityQuantiles_.left.at(h);
+               quantileGroup
+                  .createDataSet(std::to_string(quantile),
+                                 H5::PredType::IEEE_F64LE,
+                                 dsScalar)
+                  .write(&humidityThresholds_.at(h),
+                         H5::PredType::NATIVE_FLOAT);
+            }
+         }
+
+         group.createDataSet("data", H5::PredType::IEEE_F64LE, dataspace2D)
+            .write(humidity_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      // Irrigation
+      if (HasIrrigation())
+      {
+         file.createDataSet("irrigation", H5::PredType::IEEE_F64LE, dataspace2D)
+            .write(irrigation_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      // Permeability
+      if (HasPermeability())
+      {
+         H5::Group group          = file.createGroup("permeability");
+         H5::Group thresholdGroup = group.createGroup("thresholds");
+
+         thresholdGroup.createDataSet("low", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&permeabilityThresholds_.at(PermeabilityLevel::Low),
+                   H5::PredType::NATIVE_FLOAT);
+         thresholdGroup.createDataSet("med", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&permeabilityThresholds_.at(PermeabilityLevel::Medium),
+                   H5::PredType::NATIVE_FLOAT);
+
+         group.createDataSet("data", H5::PredType::IEEE_F64LE, dataspace2D)
+            .write(permeability_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      // Water Map
+      if (HasWatermap())
+      {
+         H5::Group group          = file.createGroup("watermap");
+         H5::Group thresholdGroup = group.createGroup("thresholds");
+
+         thresholdGroup
+            .createDataSet("creek", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&waterThresholds_.at(WaterThreshold::Creek),
+                   H5::PredType::NATIVE_FLOAT);
+         thresholdGroup
+            .createDataSet("river", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&waterThresholds_.at(WaterThreshold::River),
+                   H5::PredType::NATIVE_FLOAT);
+         thresholdGroup
+            .createDataSet("mainriver", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&waterThresholds_.at(WaterThreshold::MainRiver),
+                   H5::PredType::NATIVE_FLOAT);
+
+         group.createDataSet("data", H5::PredType::IEEE_F64LE, dataspace2D)
+            .write(waterMap_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      // Precipitation
+      if (HasPrecipitations())
+      {
+         H5::Group group          = file.createGroup("precipitation");
+         H5::Group thresholdGroup = group.createGroup("thresholds");
+
+         thresholdGroup.createDataSet("low", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&precipitationThresholds_.at(PrecipitationLevel::Low),
+                   H5::PredType::NATIVE_FLOAT);
+         thresholdGroup.createDataSet("med", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&precipitationThresholds_.at(PrecipitationLevel::Medium),
+                   H5::PredType::NATIVE_FLOAT);
+
+         group.createDataSet("data", H5::PredType::IEEE_F64LE, dataspace2D)
+            .write(precipitation_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      // Temperature
+      if (HasTemperature())
+      {
+         H5::Group group          = file.createGroup("temperature");
+         H5::Group thresholdGroup = group.createGroup("thresholds");
+
+         thresholdGroup
+            .createDataSet("polar", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&temperatureThresholds_.at(TemperatureLevel::Polar),
+                   H5::PredType::NATIVE_FLOAT);
+         thresholdGroup
+            .createDataSet("alpine", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&temperatureThresholds_.at(TemperatureLevel::Alpine),
+                   H5::PredType::NATIVE_FLOAT);
+         thresholdGroup
+            .createDataSet("boreal", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&temperatureThresholds_.at(TemperatureLevel::Boreal),
+                   H5::PredType::NATIVE_FLOAT);
+         thresholdGroup
+            .createDataSet("cool", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&temperatureThresholds_.at(TemperatureLevel::Cool),
+                   H5::PredType::NATIVE_FLOAT);
+         thresholdGroup
+            .createDataSet("warm", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&temperatureThresholds_.at(TemperatureLevel::Warm),
+                   H5::PredType::NATIVE_FLOAT);
+         thresholdGroup
+            .createDataSet("subtropical", H5::PredType::IEEE_F64LE, dsScalar)
+            .write(&temperatureThresholds_.at(TemperatureLevel::Subtropical),
+                   H5::PredType::NATIVE_FLOAT);
+
+         group.createDataSet("data", H5::PredType::IEEE_F64LE, dataspace2D)
+            .write(temperature_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      // Icecap
+      if (HasIcecap())
+      {
+         file.createDataSet("icecap", H5::PredType::IEEE_F64LE, dataspace2D)
+            .write(icecap_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      // Lake Map
+      if (HasLakemap())
+      {
+         file.createDataSet("lake_map", H5::PredType::IEEE_F64LE, dataspace2D)
+            .write(lakeMap_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      // River Map
+      if (HasRivermap())
+      {
+         file.createDataSet("river_map", H5::PredType::IEEE_F64LE, dataspace2D)
+            .write(riverMap_.data(), H5::PredType::NATIVE_FLOAT);
+      }
+
+      H5::Group generationParamsGroup = file.createGroup("generation_params");
+      generationParamsGroup
+         .createDataSet("seed", H5::PredType::STD_I32LE, dsScalar)
+         .write(&seed_, H5::PredType::NATIVE_UINT32);
+      generationParamsGroup
+         .createDataSet("n_plates", H5::PredType::STD_I32LE, dsScalar)
+         .write(&generationParams_.numPlates_, H5::PredType::NATIVE_UINT32);
+      generationParamsGroup
+         .createDataSet("ocean_level", H5::PredType::IEEE_F64LE, dsScalar)
+         .write(&generationParams_.oceanLevel_, H5::PredType::NATIVE_FLOAT);
+      generationParamsGroup.createDataSet("step", stringType, dsScalar)
+         .write(generationParams_.step_.name(), stringType);
 
       file.close();
 

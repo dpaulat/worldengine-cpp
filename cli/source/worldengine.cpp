@@ -351,7 +351,11 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    }
    else if (worldFormat == WorldFormat::HDF5)
    {
-      // TODO: SaveWorldToHdf5()
+      bool success = world->SaveHdf5(worldFilename);
+      if (!success)
+      {
+         BOOST_LOG_TRIVIAL(error) << "Error writing world data to HDF5 file";
+      }
    }
    else
    {
@@ -548,7 +552,7 @@ void PrintWorldInfo(const World& world)
 
    std::cout << "Has Biome          : " << world.HasBiome() << std::endl;
    std::cout << "Has Humidity       : " << world.HasHumidity() << std::endl;
-   std::cout << "Has Irrigation     : " << world.HasIrrigiation() << std::endl;
+   std::cout << "Has Irrigation     : " << world.HasIrrigation() << std::endl;
    std::cout << "Has Permeability   : " << world.HasPermeability() << std::endl;
    std::cout << "Has Watermap       : " << world.HasWatermap() << std::endl;
    std::cout << "Has Precipitations : " << world.HasPrecipitations()
