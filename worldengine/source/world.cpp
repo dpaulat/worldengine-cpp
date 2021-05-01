@@ -87,13 +87,13 @@ typedef boost::bimap<boost::bimaps::unordered_set_of<HumidityLevel>,
                                  HumidityQuantileMap;
 static const HumidityQuantileMap humidityQuantiles_ =
    boost::assign::list_of<HumidityQuantileMap::relation> //
-   (HumidityLevel::Superarid, 12)                        //
-   (HumidityLevel::Perarid, 25)                          //
-   (HumidityLevel::Arid, 37)                             //
+   (HumidityLevel::Superarid, 87)                        //
+   (HumidityLevel::Perarid, 75)                          //
+   (HumidityLevel::Arid, 62)                             //
    (HumidityLevel::Semiarid, 50)                         //
-   (HumidityLevel::Subhumid, 62)                         //
-   (HumidityLevel::Humid, 75)                            //
-   (HumidityLevel::Perhumid, 87);
+   (HumidityLevel::Subhumid, 37)                         //
+   (HumidityLevel::Humid, 25)                            //
+   (HumidityLevel::Perhumid, 12);
 
 typedef boost::bimap<boost::bimaps::unordered_set_of<Biome>,
                      boost::bimaps::unordered_set_of<int>>

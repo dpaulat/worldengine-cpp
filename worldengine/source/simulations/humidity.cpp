@@ -18,19 +18,19 @@ void HumiditySimulation(World& world)
    HumidityCalculation(world);
 
    world.SetThreshold(HumidityLevel::Superarid,
-                      FindThresholdF(h, world.humids()[6], &ocean));
+                      FindThresholdF(h, world.humids()[0], &ocean));
    world.SetThreshold(HumidityLevel::Perarid,
-                      FindThresholdF(h, world.humids()[5], &ocean));
+                      FindThresholdF(h, world.humids()[1], &ocean));
    world.SetThreshold(HumidityLevel::Arid,
-                      FindThresholdF(h, world.humids()[4], &ocean));
+                      FindThresholdF(h, world.humids()[2], &ocean));
    world.SetThreshold(HumidityLevel::Semiarid,
                       FindThresholdF(h, world.humids()[3], &ocean));
    world.SetThreshold(HumidityLevel::Subhumid,
-                      FindThresholdF(h, world.humids()[2], &ocean));
+                      FindThresholdF(h, world.humids()[4], &ocean));
    world.SetThreshold(HumidityLevel::Humid,
-                      FindThresholdF(h, world.humids()[1], &ocean));
+                      FindThresholdF(h, world.humids()[5], &ocean));
    world.SetThreshold(HumidityLevel::Perhumid,
-                      FindThresholdF(h, world.humids()[0], &ocean));
+                      FindThresholdF(h, world.humids()[6], &ocean));
    world.SetThreshold(HumidityLevel::Superhumid,
                       std::numeric_limits<float>::max());
 

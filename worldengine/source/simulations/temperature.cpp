@@ -30,17 +30,17 @@ void TemperatureSimulation(World& world, uint32_t seed)
    TemperatureCalculation(world, seed, elevation, mountainLevel);
 
    world.SetThreshold(TemperatureLevel::Polar,
-                      FindThresholdF(t, world.temps()[5], &ocean));
-   world.SetThreshold(TemperatureLevel::Alpine,
-                      FindThresholdF(t, world.temps()[4], &ocean));
-   world.SetThreshold(TemperatureLevel::Boreal,
-                      FindThresholdF(t, world.temps()[3], &ocean));
-   world.SetThreshold(TemperatureLevel::Cool,
-                      FindThresholdF(t, world.temps()[2], &ocean));
-   world.SetThreshold(TemperatureLevel::Warm,
-                      FindThresholdF(t, world.temps()[1], &ocean));
-   world.SetThreshold(TemperatureLevel::Subtropical,
                       FindThresholdF(t, world.temps()[0], &ocean));
+   world.SetThreshold(TemperatureLevel::Alpine,
+                      FindThresholdF(t, world.temps()[1], &ocean));
+   world.SetThreshold(TemperatureLevel::Boreal,
+                      FindThresholdF(t, world.temps()[2], &ocean));
+   world.SetThreshold(TemperatureLevel::Cool,
+                      FindThresholdF(t, world.temps()[3], &ocean));
+   world.SetThreshold(TemperatureLevel::Warm,
+                      FindThresholdF(t, world.temps()[4], &ocean));
+   world.SetThreshold(TemperatureLevel::Subtropical,
+                      FindThresholdF(t, world.temps()[5], &ocean));
    world.SetThreshold(TemperatureLevel::Tropical,
                       std::numeric_limits<float>::max());
 

@@ -573,6 +573,19 @@ void SetLogLevel(const ArgumentsType& args, const po::variables_map& vm)
                                        severity);
 }
 
+void TransformArguments(ArgumentsType& args)
+{
+   std::transform(args.temps.begin(),
+                  args.temps.end(),
+                  args.temps.begin(),
+                  [](const float& t) -> float { return 1.0f - t; });
+
+   std::transform(args.humids.begin(),
+                  args.humids.end(),
+                  args.humids.begin(),
+                  [](const float& h) -> float { return 1.0f - h; });
+}
+
 int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
 {
    // TODO: Validate file positional parameter
@@ -615,6 +628,8 @@ void CliMain(int argc, const char** argv)
    status = ValidateArguments(args, vm);
 
    PrintArguments(args);
+
+   TransformArguments(args);
 
    std::shared_ptr<World> world;
 
