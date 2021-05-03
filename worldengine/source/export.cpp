@@ -83,8 +83,27 @@ bool ExportImage(const World&                 world,
       // void* parameter
       const boost::multi_array<float, 2>& constElevation =
          world.GetElevationData();
-      boost::multi_array<float, 2>& elevation =
-         const_cast<boost::multi_array<float, 2>&>(constElevation);
+
+      // Normalize the data-set to the minimum/maximum allowed by the data type,
+      // typical for 8bpp
+      boost::multi_array<float, 2> elevation = constElevation;
+      if (exportNormalize.size() == 2)
+      {
+         std::pair<float*, float*> minmax = std::minmax_element(
+            elevation.data(), elevation.data() + elevation.num_elements());
+
+         const float min = *minmax.first;
+         const float max = *minmax.second;
+         const float scale =
+            (exportNormalize[1] - exportNormalize[0]) / (max - min);
+
+         std::transform(
+            elevation.data(),
+            elevation.data() + elevation.num_elements(),
+            elevation.data(),
+            [&min, &scale, &newMin = std::as_const(exportNormalize[0])](
+               const float& e) { return (e - min) * scale + newMin; });
+      }
 
       // Take elevation data and push it into an intermediate ENVI format, some
       // formats don't support being written by Create()
@@ -112,26 +131,12 @@ bool ExportImage(const World&                 world,
 
       std::vector<std::string> translateArgs;
 
-      // Resize, normalize and blend if necessary
+      // Resize and blend if necessary
       if (exportDimensions.size() == 2)
       {
          translateArgs.push_back("-outsize");
          translateArgs.push_back(std::to_string(exportDimensions[0])); // Width
          translateArgs.push_back(std::to_string(exportDimensions[1])); // Height
-      }
-
-      // Normalize the data-set to the minimum/maximum allowed by the data type,
-      // typical for 8bpp
-      if (exportNormalize.size() == 2)
-      {
-         std::pair<float*, float*> minmax = std::minmax_element(
-            elevation.data(), elevation.data() + elevation.num_elements());
-
-         translateArgs.push_back("-scale");
-         translateArgs.push_back(std::to_string(*minmax.first));
-         translateArgs.push_back(std::to_string(*minmax.second));
-         translateArgs.push_back(std::to_string(exportNormalize[0])); // dstMin
-         translateArgs.push_back(std::to_string(exportNormalize[1])); // dstMax
       }
 
       // Apply changes to the dataset
