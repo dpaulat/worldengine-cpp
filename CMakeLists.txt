@@ -10,6 +10,7 @@ include(${PROJECT_SOURCE_DIR}/external/cmake-conan/conan.cmake)
 
 conan_cmake_configure(REQUIRES boost/1.76.0
                                eigen/3.3.9
+                               gdal/3.2.1
                                gtest/1.10.0
                                hdf5/1.12.0
                                libpng/1.6.37

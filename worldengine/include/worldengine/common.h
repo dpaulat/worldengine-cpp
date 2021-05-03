@@ -112,9 +112,11 @@ enum class ExportDataType
 {
    Int16,
    Int32,
+   Uint8,
    Uint16,
    Uint32,
-   Float32
+   Float32,
+   Float64
 };
 
 enum class HumidityLevel

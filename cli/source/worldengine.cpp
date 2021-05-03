@@ -12,6 +12,7 @@
 #include <boost/program_options.hpp>
 
 #include <worldengine/common.h>
+#include <worldengine/export.h>
 #include <worldengine/plates.h>
 #include <worldengine/world.h>
 
@@ -249,12 +250,15 @@ int AddOptions(int                      argc,
        "Example: 4096 4096")
       //
       ("export-normalize",
-       po::value<std::vector<uint32_t>>(&args.exportNormalize)->multitoken(),
+       po::value<std::vector<int32_t>>(&args.exportNormalize)->multitoken(),
        "Normalize the data set between min and max\n"
        "Example: 0 255")
       //
       ("export-subset",
-       po::value<std::vector<uint32_t>>(&args.exportSubset)->multitoken());
+       po::value<std::vector<uint32_t>>(&args.exportSubset)->multitoken(),
+       "Selects a subwindow from the data set\n"
+       "Arguments: <xoff> <yoff> <xsize> <ysize>\n"
+       "Example: 128 128 256 256");
 
    options.add(genericOptions);
    options.add(configuration);
@@ -699,7 +703,19 @@ void CliMain(int argc, const char** argv)
    }
    else if (args.operation == OperationType::Export)
    {
-      // TODO
+      world = LoadWorld(args.file, args.worldFormat);
+      if (world != nullptr)
+      {
+         const std::string path =
+            args.outputDir + "/" + world->name() + "_elevation";
+         ExportImage(*world,
+                     args.exportFormat,
+                     args.exportDatatype,
+                     args.exportDimensions,
+                     args.exportNormalize,
+                     args.exportSubset,
+                     path);
+      }
    }
    else
    {

@@ -70,7 +70,7 @@ struct ArgumentsType
    std::string           exportFormat;
    ExportDataType        exportDatatype;
    std::vector<uint32_t> exportDimensions;
-   std::vector<uint32_t> exportNormalize;
+   std::vector<int32_t>  exportNormalize;
    std::vector<uint32_t> exportSubset;
 };
 

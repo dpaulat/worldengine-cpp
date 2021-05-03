@@ -3,16 +3,19 @@ project(libworldengine CXX)
 
 find_package(Boost)
 find_package(Eigen3)
+find_package(GDAL)
 find_package(HDF5)
 find_package(PNG)
 find_package(Protobuf)
 find_package(ZLIB)
 
 set(HDR_INTERFACE include/worldengine/common.h
+                  include/worldengine/export.h
                   include/worldengine/plates.h
                   include/worldengine/world.h)
 set(SRC_MAIN source/basic.cpp
              source/common.cpp
+             source/export.cpp
              source/generation.cpp
              source/path.cpp
              source/plates.cpp
@@ -93,6 +96,7 @@ target_include_directories(worldengine PRIVATE ${PLATE_TECTONICS_INCLUDE_DIR}
                                                ${OPENSIMPLEX_NOISE_INCLUDE_DIR}
                                                ${Boost_INCLUDE_DIR}
                                                ${Eigen3_INCLUDE_DIR}
+                                               ${GDAL_INCLUDE_DIR}
                                                ${HDF5_INCLUDE_DIRS}
                                                ${PNG_INCLUDE_DIR}
                                                ${protobuf_INCLUDE_DIR}
