@@ -11,6 +11,7 @@ find_package(ZLIB)
 
 set(HDR_INTERFACE include/worldengine/common.h
                   include/worldengine/export.h
+                  include/worldengine/generation.h
                   include/worldengine/plates.h
                   include/worldengine/world.h)
 set(SRC_MAIN source/basic.cpp
@@ -21,7 +22,6 @@ set(SRC_MAIN source/basic.cpp
              source/plates.cpp
              source/world.cpp)
 set(HDR_MAIN source/basic.h
-             source/generation.h
              source/path.h)
 set(SRC_SIMULATIONS source/simulations/biome.cpp
                     source/simulations/erosion.cpp

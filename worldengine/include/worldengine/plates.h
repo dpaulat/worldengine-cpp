@@ -12,6 +12,42 @@ namespace WorldEngine
 {
 
 /**
+ * @brief Perform an initial plates simulation using the Plate Tectonics library
+ * @param heightmap Elevation map
+ * @param platesmap Plates map
+ * @param seed Random seed value
+ * @param width Width in pixels
+ * @param height Height in pixels
+ * @param seaLevel The elevation representing the ocean level
+ * @param erosionPeriod
+ * @param foldingRatio
+ * @param aggrOverlapAbs
+ * @param aggrOverlapRel
+ * @param cycleCount
+ * @param numPlates Number of plates
+ * @return Handle to a Plate Tectonics library object
+ */
+void* GeneratePlatesSimulation(
+   float**    heightmap,
+   uint32_t** platesmap,
+   long       seed,
+   uint32_t   width,
+   uint32_t   height,
+   float      seaLevel       = DEFAULT_SEA_LEVEL,
+   uint32_t   erosionPeriod  = DEFAULT_EROSION_PERIOD,
+   float      foldingRatio   = DEFAULT_FOLDING_RATIO,
+   uint32_t   aggrOverlapAbs = DEFAULT_AGGR_OVERLAP_ABS,
+   float      aggrOverlapRel = DEFAULT_AGGR_OVERLAP_REL,
+   uint32_t   cycleCount     = DEFAULT_CYCLE_COUNT,
+   uint32_t   numPlates      = DEFAULT_NUM_PLATES);
+
+/**
+ * @brief Destroy a Plate Tectonics library object
+ * @param p Handle to a Plate Tectonics library object
+ */
+void PlatecApiDestroy(void* p);
+
+/**
  * @brief Generate a new world
  * @param name World name
  * @param width Width in pixels

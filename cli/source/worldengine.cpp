@@ -13,6 +13,7 @@
 
 #include <worldengine/common.h>
 #include <worldengine/export.h>
+#include <worldengine/generation.h>
 #include <worldengine/plates.h>
 #include <worldengine/world.h>
 
@@ -38,6 +39,13 @@ int AddOptions(int                      argc,
                ArgumentsType&           args,
                po::options_description& options,
                po::variables_map&       vm);
+
+void GeneratePlates(const std::string& worldName,
+                    uint32_t           width,
+                    uint32_t           height,
+                    uint32_t           seed,
+                    const std::string& outputDir,
+                    uint32_t           numPlates = DEFAULT_NUM_PLATES);
 std::shared_ptr<World>
 GenerateWorld(const std::string&        worldName,
               uint32_t                  width,
@@ -291,6 +299,57 @@ int AddOptions(int                      argc,
    }
 
    return 0;
+}
+
+void GeneratePlates(const std::string& worldName,
+                    uint32_t           width,
+                    uint32_t           height,
+                    uint32_t           seed,
+                    const std::string& outputDir,
+                    uint32_t           numPlates)
+{
+   // Eventually this method should be invoked when generation is called and
+   // asked to stop at step "plates", it should not be a different operation.
+   float*    heightmap;
+   uint32_t* platesmap;
+
+   void* p = GeneratePlatesSimulation(&heightmap,
+                                      &platesmap,
+                                      seed,
+                                      width,
+                                      height,
+                                      DEFAULT_SEA_LEVEL,
+                                      DEFAULT_EROSION_PERIOD,
+                                      DEFAULT_FOLDING_RATIO,
+                                      DEFAULT_AGGR_OVERLAP_ABS,
+                                      DEFAULT_AGGR_OVERLAP_REL,
+                                      DEFAULT_CYCLE_COUNT,
+                                      numPlates);
+
+   std::shared_ptr<World> world = std::shared_ptr<World>(
+      new World(worldName,
+                Size(width, height),
+                seed,
+                GenerationParameters(numPlates, -1.0f, STEP_PLATES)));
+
+   world->SetElevationData(heightmap);
+   world->SetPlatesData(platesmap);
+
+   PlatecApiDestroy(p);
+
+   // Generate images
+   const std::string platesFilename =
+      outputDir + "/plates_" + worldName + ".png";
+   SimpleElevationImage(*world).Draw(platesFilename);
+   BOOST_LOG_TRIVIAL(info) << "Plates image generated in " << platesFilename;
+
+   CenterLand(*world);
+
+   const std::string centeredPlatesFilename =
+      outputDir + "/centered_plates_" + worldName + ".png";
+   SimpleElevationImage(*world).Draw(centeredPlatesFilename);
+   BOOST_LOG_TRIVIAL(info) << "Centered plates image generated in "
+                           << centeredPlatesFilename;
 }
 
 std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
@@ -664,7 +723,14 @@ void CliMain(int argc, const char** argv)
    }
    else if (args.operation == OperationType::Plates)
    {
-      // TODO
+      BOOST_LOG_TRIVIAL(info) << "Starting plates generation...";
+
+      GeneratePlates(args.worldName,
+                     args.width,
+                     args.height,
+                     args.seed,
+                     args.outputDir,
+                     args.numPlates);
    }
    else if (args.operation == OperationType::AncientMap)
    {

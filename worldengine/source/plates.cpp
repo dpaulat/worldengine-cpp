@@ -1,6 +1,6 @@
 #include "worldengine/plates.h"
+#include "worldengine/generation.h"
 #include "worldengine/world.h"
-#include "generation.h"
 
 #include <chrono>
 #include <random>
@@ -11,36 +11,6 @@
 
 namespace WorldEngine
 {
-
-/**
- * @brief Perform an initial plates simulation using the Plate Tectonics library
- * @param heightmap Elevation map
- * @param platesmap Plates map
- * @param seed Random seed value
- * @param width Width in pixels
- * @param height Height in pixels
- * @param seaLevel The elevation representing the ocean level
- * @param erosionPeriod
- * @param foldingRatio
- * @param aggrOverlapAbs
- * @param aggrOverlapRel
- * @param cycleCount
- * @param numPlates Number of plates
- * @return Handle to a Plate Tectonics library object
- */
-static void*
-GeneratePlatesSimulation(float**    heightmap,
-                         uint32_t** platesmap,
-                         long       seed,
-                         uint32_t   width,
-                         uint32_t   height,
-                         float      seaLevel       = DEFAULT_SEA_LEVEL,
-                         uint32_t   erosionPeriod  = DEFAULT_EROSION_PERIOD,
-                         float      foldingRatio   = DEFAULT_FOLDING_RATIO,
-                         uint32_t   aggrOverlapAbs = DEFAULT_AGGR_OVERLAP_ABS,
-                         float      aggrOverlapRel = DEFAULT_AGGR_OVERLAP_REL,
-                         uint32_t   cycleCount     = DEFAULT_CYCLE_COUNT,
-                         uint32_t   numPlates      = DEFAULT_NUM_PLATES);
 
 /**
  * @brief Create a new world based on an initial plates simulation
@@ -146,18 +116,18 @@ std::shared_ptr<World> WorldGen(const std::string&        name,
    return world;
 }
 
-static void* GeneratePlatesSimulation(float**    heightmap,
-                                      uint32_t** platesmap,
-                                      long       seed,
-                                      uint32_t   width,
-                                      uint32_t   height,
-                                      float      seaLevel,
-                                      uint32_t   erosionPeriod,
-                                      float      foldingRatio,
-                                      uint32_t   aggrOverlapAbs,
-                                      float      aggrOverlapRel,
-                                      uint32_t   cycleCount,
-                                      uint32_t   numPlates)
+void* GeneratePlatesSimulation(float**    heightmap,
+                               uint32_t** platesmap,
+                               long       seed,
+                               uint32_t   width,
+                               uint32_t   height,
+                               float      seaLevel,
+                               uint32_t   erosionPeriod,
+                               float      foldingRatio,
+                               uint32_t   aggrOverlapAbs,
+                               float      aggrOverlapRel,
+                               uint32_t   cycleCount,
+                               uint32_t   numPlates)
 {
    std::chrono::steady_clock::time_point startTime;
    std::chrono::steady_clock::time_point endTime;
@@ -195,6 +165,11 @@ static void* GeneratePlatesSimulation(float**    heightmap,
                             << "Elapsed time " << elapsedTime << "ms.";
 
    return p;
+}
+
+void PlatecApiDestroy(void* p)
+{
+   platec_api_destroy(p);
 }
 
 static std::shared_ptr<World> PlatesSimulation(const std::string&        name,
@@ -238,7 +213,7 @@ static std::shared_ptr<World> PlatesSimulation(const std::string&        name,
    world->SetElevationData(heightmap);
    world->SetPlatesData(platesmap);
 
-   platec_api_destroy(p);
+   PlatecApiDestroy(p);
 
    return world;
 }
