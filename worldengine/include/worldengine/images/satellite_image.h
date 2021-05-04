@@ -23,7 +23,7 @@ protected:
    void DrawImage(boost::gil::rgb8_image_t::view_t& target) override;
 
 private:
-   std::default_random_engine generator_;
+   std::mt19937 generator_;
 
    /**
     * @brief Take the average of two colors
@@ -64,7 +64,6 @@ private:
     * @brief Convert raw elevation into normalized values between 0 and 255
     * @return
     */
-   boost::multi_array<uint8_t, 2>
-   GetNormalizedElevationArray() const;
+   boost::multi_array<uint8_t, 2> GetNormalizedElevationArray() const;
 };
 } // namespace WorldEngine

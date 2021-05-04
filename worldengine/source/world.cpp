@@ -666,7 +666,7 @@ void World::GetRandomLand(
       return;
    }
 
-   std::default_random_engine              generator(seed);
+   std::mt19937                            generator(seed);
    std::uniform_int_distribution<uint32_t> distribution(0, land.size() - 1);
 
    for (uint32_t i = 0; i < numSamples; i++)

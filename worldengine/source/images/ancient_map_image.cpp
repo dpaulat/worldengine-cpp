@@ -127,7 +127,7 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 {
    BOOST_LOG_TRIVIAL(debug) << "Ancient map: Initializing";
 
-   std::default_random_engine generator(seed_);
+   std::mt19937 generator(seed_);
 
    const uint32_t width   = world_.width();
    const uint32_t height  = world_.height();

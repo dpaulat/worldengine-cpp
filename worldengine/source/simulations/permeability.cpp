@@ -35,7 +35,7 @@ static void PermeabilityCalculation(World& world, uint32_t seed)
 {
    BOOST_LOG_TRIVIAL(debug) << "Seed: " << seed;
 
-   std::default_random_engine              generator(seed);
+   std::mt19937                            generator(seed);
    std::uniform_int_distribution<uint32_t> distribution;
 
    OpenSimplexNoise::Noise noise(distribution(generator));

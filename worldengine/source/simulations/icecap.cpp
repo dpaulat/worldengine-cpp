@@ -28,7 +28,7 @@ void IcecapSimulation(World& world, uint32_t seed)
 {
    BOOST_LOG_TRIVIAL(info) << "Icecap simulation start";
 
-   std::default_random_engine            generator(seed);
+   std::mt19937                          generator(seed);
    std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
    const uint32_t width  = world.width();

@@ -597,7 +597,7 @@ int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
    if (!vm.count("seed"))
    {
       // TODO: Seed engine
-      std::default_random_engine              generator;
+      std::mt19937                            generator;
       std::uniform_int_distribution<uint32_t> distribution(MIN_SEED, MAX_SEED);
       args.seed = distribution(generator);
    }

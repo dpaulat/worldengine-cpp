@@ -157,7 +157,7 @@ void GenerateWorld(World& world, const Step& step, uint32_t seed)
       return;
    }
 
-   std::default_random_engine              generator(seed);
+   std::mt19937                            generator(seed);
    std::uniform_int_distribution<uint32_t> distribution(0, UINT32_MAX);
 
    // Seed map should be appended to to maximize compatibility between versions
