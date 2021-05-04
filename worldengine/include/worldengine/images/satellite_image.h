@@ -23,6 +23,7 @@ protected:
    void DrawImage(boost::gil::rgb8_image_t::view_t& target) override;
 
 private:
+   uint32_t     seed_;
    std::mt19937 generator_;
 
    /**

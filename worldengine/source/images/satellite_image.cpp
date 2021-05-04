@@ -155,7 +155,7 @@ static const std::unordered_map<Biome, boost::gil::rgb8_pixel_t>
                             {Biome::BareRock, {96, 96, 96}}};
 
 SatelliteImage::SatelliteImage(const World& world, uint32_t seed) :
-    Image(world, false), generator_(seed)
+    Image(world, false), seed_(seed), generator_(seed)
 {
 }
 SatelliteImage::~SatelliteImage() {}
@@ -175,6 +175,9 @@ void SatelliteImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
       elevation.data(), elevation.data() + elevation.num_elements());
    const float minElevation = *minmaxElevation.first;
    const float maxElevation = *minmaxElevation.second;
+
+   // Re-seed the engine
+   generator_.seed(seed_);
 
    // Get an elevation mask where heights are normalized between 0 and 255
    boost::multi_array<uint8_t, 2> normalElevation(
