@@ -10,6 +10,7 @@
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/program_options.hpp>
+#include <boost/random/random_device.hpp>
 
 #include <worldengine/common.h>
 #include <worldengine/export.h>
@@ -535,8 +536,10 @@ std::shared_ptr<World> LoadWorld(const std::string& worldFilename,
 
 void PrintArguments(const ArgumentsType& args)
 {
-   std::cout << "WorldEngine - A World Generator (version 0.19.1)" << std::endl;
-   std::cout << "------------------------------------------------" << std::endl;
+   std::cout << "WorldEngine C++ - A World Generator (version "
+             << WORLDENGINE_VERSION << ")" << std::endl;
+   std::cout << "----------------------------------------------------"
+             << std::endl;
    if (IsGenerationOption(args.operation))
    {
       std::cout << " Operation            : " << args.operation << " generation"
@@ -625,11 +628,11 @@ void PrintWorldInfo(const World& world)
 
 void SetLogLevel(const ArgumentsType& args, const po::variables_map& vm)
 {
-   boost::log::trivial::severity_level severity = boost::log::trivial::debug;
+   boost::log::trivial::severity_level severity = boost::log::trivial::info;
 
    if (args.verbose)
    {
-      severity = boost::log::trivial::trace;
+      severity = boost::log::trivial::debug;
    }
 
    boost::log::core::get()->set_filter(boost::log::trivial::severity >=
@@ -655,8 +658,9 @@ int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
 
    if (!vm.count("seed"))
    {
-      // TODO: Seed engine
-      std::mt19937                            generator;
+      // Unlike std::random_device, the boost version is guaranteed to be
+      // non-deterministic
+      boost::random::random_device            generator;
       std::uniform_int_distribution<uint32_t> distribution(MIN_SEED, MAX_SEED);
       args.seed = distribution(generator);
    }
@@ -746,7 +750,7 @@ void CliMain(int argc, const char** argv)
          BOOST_LOG_TRIVIAL(info) << "Generating ancient map...";
 
          AncientMapImage(*world,
-                         0, // TODO: Seed
+                         args.seed,
                          args.resizeFactor,
                          args.seaColor,
                          !args.notDrawBiome,
