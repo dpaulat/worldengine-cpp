@@ -389,9 +389,21 @@ static std::list<Point> RiverSources(const World&              world,
 
          bool neighborSeedFound = false;
 
+         std::vector<Point> visited;
+
          // Follow flow path to where it may lead
          while (true)
          {
+            // If we have been here before, break out of the loop
+            if (std::find(visited.cbegin(), visited.cend(), Point(cx, cy)) !=
+                visited.cend())
+            {
+               break;
+            }
+
+            // Mark point as visited
+            visited.push_back(Point(cx, cy));
+
             // Have we found a seed?
             if (world.IsMountain(cx, cy) &&
                 waterFlow[cy][cx] >= RIVER_THRESHOLD)
