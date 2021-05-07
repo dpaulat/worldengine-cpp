@@ -6,6 +6,8 @@
 #include <random>
 
 #include <boost/assign.hpp>
+#include <boost/bind/bind.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
@@ -40,6 +42,17 @@ int AddOptions(int                      argc,
                ArgumentsType&           args,
                po::options_description& options,
                po::variables_map&       vm);
+
+template<typename T>
+static void CheckCount(const std::vector<T>& v,
+                       const size_t&         count,
+                       const std::string&    errorMessage = "");
+
+template<typename T>
+static void CheckRange(const T&           value,
+                       const T&           min,
+                       const T&           max,
+                       const std::string& errorMessage = "");
 
 void GeneratePlates(const std::string& worldName,
                     uint32_t           width,
@@ -121,7 +134,7 @@ int AddOptions(int                      argc,
        po::value<std::string>(&args.worldName),
        "Set world name")
       //
-      ("format,f",
+      ("format",
        po::value<WorldFormat>(&args.worldFormat)
           ->default_value(WorldFormat::Protobuf),
        "Set file format\n"
@@ -145,8 +158,15 @@ int AddOptions(int                      argc,
        "Height of the world to be generated")
       //
       ("plates,q",
-       po::value<uint32_t>(&args.numPlates)->default_value(DEFAULT_NUM_PLATES),
-       "Number of plates")
+       po::value<uint32_t>(&args.numPlates)
+          ->default_value(DEFAULT_NUM_PLATES)
+          ->notifier(boost::bind(&CheckRange<uint32_t>,
+                                 boost::placeholders::_1,
+                                 1,
+                                 100,
+                                 "Number of plates should be in [1, 100]")),
+       "Number of plates\n"
+       "Valid values: [1, 100]")
       //
       ("black-and-white",
        po::bool_switch(&args.blackAndWhite)->default_value(false),
@@ -170,22 +190,54 @@ int AddOptions(int                      argc,
       ("temps",
        po::value<std::vector<float>>(&args.temps)
           ->multitoken()
-          ->default_value(DEFAULT_TEMPS),
+          ->default_value(DEFAULT_TEMPS)
+          ->notifier(
+             boost::bind(&CheckCount<float>,
+                         boost::placeholders::_1,
+                         6,
+                         "List of temperatures must have exactly 6 values")),
        "Provide alternate ranges for temperatures")
       //
       ("humidity",
        po::value<std::vector<float>>(&args.humids)
           ->multitoken()
-          ->default_value(DEFAULT_HUMIDS),
+          ->default_value(DEFAULT_HUMIDS)
+          ->notifier(
+             boost::bind(&CheckCount<float>,
+                         boost::placeholders::_1,
+                         7,
+                         "List of humidities must have exactly 7 values")),
        "Provide alternate ranges for humidities")
       //
       ("gamma-value",
-       po::value<float>(&args.gammaValue)->default_value(DEFAULT_GAMMA_CURVE),
-       "Gamma value for temperature/precipitation gamma correction curve")
+       po::value<float>(&args.gammaValue)
+          ->default_value(DEFAULT_GAMMA_CURVE)
+          ->notifier([](const float& value) {
+             if (value <= 0)
+             {
+                BOOST_LOG_TRIVIAL(error)
+                   << "Gamma value must be greater than 0";
+                throw po::validation_error(
+                   po::validation_error::invalid_option_value);
+             }
+          }),
+       "Gamma value for temperature/precipitation gamma correction curve\n"
+       "Valid values: Positive floating point")
       //
       ("gamma-offset",
-       po::value<float>(&args.curveOffset)->default_value(DEFAULT_CURVE_OFFSET),
-       "Adjustment value for temperature/precipitation gamma correction curve")
+       po::value<float>(&args.curveOffset)
+          ->default_value(DEFAULT_CURVE_OFFSET)
+          ->notifier([](const float& value) {
+             if (value < 0 || value >= 1)
+             {
+                BOOST_LOG_TRIVIAL(error)
+                   << "Gamma offset must be between [0.0, 1.0)";
+                throw po::validation_error(
+                   po::validation_error::invalid_option_value);
+             }
+          }),
+       "Adjustment value for temperature/precipitation gamma correction curve\n"
+       "Valid values: [0.0, 1.0)")
       //
       ("not-fade-borders",
        po::bool_switch(&args.notFadeBorders)->default_value(false),
@@ -300,6 +352,31 @@ int AddOptions(int                      argc,
    }
 
    return 0;
+}
+
+template<typename T>
+static void CheckCount(const std::vector<T>& v,
+                       const size_t&         count,
+                       const std::string&    errorMessage)
+{
+   if (v.size() != count)
+   {
+      BOOST_LOG_TRIVIAL(error) << errorMessage;
+      throw po::validation_error(po::validation_error::invalid_option_value);
+   }
+}
+
+template<typename T>
+static void CheckRange(const T&           value,
+                       const T&           min,
+                       const T&           max,
+                       const std::string& errorMessage)
+{
+   if (value < min || value > max)
+   {
+      BOOST_LOG_TRIVIAL(error) << errorMessage;
+      throw po::validation_error(po::validation_error::invalid_option_value);
+   }
 }
 
 void GeneratePlates(const std::string& worldName,
@@ -584,7 +661,40 @@ void PrintArguments(const ArgumentsType& args)
                 << std::endl;
    }
 
-   // TODO: Print warnings
+   // Print warning messages
+   auto minmaxTemps =
+      std::minmax_element(args.temps.cbegin(), args.temps.cend());
+   auto minmaxHumids =
+      std::minmax_element(args.humids.cbegin(), args.humids.cend());
+
+   if (!std::is_sorted(args.temps.cbegin(), args.temps.cend()))
+   {
+      BOOST_LOG_TRIVIAL(warning) << "Temperature array not in ascending order";
+   }
+   if (*minmaxTemps.first < 0.0f)
+   {
+      BOOST_LOG_TRIVIAL(warning)
+         << "Minimum value in temperature array less than 0";
+   }
+   if (*minmaxTemps.second > 1.0f)
+   {
+      BOOST_LOG_TRIVIAL(warning)
+         << "Maximum value in temperature array greater than 1";
+   }
+   if (!std::is_sorted(args.humids.cbegin(), args.humids.cend()))
+   {
+      BOOST_LOG_TRIVIAL(warning) << "Humidity array not in ascending order";
+   }
+   if (*minmaxHumids.first < 0.0f)
+   {
+      BOOST_LOG_TRIVIAL(warning)
+         << "Minimum value in humidity array less than 0";
+   }
+   if (*minmaxHumids.second > 1.0f)
+   {
+      BOOST_LOG_TRIVIAL(warning)
+         << "Maximum value in humidity array greater than 1";
+   }
 }
 
 void PrintUsage(const std::string&             programName,
@@ -654,7 +764,41 @@ void TransformArguments(ArgumentsType& args)
 
 int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
 {
-   // TODO: Validate file positional parameter
+   int status = 0;
+
+   if (boost::filesystem::exists(args.outputDir))
+   {
+      if (!boost::filesystem::is_directory(args.outputDir))
+      {
+         BOOST_LOG_TRIVIAL(error)
+            << "Output directory exists, but is not a directory: "
+            << args.outputDir;
+         status = -1;
+      }
+   }
+   else
+   {
+      BOOST_LOG_TRIVIAL(info)
+         << "Creating output directory: " << args.outputDir;
+      boost::filesystem::create_directory(args.outputDir);
+   }
+
+   if (args.operation == OperationType::Info ||
+       args.operation == OperationType::Export)
+   {
+      if (!vm.count("file"))
+      {
+         BOOST_LOG_TRIVIAL(error)
+            << "For operations info and export, file parameter is required";
+         status = -1;
+      }
+      else if (!boost::filesystem::exists(args.file) ||
+               boost::filesystem::is_directory(args.file))
+      {
+         BOOST_LOG_TRIVIAL(error) << "The specified world file does not exist";
+         status = -1;
+      }
+   }
 
    if (!vm.count("seed"))
    {
@@ -670,7 +814,7 @@ int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
       args.worldName = "seed_" + std::to_string(args.seed);
    }
 
-   return 0;
+   return status;
 }
 
 void CliMain(int argc, const char** argv)
@@ -684,15 +828,17 @@ void CliMain(int argc, const char** argv)
 
    status = AddOptions(argc, argv, args, options, vm);
 
+   if (status == 0)
+   {
+      SetLogLevel(args, vm);
+      status = ValidateArguments(args, vm);
+   }
+
    if (args.help || status != 0)
    {
       PrintUsage((argc > 0 ? argv[0] : "worldengine.exe"), options);
       return;
    }
-
-   SetLogLevel(args, vm);
-
-   status = ValidateArguments(args, vm);
 
    PrintArguments(args);
 
@@ -776,6 +922,8 @@ void CliMain(int argc, const char** argv)
       world = LoadWorld(args.file, args.worldFormat);
       if (world != nullptr)
       {
+         BOOST_LOG_TRIVIAL(info) << "Exporting image...";
+
          const std::string path =
             args.outputDir + "/" + world->name() + "_elevation";
          ExportImage(*world,

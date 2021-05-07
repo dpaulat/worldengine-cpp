@@ -71,6 +71,8 @@ bool ExportImage(const World&                 world,
 
    if (success)
    {
+      const char* driverName = finalDriver->GetMetadataItem(GDAL_DMD_LONGNAME);
+
       // Determine file suffix
       const char* ext = finalDriver->GetMetadataItem(GDAL_DMD_EXTENSION);
       std::string fileExtension = (ext != nullptr) ? ext : exportFiletype;
@@ -174,6 +176,9 @@ bool ExportImage(const World&                 world,
          path + "-" + std::to_string(bpp) + "." + fileExtension;
       finalDriver->CreateCopy(
          exportFilename.c_str(), intDataset, FALSE, NULL, NULL, NULL);
+
+      BOOST_LOG_TRIVIAL(info)
+         << "Exported " << driverName << " image to " << exportFilename;
 
       GDALClose(intDataset);
 
