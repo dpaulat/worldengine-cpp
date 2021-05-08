@@ -25,6 +25,7 @@ target_include_directories(worldengine-test PRIVATE ${GTest_INCLUDE_DIRS}
 set_target_properties(worldengine-test PROPERTIES CXX_STANDARD 17
                                                   CXX_STANDARD_REQUIRED ON
                                                   CXX_EXTENSIONS OFF)
+set_target_properties(worldengine-test PROPERTIES LINK_FLAGS "/ignore:4099")
 
 target_compile_definitions(worldengine-test PRIVATE WORLDENGINE_TEST_DATA_DIR="${WORLDENGINE_DIR}/external/worldengine-cpp-data/tests")
 

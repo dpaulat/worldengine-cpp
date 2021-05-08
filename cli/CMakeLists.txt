@@ -23,6 +23,6 @@ target_link_libraries(worldengine-cli Boost::log
                                       PNG::PNG
                                       protobuf::protobuf)
 
+set_target_properties(worldengine-cli PROPERTIES LINK_FLAGS "/ignore:4099")
 set_target_properties(worldengine-cli PROPERTIES ARCHIVE_OUTPUT_NAME worldengine-cli)
-
 set_target_properties(worldengine-cli PROPERTIES OUTPUT_NAME worldengine)
