@@ -882,7 +882,7 @@ bool World::ProtobufSerialize(std::string& output) const
    {
       ::World::World_DoubleMatrix* pbTemperature =
          new ::World::World_DoubleMatrix();
-      ToProtobufMatrix(precipitation_, pbTemperature);
+      ToProtobufMatrix(temperature_, pbTemperature);
       pbWorld.set_allocated_temperaturedata(pbTemperature);
       pbWorld.set_temperature_polar(GetThreshold(TemperatureLevel::Polar));
       pbWorld.set_temperature_alpine(GetThreshold(TemperatureLevel::Alpine));
