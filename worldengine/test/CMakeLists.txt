@@ -11,6 +11,7 @@ find_package(Protobuf)
 set(SRC_MAIN source/BasicTest.cpp
              source/GenerationTest.cpp
              source/PathTest.cpp
+             source/SerializationTest.cpp
              source/WorldEngineTest.cpp)
 set(SRC_SIMULATIONS source/simulations/TemperatureTest.cpp)
 

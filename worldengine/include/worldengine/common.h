@@ -107,6 +107,10 @@ enum class ElevationThreshold
    Hill,
    Mountain
 };
+typedef Iterator<ElevationThreshold,
+                 ElevationThreshold::Sea,
+                 ElevationThreshold::Mountain>
+   ElevationIterator;
 
 enum class ExportDataType
 {
@@ -142,6 +146,10 @@ enum class PermeabilityLevel
    Medium,
    High
 };
+typedef Iterator<PermeabilityLevel,
+                 PermeabilityLevel::Low,
+                 PermeabilityLevel::High>
+   PermeabilityIterator;
 
 enum class PrecipitationLevel
 {
@@ -149,6 +157,10 @@ enum class PrecipitationLevel
    Medium,
    High
 };
+typedef Iterator<PrecipitationLevel,
+                 PrecipitationLevel::Low,
+                 PrecipitationLevel::High>
+   PrecipitationIterator;
 
 enum class SeaColor
 {
@@ -199,6 +211,10 @@ enum class WaterThreshold
    River,
    MainRiver
 };
+typedef Iterator<WaterThreshold,
+                 WaterThreshold::Creek,
+                 WaterThreshold::MainRiver>
+   WaterIterator;
 
 enum class WorldFormat
 {
@@ -311,7 +327,7 @@ std::ostream& operator<<(std::ostream& os, const Biome& type);
  * @brief Convert from a biome group enumeration to a string value
  * @param type Biome group enumeration
  * @return String value
-*/
+ */
 std::string BiomeGroupToString(BiomeGroup type);
 
 std::ostream& operator<<(std::ostream& os, const BiomeGroup& type);

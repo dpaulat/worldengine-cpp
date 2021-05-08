@@ -81,6 +81,7 @@ public:
 
    const ElevationArrayType&     GetElevationData() const;
    const OceanArrayType&         GetOceanData() const;
+   const PlateArrayType&         GetPlateData() const;
    const BiomeArrayType&         GetBiomeData() const;
    const HumidityArrayType&      GetHumidityData() const;
    const IcecapArrayType&        GetIcecapData() const;

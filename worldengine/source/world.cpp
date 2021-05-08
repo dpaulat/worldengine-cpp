@@ -349,6 +349,11 @@ const OceanArrayType& World::GetOceanData() const
    return ocean_;
 }
 
+const PlateArrayType& World::GetPlateData() const
+{
+   return plates_;
+}
+
 const BiomeArrayType& World::GetBiomeData() const
 {
    return biome_;
