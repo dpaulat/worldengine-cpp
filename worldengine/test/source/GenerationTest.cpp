@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include <gtest/gtest.h>
 
 #include <basic.h>
@@ -7,11 +9,36 @@
 namespace WorldEngine
 {
 
+static float MeanElevationAtBorders(const World& world);
+
 TEST(PlatesTest, WorldGenTest)
 {
    std::shared_ptr<World> world = WorldGen("Dummy", 32, 16, 1);
 
    EXPECT_NE(world, nullptr);
+}
+
+TEST(GenerationTest, CenterLandTest)
+{
+   static const std::string testDataDir   = WORLDENGINE_TEST_DATA_DIR;
+   const std::string        worldFilename = testDataDir + "/data/seed_1618.world";
+
+   std::shared_ptr<World> w = std::make_shared<World>();
+
+   std::ifstream input(worldFilename,
+                       std::ios_base::in | std::ios_base::binary);
+   bool          success = w->ProtobufDeserialize(input);
+
+   EXPECT_EQ(success, true) << "Unable to parse " << worldFilename;
+
+   if (success)
+   {
+      // We want to have less land than before at the borders
+      float elBefore = MeanElevationAtBorders(*w);
+      CenterLand(*w);
+      float elAfter = MeanElevationAtBorders(*w);
+      EXPECT_LE(elAfter, elBefore);
+   }
 }
 
 TEST(GenerationTest, SeaDepthTest)
@@ -87,6 +114,26 @@ TEST(GenerationTest, SeaDepthTest)
             << "(x, y) = (" << x << ", " << y << ")";
       }
    }
+}
+
+static float MeanElevationAtBorders(const World& world)
+{
+   float totalElevation = 0.0f;
+
+   for (size_t y = 0; y < world.height(); y++)
+   {
+      totalElevation += world.GetElevationAt(0, y);
+      totalElevation += world.GetElevationAt(world.width() - 1, y);
+   }
+   for (size_t x = 1; x < world.width() - 1; x++)
+   {
+      totalElevation += world.GetElevationAt(x, 0);
+      totalElevation += world.GetElevationAt(x, world.height() - 1);
+   }
+
+   size_t totalCells = (world.width() + world.height() - 2) * 2;
+
+   return totalElevation / totalCells;
 }
 
 } // namespace WorldEngine

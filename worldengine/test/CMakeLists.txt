@@ -26,6 +26,8 @@ set_target_properties(worldengine-test PROPERTIES CXX_STANDARD 17
                                                   CXX_STANDARD_REQUIRED ON
                                                   CXX_EXTENSIONS OFF)
 
+target_compile_definitions(worldengine-test PRIVATE WORLDENGINE_TEST_DATA_DIR="${WORLDENGINE_DIR}/external/worldengine-cpp-data/tests")
+
 gtest_discover_tests(worldengine-test)
 
 target_link_libraries(worldengine-test Boost::log

@@ -568,6 +568,11 @@ BiomeGroup World::GetBiomeGroup(uint32_t x, uint32_t y) const
    return biomeGroups_.at(biome_[y][x]);
 }
 
+float World::GetElevationAt(uint32_t x, uint32_t y) const
+{
+   return elevation_[y][x];
+}
+
 float World::GetLevelOfMountain(uint32_t x, uint32_t y) const
 {
    float mountainLevel = GetThreshold(ElevationThreshold::Mountain);

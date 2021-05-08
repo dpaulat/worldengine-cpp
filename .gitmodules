@@ -7,3 +7,6 @@
 [submodule "external/OpenSimplexNoise"]
 	path = external/OpenSimplexNoise
 	url = https://github.com/deerel/OpenSimplexNoise.git
+[submodule "external/worldengine-cpp-data"]
+	path = external/worldengine-cpp-data
+	url = ../worldengine-cpp-data
