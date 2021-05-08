@@ -12,14 +12,12 @@ set(SRC_MAIN source/BasicTest.cpp
              source/GenerationTest.cpp
              source/PathTest.cpp
              source/SerializationTest.cpp
+             source/SimulationTest.cpp
              source/WorldEngineTest.cpp)
-set(SRC_SIMULATIONS source/simulations/TemperatureTest.cpp)
 
-add_executable(worldengine-test ${SRC_MAIN}
-                                ${SRC_SIMULATIONS})
+add_executable(worldengine-test ${SRC_MAIN})
 
-source_group("Source Files\\main"        FILES ${SRC_MAIN})
-source_group("Source Files\\simulations" FILES ${SRC_SIMULATIONS})
+source_group("Source Files\\main" FILES ${SRC_MAIN})
 
 target_include_directories(worldengine-test PRIVATE ${GTest_INCLUDE_DIRS}
                                                     ${libworldengine_SOURCE_DIR}/source)

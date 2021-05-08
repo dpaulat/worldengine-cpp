@@ -182,6 +182,14 @@ std::istream& operator>>(std::istream& in, ExportDataType& type)
    return in;
 }
 
+std::string PointToString(Point p)
+{
+   std::string value = '(' + std::to_string(p.first) + ',' + ' ' +
+                       std::to_string(p.second) + ')';
+
+   return value;
+}
+
 std::string SeaColorToString(SeaColor color)
 {
    switch (color)
@@ -329,3 +337,9 @@ std::istream& operator>>(std::istream& in, WorldFormat& format)
 }
 
 } // namespace WorldEngine
+
+std::ostream& operator<<(std::ostream& os, const WorldEngine::Point& p)
+{
+   os << WorldEngine::PointToString(p);
+   return os;
+}

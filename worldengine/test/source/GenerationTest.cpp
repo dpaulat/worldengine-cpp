@@ -83,7 +83,8 @@ TEST(GenerationTest, SeaDepthTest)
    {
       for (size_t x = 0; x < extent; x++)
       {
-         EXPECT_NEAR(seaDepth[y][x], expectedSeaDepth[y][x], 0.07f);
+         EXPECT_NEAR(seaDepth[y][x], expectedSeaDepth[y][x], 0.07f)
+            << "(x, y) = (" << x << ", " << y << ")";
       }
    }
 }

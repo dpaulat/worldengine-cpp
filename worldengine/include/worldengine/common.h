@@ -359,6 +359,13 @@ std::ostream& operator<<(std::ostream& os, const ExportDataType& type);
 std::istream& operator>>(std::istream& in, ExportDataType& type);
 
 /**
+ * @brief Convert from a point value to a string value
+ * @param p Point
+ * @return String value
+ */
+std::string PointToString(Point p);
+
+/**
  * @brief Convert from a sea color enumeration to a string value
  * @param color Sea color enumeration
  * @return String value
@@ -407,3 +414,5 @@ std::ostream& operator<<(std::ostream& os, const WorldFormat& format);
 std::istream& operator>>(std::istream& in, WorldFormat& format);
 
 } // namespace WorldEngine
+
+std::ostream& operator<<(std::ostream& os, const WorldEngine::Point& p);

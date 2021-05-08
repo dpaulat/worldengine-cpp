@@ -39,9 +39,8 @@ static void Droplet(World& world, uint32_t x, uint32_t y, float q)
       return;
    }
 
-   const ElevationArrayType&     elevation      = world.GetElevationData();
-   const PrecipitationArrayType& precipitations = world.GetPrecipitationData();
-   WaterMapArrayType&            watermap       = world.GetWaterMapData();
+   const ElevationArrayType& elevation = world.GetElevationData();
+   WaterMapArrayType&        watermap  = world.GetWaterMapData();
 
    std::vector<std::pair<uint32_t, uint32_t>>            tilesAround;
    std::vector<std::tuple<uint32_t, uint32_t, uint32_t>> lowers;
@@ -130,7 +129,7 @@ static void WatermapExecute(World& world, uint32_t numSamples, uint32_t seed)
     * should anyone else happen to rely on it.
     */
 
-   std::vector<std::pair<uint32_t, uint32_t>> landSamples;
+   std::vector<Point> landSamples;
 
    world.GetRandomLand(landSamples, numSamples, distribution(generator));
 

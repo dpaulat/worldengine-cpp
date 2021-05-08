@@ -645,10 +645,9 @@ HumidityLevel World::GetHumidityLevel(uint32_t x, uint32_t y) const
    return HumidityLevel::Last;
 }
 
-void World::GetRandomLand(
-   std::vector<std::pair<uint32_t, uint32_t>>& landSamples,
-   uint32_t                                    numSamples,
-   uint32_t                                    seed) const
+void World::GetRandomLand(std::vector<Point>& landSamples,
+                          uint32_t            numSamples,
+                          uint32_t            seed) const
 {
    std::vector<std::pair<uint32_t, uint32_t>> land;
 
