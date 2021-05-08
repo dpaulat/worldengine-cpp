@@ -5,8 +5,6 @@
 namespace WorldEngine
 {
 
-static std::string GenerateTemporaryFilename(const std::string& prefix);
-
 void CheckEqual(const World& w1, const World& w2)
 {
    EXPECT_EQ(w1.name(), w2.name());
@@ -84,15 +82,6 @@ TEST(SerializationTest, HDF5Test)
    std::remove(filename.c_str());
 
    CheckEqual(*w1, *w2);
-}
-
-static std::string GenerateTemporaryFilename(const std::string& prefix)
-{
-   time_t             t    = std::time(nullptr);
-   tm                 time = *std::localtime(&t);
-   std::ostringstream oss;
-   oss << std::put_time(&time, "%Y%m%dT%H%M%S");
-   return std::string(prefix + oss.str());
 }
 
 } // namespace WorldEngine

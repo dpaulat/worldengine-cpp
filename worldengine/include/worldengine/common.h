@@ -315,6 +315,15 @@ const std::vector<float> DEFAULT_HUMIDS {
    0.059, 0.222, 0.493, 0.764, 0.927, 0.986, 0.998};
 
 /**
+ * @brief Generate a temporary filename with a given prefix and suffix
+ * @param prefix Filename prefix
+ * @param suffx Filename suffix
+ * @return Temporary filename
+ */
+std::string GenerateTemporaryFilename(const std::string& prefix = "",
+                                      const std::string& suffix = "");
+
+/**
  * @brief Convert from a biomes enumeration to a string value
  * @param type Biome enumeration
  * @return String value

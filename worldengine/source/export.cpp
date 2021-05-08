@@ -1,7 +1,5 @@
 #include "worldengine/export.h"
 
-#include <cstdio>
-#include <iomanip>
 #include <unordered_map>
 
 #pragma warning(push)
@@ -39,7 +37,6 @@ static const std::unordered_map<ExportDataType, GDALDataType> gdalTypeMap = {
 
 static const char** ArgListCreate(const std::vector<std::string>& argVector);
 static void         ArgListDelete(const char** argList);
-static std::string  GenerateTemporaryFilename(const std::string& prefix);
 static void         Translate(GDALDataset**             dataset,
                               std::vector<std::string>& translateArgs);
 
@@ -208,15 +205,6 @@ static const char** ArgListCreate(const std::vector<std::string>& argVector)
 static void ArgListDelete(const char** argList)
 {
    delete[] argList;
-}
-
-static std::string GenerateTemporaryFilename(const std::string& prefix)
-{
-   time_t             t    = std::time(nullptr);
-   tm                 time = *std::localtime(&t);
-   std::ostringstream oss;
-   oss << std::put_time(&time, "%Y%m%dT%H%M%S");
-   return std::string(prefix + oss.str());
 }
 
 static void Translate(GDALDataset**             dataset,

@@ -1,6 +1,8 @@
 #include "worldengine/common.h"
 
+#include <iomanip>
 #include <istream>
+#include <sstream>
 
 #include <boost/algorithm/string.hpp>
 
@@ -21,6 +23,16 @@ const Step& Step::step(StepType type)
 std::string Step::name() const
 {
    return StepTypeToString(stepType_);
+}
+
+std::string GenerateTemporaryFilename(const std::string& prefix,
+                                      const std::string& suffix)
+{
+   time_t             t    = std::time(nullptr);
+   tm                 time = *std::localtime(&t);
+   std::ostringstream oss;
+   oss << std::put_time(&time, "%Y%m%dT%H%M%S");
+   return std::string(prefix + oss.str() + suffix);
 }
 
 std::string BiomeToString(Biome type)
