@@ -1,4 +1,4 @@
-#include <fstream>
+#include "Functions.h"
 
 #include <gtest/gtest.h>
 
@@ -20,25 +20,17 @@ TEST(PlatesTest, WorldGenTest)
 
 TEST(GenerationTest, CenterLandTest)
 {
-   static const std::string testDataDir   = WORLDENGINE_TEST_DATA_DIR;
-   const std::string        worldFilename = testDataDir + "/data/seed_1618.world";
+   const std::string      worldFilename = "/data/seed_1618.world";
+   std::shared_ptr<World> w             = std::make_shared<World>();
+   bool                   success       = LoadWorld(*w, worldFilename);
 
-   std::shared_ptr<World> w = std::make_shared<World>();
+   ASSERT_EQ(success, true) << "Unable to load " << worldFilename;
 
-   std::ifstream input(worldFilename,
-                       std::ios_base::in | std::ios_base::binary);
-   bool          success = w->ProtobufDeserialize(input);
-
-   EXPECT_EQ(success, true) << "Unable to parse " << worldFilename;
-
-   if (success)
-   {
-      // We want to have less land than before at the borders
-      float elBefore = MeanElevationAtBorders(*w);
-      CenterLand(*w);
-      float elAfter = MeanElevationAtBorders(*w);
-      EXPECT_LE(elAfter, elBefore);
-   }
+   // We want to have less land than before at the borders
+   float elBefore = MeanElevationAtBorders(*w);
+   CenterLand(*w);
+   float elAfter = MeanElevationAtBorders(*w);
+   EXPECT_LE(elAfter, elBefore);
 }
 
 TEST(GenerationTest, SeaDepthTest)

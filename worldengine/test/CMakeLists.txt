@@ -8,18 +8,28 @@ find_package(GTest)
 find_package(HDF5)
 find_package(Protobuf)
 
-set(SRC_MAIN source/BasicTest.cpp
-             source/GenerationTest.cpp
-             source/PathTest.cpp
-             source/SerializationTest.cpp
-             source/SimulationTest.cpp
-             source/WorldEngineTest.cpp)
+set(SRC_MAIN source/WorldEngineTest.cpp)
+set(HDR_SUPPORT source/Functions.h)
+set(SRC_SUPPORT source/Functions.cpp)
+set(SRC_TESTS source/BasicTest.cpp
+              source/GenerationTest.cpp
+              source/ImageTest.cpp
+              source/PathTest.cpp
+              source/SerializationTest.cpp
+              source/SimulationTest.cpp)
 
-add_executable(worldengine-test ${SRC_MAIN})
+add_executable(worldengine-test ${SRC_MAIN}
+                                ${HDR_SUPPORT}
+                                ${SRC_SUPPORT}
+                                ${SRC_TESTS})
 
-source_group("Source Files\\main" FILES ${SRC_MAIN})
+source_group("Source Files\\main"    FILES ${SRC_MAIN})
+source_group("Header Files\\support" FILES ${HDR_SUPPORT})
+source_group("Source Files\\support" FILES ${SRC_SUPPORT})
+source_group("Source Files\\tests"   FILES ${SRC_TESTS})
 
 target_include_directories(worldengine-test PRIVATE ${GTest_INCLUDE_DIRS}
+                                                    ${PNG_INCLUDE_DIR}
                                                     ${libworldengine_SOURCE_DIR}/source)
 
 set_target_properties(worldengine-test PROPERTIES CXX_STANDARD 17
@@ -36,5 +46,6 @@ target_link_libraries(worldengine-test Boost::log
                                        HDF5::HDF5
                                        OpenSimplexNoise
                                        protobuf::protobuf
+                                       PNG::PNG
                                        PlateTectonics
                                        worldengine)
