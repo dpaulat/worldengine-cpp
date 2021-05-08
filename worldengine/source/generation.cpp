@@ -60,8 +60,6 @@ static void HarmonizeOcean(const OceanArrayType& ocean,
 static boost::multi_array<int32_t, 2>
 NextLandDynamic(const OceanArrayType& ocean, int32_t maxRadius = 5);
 
-static void SeaDepth(World& world, float seaLevel);
-
 void AddNoiseToElevation(World& world, uint32_t seed)
 {
    uint32_t octaves = 8;
@@ -407,7 +405,7 @@ NextLandDynamic(const OceanArrayType& ocean, int32_t maxRadius)
    return nextLand;
 }
 
-static void SeaDepth(World& world, float seaLevel)
+void SeaDepth(World& world, float seaLevel)
 {
    // We want to multiply the raw sea depth by one of these factors depending on
    // the distance from the next land

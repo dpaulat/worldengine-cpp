@@ -45,4 +45,11 @@ void InitializeOceanAndThresholds(World& world,
  */
 void PlaceOceansAtMapBorders(World& world);
 
+/**
+ * @brief Calculate the sea depth
+ * @param world A world having elevation and oceans
+ * @param seaLevel The elevation representing the ocean level
+*/
+void SeaDepth(World& world, float seaLevel);
+
 } // namespace WorldEngine

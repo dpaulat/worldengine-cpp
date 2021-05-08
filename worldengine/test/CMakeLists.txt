@@ -5,9 +5,11 @@ include(GoogleTest)
 
 find_package(Boost)
 find_package(GTest)
+find_package(HDF5)
 find_package(Protobuf)
 
 set(SRC_MAIN source/BasicTest.cpp
+             source/GenerationTest.cpp
              source/PathTest.cpp
              source/WorldEngineTest.cpp)
 set(SRC_SIMULATIONS source/simulations/TemperatureTest.cpp)
@@ -29,6 +31,8 @@ gtest_discover_tests(worldengine-test)
 
 target_link_libraries(worldengine-test Boost::log
                                        GTest::gtest
+                                       HDF5::HDF5
                                        OpenSimplexNoise
                                        protobuf::protobuf
+                                       PlateTectonics
                                        worldengine)
