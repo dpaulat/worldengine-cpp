@@ -896,7 +896,7 @@ void CliMain(int argc, const char** argv)
          BOOST_LOG_TRIVIAL(info) << "Generating ancient map...";
 
          AncientMapImage(*world,
-                         args.seed,
+                         world->seed(),
                          args.resizeFactor,
                          args.seaColor,
                          !args.notDrawBiome,

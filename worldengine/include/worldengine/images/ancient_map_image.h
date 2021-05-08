@@ -17,7 +17,7 @@ public:
                             bool         drawBiome           = true,
                             bool         drawRivers          = true,
                             bool         drawMountains       = true,
-                            bool         drawOuterLandBorder = true);
+                            bool         drawOuterLandBorder = false);
    ~AncientMapImage();
 
 protected:
