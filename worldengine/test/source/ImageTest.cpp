@@ -39,6 +39,20 @@ protected:
 static void CompareImages(const std::string& file1, const std::string& file2);
 static std::string GoldenImagePath(const std::string& filename);
 
+TEST(ImageFunctionTest, GradientTest)
+{
+   const boost::gil::rgb8_pixel_t c1(10, 20, 40);
+   const boost::gil::rgb8_pixel_t c2(0, 128, 240);
+
+   boost::gil::rgb8_pixel_t g1 = Gradient(0.0f, 0.0f, 1.0f, c1, c2);
+   boost::gil::rgb8_pixel_t g2 = Gradient(1.0f, 0.0f, 1.0f, c1, c2);
+   boost::gil::rgb8_pixel_t g3 = Gradient(0.5f, 0.0f, 1.0f, c1, c2);
+
+   EXPECT_EQ(g1, boost::gil::rgb8_pixel_t(10, 20, 40));
+   EXPECT_EQ(g2, boost::gil::rgb8_pixel_t(0, 128, 240));
+   EXPECT_EQ(g3, boost::gil::rgb8_pixel_t(5, 74, 140));
+}
+
 TEST_F(ImageTest, AncientMapTest)
 {
    const uint32_t  scale = 3u;
@@ -48,6 +62,30 @@ TEST_F(ImageTest, AncientMapTest)
 
    const std::string goldenImage =
       GoldenImagePath("ancient_map_seed_1618_factor3.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, AncientMapBorderTest)
+{
+   const uint32_t  scale               = 1u;
+   const bool      drawBiome           = true;
+   const bool      drawRivers          = true;
+   const bool      drawMountains       = true;
+   const bool      drawOuterLandBorder = true;
+   AncientMapImage image(*w_,
+                         seed_,
+                         scale,
+                         SeaColor::Brown,
+                         drawBiome,
+                         drawRivers,
+                         drawMountains,
+                         drawOuterLandBorder);
+
+   image.Draw(filename_);
+
+   const std::string goldenImage =
+      GoldenImagePath("ancient_map_seed_1618_outer_border.png");
 
    CompareImages(filename_, goldenImage);
 }

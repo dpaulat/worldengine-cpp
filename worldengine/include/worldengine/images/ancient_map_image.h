@@ -35,4 +35,11 @@ private:
    bool     drawMountains_;
    bool     drawOuterLandBorder_;
 };
+
+boost::gil::rgb8_pixel_t Gradient(float                    value,
+                                  float                    low,
+                                  float                    high,
+                                  boost::gil::rgb8_pixel_t lowColor,
+                                  boost::gil::rgb8_pixel_t highColor);
+
 } // namespace WorldEngine

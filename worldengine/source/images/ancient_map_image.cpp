@@ -92,12 +92,6 @@ DrawTundra(boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y);
 static void DrawWarmTemperateForest(boost::gil::rgb8_image_t::view_t& target,
                                     uint32_t                          x,
                                     uint32_t                          y);
-
-static boost::gil::rgb8_pixel_t Gradient(float                    value,
-                                         float                    low,
-                                         float                    high,
-                                         boost::gil::rgb8_pixel_t lowColor,
-                                         boost::gil::rgb8_pixel_t highColor);
 template<typename T>
 static void ScaleArray(const boost::multi_array<T, 2>& input,
                        boost::multi_array<T, 2>&       output,
@@ -755,11 +749,11 @@ static void DrawWarmTemperateForest(boost::gil::rgb8_image_t::view_t& target,
    DrawForestPattern2(target, x, y, c1, c2);
 }
 
-static boost::gil::rgb8_pixel_t Gradient(float                    value,
-                                         float                    low,
-                                         float                    high,
-                                         boost::gil::rgb8_pixel_t lowColor,
-                                         boost::gil::rgb8_pixel_t highColor)
+boost::gil::rgb8_pixel_t Gradient(float                    value,
+                                  float                    low,
+                                  float                    high,
+                                  boost::gil::rgb8_pixel_t lowColor,
+                                  boost::gil::rgb8_pixel_t highColor)
 {
    if (low == high)
    {
