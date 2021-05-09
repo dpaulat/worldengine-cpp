@@ -39,11 +39,11 @@ namespace po = boost::program_options;
 namespace WorldEngine
 {
 
-int AddOptions(int                      argc,
-               const char**             argv,
-               ArgumentsType&           args,
-               po::options_description& options,
-               po::variables_map&       vm);
+static int AddOptions(int                      argc,
+                      const char**             argv,
+                      ArgumentsType&           args,
+                      po::options_description& options,
+                      po::variables_map&       vm);
 
 template<typename T>
 static void CheckCount(const std::vector<T>& v,
@@ -56,13 +56,13 @@ static void CheckRange(const T&           value,
                        const T&           max,
                        const std::string& errorMessage = "");
 
-void GeneratePlates(const std::string& worldName,
-                    uint32_t           width,
-                    uint32_t           height,
-                    uint32_t           seed,
-                    const std::string& outputDir,
-                    uint32_t           numPlates = DEFAULT_NUM_PLATES);
-std::shared_ptr<World>
+static void GeneratePlates(const std::string& worldName,
+                           uint32_t           width,
+                           uint32_t           height,
+                           uint32_t           seed,
+                           const std::string& outputDir,
+                           uint32_t           numPlates = DEFAULT_NUM_PLATES);
+static std::shared_ptr<World>
 GenerateWorld(const std::string&        worldName,
               uint32_t                  width,
               uint32_t                  height,
@@ -87,20 +87,20 @@ GenerateWorld(const std::string&        worldName,
               bool                      elevationMap  = DEFAULT_ELEVATION_MAP,
               bool elevationShadows = DEFAULT_ELEVATION_SHADOWS);
 
-std::shared_ptr<World> LoadWorld(const std::string& filename,
-                                 WorldFormat        format);
+static std::shared_ptr<World> LoadWorld(const std::string& filename,
+                                        WorldFormat        format);
 
-void PrintUsage(const std::string&             programName,
-                const po::options_description& options);
-void PrintWorldInfo(const World& world);
-void SetLogLevel(const ArgumentsType& args, const po::variables_map& vm);
-int  ValidateArguments(ArgumentsType& args, const po::variables_map& vm);
+static void PrintUsage(const std::string&             programName,
+                       const po::options_description& options);
+static void PrintWorldInfo(const World& world);
+static void SetLogLevel(const ArgumentsType& args, const po::variables_map& vm);
+static int  ValidateArguments(ArgumentsType& args, const po::variables_map& vm);
 
-int AddOptions(int                      argc,
-               const char**             argv,
-               ArgumentsType&           args,
-               po::options_description& options,
-               po::variables_map&       vm)
+static int AddOptions(int                      argc,
+                      const char**             argv,
+                      ArgumentsType&           args,
+                      po::options_description& options,
+                      po::variables_map&       vm)
 {
    po::positional_options_description p;
    p.add("operation", 1);
@@ -397,12 +397,12 @@ static void CheckRange(const T&           value,
    }
 }
 
-void GeneratePlates(const std::string& worldName,
-                    uint32_t           width,
-                    uint32_t           height,
-                    uint32_t           seed,
-                    const std::string& outputDir,
-                    uint32_t           numPlates)
+static void GeneratePlates(const std::string& worldName,
+                           uint32_t           width,
+                           uint32_t           height,
+                           uint32_t           seed,
+                           const std::string& outputDir,
+                           uint32_t           numPlates)
 {
    // Eventually this method should be invoked when generation is called and
    // asked to stop at step "plates", it should not be a different operation.
@@ -448,29 +448,29 @@ void GeneratePlates(const std::string& worldName,
                            << centeredPlatesFilename;
 }
 
-std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
-                                     uint32_t                  width,
-                                     uint32_t                  height,
-                                     uint32_t                  seed,
-                                     uint32_t                  numPlates,
-                                     const std::string&        outputDir,
-                                     const Step&               step,
-                                     float                     oceanLevel,
-                                     const std::vector<float>& temps,
-                                     const std::vector<float>& humids,
-                                     WorldFormat               worldFormat,
-                                     float                     gammaCurve,
-                                     float                     curveOffset,
-                                     bool                      fadeBorders,
-                                     bool                      blackAndWhite,
-                                     bool                      gsHeightmap,
-                                     bool                      rivers,
-                                     bool                      scatterPlot,
-                                     bool                      satelliteMap,
-                                     bool                      icecapsMap,
-                                     bool                      worldMap,
-                                     bool                      elevationMap,
-                                     bool                      elevationShadows)
+static std::shared_ptr<World> GenerateWorld(const std::string& worldName,
+                                            uint32_t           width,
+                                            uint32_t           height,
+                                            uint32_t           seed,
+                                            uint32_t           numPlates,
+                                            const std::string& outputDir,
+                                            const Step&        step,
+                                            float              oceanLevel,
+                                            const std::vector<float>& temps,
+                                            const std::vector<float>& humids,
+                                            WorldFormat worldFormat,
+                                            float       gammaCurve,
+                                            float       curveOffset,
+                                            bool        fadeBorders,
+                                            bool        blackAndWhite,
+                                            bool        gsHeightmap,
+                                            bool        rivers,
+                                            bool        scatterPlot,
+                                            bool        satelliteMap,
+                                            bool        icecapsMap,
+                                            bool        worldMap,
+                                            bool        elevationMap,
+                                            bool        elevationShadows)
 {
    std::shared_ptr<World> world = WorldGen(worldName,
                                            width,
@@ -630,8 +630,8 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
    return world;
 }
 
-std::shared_ptr<World> LoadWorld(const std::string& worldFilename,
-                                 WorldFormat        format)
+static std::shared_ptr<World> LoadWorld(const std::string& worldFilename,
+                                        WorldFormat        format)
 {
    std::shared_ptr<World> world = std::make_shared<World>();
 
@@ -657,7 +657,7 @@ std::shared_ptr<World> LoadWorld(const std::string& worldFilename,
    return world;
 }
 
-void PrintArguments(const ArgumentsType& args)
+static void PrintArguments(const ArgumentsType& args)
 {
    std::cout << "WorldEngine C++ - A World Generator (version "
              << WORLDENGINE_VERSION << ")" << std::endl;
@@ -747,8 +747,8 @@ void PrintArguments(const ArgumentsType& args)
    }
 }
 
-void PrintUsage(const std::string&             programName,
-                const po::options_description& options)
+static void PrintUsage(const std::string&             programName,
+                       const po::options_description& options)
 {
    std::cout << "Usage: " << programName
              << " [<operation> [<file>]] [<options>] " << std::endl;
@@ -766,7 +766,7 @@ void PrintUsage(const std::string&             programName,
    std::cout << options << std::endl;
 }
 
-void PrintWorldInfo(const World& world)
+static void PrintWorldInfo(const World& world)
 {
    std::cout << "Name               : " << world.name() << std::endl;
    std::cout << "Width              : " << world.width() << std::endl;
@@ -786,7 +786,7 @@ void PrintWorldInfo(const World& world)
    std::cout << "Has Temperature    : " << world.HasTemperature() << std::endl;
 }
 
-void SetLogLevel(const ArgumentsType& args, const po::variables_map& vm)
+static void SetLogLevel(const ArgumentsType& args, const po::variables_map& vm)
 {
    boost::log::trivial::severity_level severity = boost::log::trivial::info;
 
@@ -799,7 +799,7 @@ void SetLogLevel(const ArgumentsType& args, const po::variables_map& vm)
                                        severity);
 }
 
-void TransformArguments(ArgumentsType& args)
+static void TransformArguments(ArgumentsType& args)
 {
    std::transform(args.temps.begin(),
                   args.temps.end(),
@@ -812,7 +812,7 @@ void TransformArguments(ArgumentsType& args)
                   [](const float& h) -> float { return 1.0f - h; });
 }
 
-int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
+static int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
 {
    int status = 0;
 
