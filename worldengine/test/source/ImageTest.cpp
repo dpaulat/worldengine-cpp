@@ -16,6 +16,7 @@
 #include <worldengine/images/scatter_plot_image.h>
 #include <worldengine/images/simple_elevation_image.h>
 #include <worldengine/images/temperature_image.h>
+#include <worldengine/images/world_image.h>
 
 namespace WorldEngine
 {
@@ -143,7 +144,7 @@ TEST_F(ImageTest, PrecipitationTest)
    CompareImages(filename_, goldenImage);
 }
 
-TEST_F(ImageTest, RiverTest)
+TEST_F(ImageTest, RiverMapTest)
 {
    RiverImage image(*w_);
    image.Draw(filename_);
@@ -190,6 +191,16 @@ TEST_F(ImageTest, TemperatureTest)
    image.Draw(filename_);
 
    const std::string goldenImage = GoldenImagePath("seed_1618_temperature.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, WorldTest)
+{
+   WorldImage image(*w_);
+   image.Draw(filename_);
+
+   const std::string goldenImage = GoldenImagePath("seed_1618_world.png");
 
    CompareImages(filename_, goldenImage);
 }

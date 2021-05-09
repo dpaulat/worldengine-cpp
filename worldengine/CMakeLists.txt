@@ -52,7 +52,8 @@ set(SRC_IMAGES source/images/image.cpp
                source/images/satellite_image.cpp
                source/images/scatter_plot_image.cpp
                source/images/simple_elevation_image.cpp
-               source/images/temperature_image.cpp)
+               source/images/temperature_image.cpp
+               source/images/world_image.cpp)
 set(HDR_IMAGES include/worldengine/images/image.h
                include/worldengine/images/ancient_map_image.h
                include/worldengine/images/biome_image.h
@@ -64,7 +65,8 @@ set(HDR_IMAGES include/worldengine/images/image.h
                include/worldengine/images/satellite_image.h
                include/worldengine/images/scatter_plot_image.h
                include/worldengine/images/simple_elevation_image.h
-               include/worldengine/images/temperature_image.h)
+               include/worldengine/images/temperature_image.h
+               include/worldengine/images/world_image.h)
 set(PROTO_FILES World.proto)
 
 add_library(worldengine STATIC ${SRC_MAIN}

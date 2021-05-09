@@ -65,4 +65,9 @@ void BiomeImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
       }
    }
 }
+
+boost::gil::rgb8_pixel_t BiomeImage::BiomeColor(Biome biome)
+{
+   return biomeColors_[biome];
+}
 } // namespace WorldEngine
