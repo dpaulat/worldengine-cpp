@@ -195,7 +195,12 @@ static const std::unordered_map<Biome, BiomeGroup> biomeGroups_ = {
    {Biome::BareRock, BiomeGroup::None},
 };
 
-World::World() : seed_(0), gammaCurve_(0.0f), curveOffset_(0.0f) {}
+World::World() :
+    seed_(0),
+    gammaCurve_(DEFAULT_GAMMA_CURVE),
+    curveOffset_(DEFAULT_CURVE_OFFSET)
+{
+}
 
 World::World(const std::string&          name,
              Size                        size,
