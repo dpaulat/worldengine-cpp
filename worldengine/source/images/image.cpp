@@ -10,7 +10,18 @@ static const bool   DEFAULT_HAS_COLOR           = true;
 static const bool   DEFAULT_HAS_BLACK_AND_WHITE = false;
 static const size_t DEFAULT_SCALE               = 1u;
 
+static Size CalculateSize(const World& world, size_t scale);
+
 Image::Image(const World& world) : Image(world, DEFAULT_SCALE) {}
+
+Image::Image(const World& world, Size size) :
+    Image(world,
+          DEFAULT_HAS_COLOR,
+          DEFAULT_HAS_BLACK_AND_WHITE,
+          size,
+          DEFAULT_SCALE)
+{
+}
 
 Image::Image(const World& world, size_t scale) :
     Image(world, DEFAULT_HAS_COLOR, DEFAULT_HAS_BLACK_AND_WHITE, scale)
@@ -31,9 +42,19 @@ Image::Image(const World& world,
              bool         hasColor,
              bool         hasBlackAndWhite,
              size_t       scale) :
+    Image(world, hasColor, hasBlackAndWhite, CalculateSize(world, scale), scale)
+{
+}
+
+Image::Image(const World& world,
+             bool         hasColor,
+             bool         hasBlackAndWhite,
+             Size         size,
+             size_t       scale) :
     world_(world),
     hasColor_(hasColor),
     hasBlackAndWhite_(hasBlackAndWhite),
+    size_(size),
     scale_(scale)
 {
 }
@@ -134,8 +155,7 @@ void Image::Draw(const std::string& filename, bool blackAndWhite)
 {
    if ((!blackAndWhite || !hasBlackAndWhite_) && hasColor_)
    {
-      boost::gil::rgb8_image_t         image(world_.width() * scale_,
-                                     world_.height() * scale_);
+      boost::gil::rgb8_image_t         image(size_.width_, size_.height_);
       boost::gil::rgb8_image_t::view_t view = boost::gil::view(image);
 
       DrawImage(view);
@@ -166,5 +186,10 @@ void Image::Draw(const std::string& filename, bool blackAndWhite)
          BOOST_LOG_TRIVIAL(error) << ex.what();
       }
    }
+}
+
+static Size CalculateSize(const World& world, size_t scale)
+{
+   return Size(world.width() * scale, world.height() * scale);
 }
 } // namespace WorldEngine

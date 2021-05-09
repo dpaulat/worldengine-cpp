@@ -24,6 +24,13 @@ protected:
    /**
     * @brief Construct an image
     * @param world A world
+    * @param size Image size
+    */
+   explicit Image(const World& world, Size size);
+
+   /**
+    * @brief Construct an image
+    * @param world A world
     * @param scale Image scale
     */
    explicit Image(const World& world, size_t scale);
@@ -55,11 +62,27 @@ protected:
                   bool         hasColor,
                   bool         hasBlackAndWhite,
                   size_t       scale);
+
+   /**
+    * @brief Construct an image
+    * @param world A world
+    * @param hasColor Derived image has a color option
+    * @param hasBlackAndWhite Derived image has a black and white option.
+    * @param size Image size
+    * @param scale Image scale
+    */
+   explicit Image(const World& world,
+                  bool         hasColor,
+                  bool         hasBlackAndWhite,
+                  Size         size,
+                  size_t       scale);
+
    virtual ~Image();
 
    const World& world_;
    const bool   hasColor_;
    const bool   hasBlackAndWhite_;
+   const Size   size_;
    const size_t scale_;
 
    /**

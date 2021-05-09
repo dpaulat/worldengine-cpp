@@ -2,9 +2,20 @@
 
 #include <gtest/gtest.h>
 
+#include <filesystem>
+
 #include <boost/gil/extension/io/png.hpp>
 
 #include <worldengine/images/ancient_map_image.h>
+#include <worldengine/images/biome_image.h>
+#include <worldengine/images/heightmap_image.h>
+#include <worldengine/images/ocean_image.h>
+#include <worldengine/images/precipitation_image.h>
+#include <worldengine/images/river_image.h>
+#include <worldengine/images/satellite_image.h>
+#include <worldengine/images/scatter_plot_image.h>
+#include <worldengine/images/simple_elevation_image.h>
+#include <worldengine/images/temperature_image.h>
 
 namespace WorldEngine
 {
@@ -36,6 +47,7 @@ protected:
    std::string            filename_;
 };
 
+template<typename ImageType = boost::gil::rgb8_image_t>
 static void CompareImages(const std::string& file1, const std::string& file2);
 static std::string GoldenImagePath(const std::string& filename);
 
@@ -90,10 +102,105 @@ TEST_F(ImageTest, AncientMapBorderTest)
    CompareImages(filename_, goldenImage);
 }
 
+TEST_F(ImageTest, BiomeTest)
+{
+   BiomeImage image(*w_);
+   image.Draw(filename_);
+
+   const std::string goldenImage = GoldenImagePath("seed_1618_biome.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, HeightmapTest)
+{
+   HeightmapImage image(*w_);
+   image.Draw(filename_);
+
+   const std::string goldenImage = GoldenImagePath("seed_1618_grayscale.png");
+
+   CompareImages<boost::gil::gray8_image_t>(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, OceanTest)
+{
+   OceanImage image(*w_);
+   image.Draw(filename_);
+
+   const std::string goldenImage = GoldenImagePath("seed_1618_ocean.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, PrecipitationTest)
+{
+   PrecipitationImage image(*w_);
+   image.Draw(filename_);
+
+   const std::string goldenImage =
+      GoldenImagePath("seed_1618_precipitation.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, RiverTest)
+{
+   RiverImage image(*w_);
+   image.Draw(filename_);
+
+   const std::string goldenImage = GoldenImagePath("seed_1618_rivers.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, SatelliteTest)
+{
+   SatelliteImage image(*w_, seed_);
+   image.Draw(filename_);
+
+   const std::string goldenImage = GoldenImagePath("seed_1618_satellite.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, ScatterPlotTest)
+{
+   ScatterPlotImage image(*w_, 512u);
+   image.Draw(filename_);
+
+   const std::string goldenImage =
+      GoldenImagePath("seed_1618_scatter.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, SimpleElevationTest)
+{
+   SimpleElevationImage image(*w_);
+   image.Draw(filename_);
+
+   const std::string goldenImage = GoldenImagePath("seed_1618_elevation.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, TemperatureTest)
+{
+   TemperatureImage image(*w_);
+   image.Draw(filename_);
+
+   const std::string goldenImage = GoldenImagePath("seed_1618_temperature.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+template<typename ImageType>
 static void CompareImages(const std::string& file1, const std::string& file2)
 {
-   boost::gil::rgb8_image_t                             image1;
-   boost::gil::rgb8_image_t                             image2;
+   ASSERT_EQ(std::filesystem::exists(file2), true);
+
+   ImageType                                            image1;
+   ImageType                                            image2;
    boost::gil::image_read_settings<boost::gil::png_tag> readSettings;
 
    boost::gil::read_image(file1, image1, readSettings);
@@ -102,10 +209,8 @@ static void CompareImages(const std::string& file1, const std::string& file2)
    ASSERT_EQ(image1.width(), image2.width());
    ASSERT_EQ(image1.height(), image2.height());
 
-   boost::gil::rgb8_image_t::const_view_t view1 =
-      boost::gil::const_view(image1);
-   boost::gil::rgb8_image_t::const_view_t view2 =
-      boost::gil::const_view(image2);
+   ImageType::const_view_t view1 = boost::gil::const_view(image1);
+   ImageType::const_view_t view2 = boost::gil::const_view(image2);
 
    for (size_t y = 0; y < image1.height(); y++)
    {

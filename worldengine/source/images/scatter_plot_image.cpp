@@ -5,7 +5,7 @@
 namespace WorldEngine
 {
 ScatterPlotImage::ScatterPlotImage(const World& world, size_t size) :
-    Image(world, false), size_(size)
+    Image(world, Size(size, size)), size_(size)
 {
 }
 ScatterPlotImage::~ScatterPlotImage() {}
