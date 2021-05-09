@@ -8,6 +8,7 @@
 
 #include <worldengine/images/ancient_map_image.h>
 #include <worldengine/images/biome_image.h>
+#include <worldengine/images/elevation_image.h>
 #include <worldengine/images/heightmap_image.h>
 #include <worldengine/images/ocean_image.h>
 #include <worldengine/images/precipitation_image.h>
@@ -109,6 +110,27 @@ TEST_F(ImageTest, BiomeTest)
    image.Draw(filename_);
 
    const std::string goldenImage = GoldenImagePath("seed_1618_biome.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, ElevationNoShadowTest)
+{
+   ElevationImage image(*w_, false);
+   image.Draw(filename_);
+
+   const std::string goldenImage = GoldenImagePath("seed_1618_elevation_no_shadow.png");
+
+   CompareImages(filename_, goldenImage);
+}
+
+TEST_F(ImageTest, ElevationShadowTest)
+{
+   ElevationImage image(*w_, true);
+   image.Draw(filename_);
+
+   const std::string goldenImage =
+      GoldenImagePath("seed_1618_elevation_shadow.png");
 
    CompareImages(filename_, goldenImage);
 }
