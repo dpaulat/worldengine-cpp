@@ -22,6 +22,7 @@
 
 #include <worldengine/images/ancient_map_image.h>
 #include <worldengine/images/biome_image.h>
+#include <worldengine/images/elevation_image.h>
 #include <worldengine/images/heightmap_image.h>
 #include <worldengine/images/icecap_image.h>
 #include <worldengine/images/ocean_image.h>
@@ -31,6 +32,7 @@
 #include <worldengine/images/scatter_plot_image.h>
 #include <worldengine/images/simple_elevation_image.h>
 #include <worldengine/images/temperature_image.h>
+#include <worldengine/images/world_image.h>
 
 namespace po = boost::program_options;
 
@@ -80,9 +82,13 @@ GenerateWorld(const std::string&        worldName,
               bool                      rivers        = DEFAULT_RIVERS_MAP,
               bool                      scatterPlot   = DEFAULT_SCATTER_PLOT,
               bool                      satelliteMap  = DEFAULT_SATELLITE_MAP,
-              bool                      icecapsMap    = DEFAULT_ICECAPS_MAP);
+              bool                      icecapsMap    = DEFAULT_ICECAPS_MAP,
+              bool                      worldMap      = DEFAULT_WORLD_MAP,
+              bool                      elevationMap  = DEFAULT_ELEVATION_MAP,
+              bool elevationShadows = DEFAULT_ELEVATION_SHADOWS);
 
-std::shared_ptr<World> LoadWorld(const std::string& filename);
+std::shared_ptr<World> LoadWorld(const std::string& filename,
+                                 WorldFormat        format);
 
 void PrintUsage(const std::string&             programName,
                 const po::options_description& options);
@@ -253,7 +259,19 @@ int AddOptions(int                      argc,
       //
       ("ice",
        po::bool_switch(&args.icecapsMap)->default_value(false),
-       "Generate ice caps map");
+       "Generate ice caps map")
+      //
+      ("world-map",
+       po::bool_switch(&args.worldMap)->default_value(false),
+       "Generate world map")
+      //
+      ("elevation-map",
+       po::bool_switch(&args.elevationMap)->default_value(false),
+       "Generate elevation map")
+      //
+      ("elevation-shadows",
+       po::bool_switch(&args.elevationShadows)->default_value(false),
+       "Draw shadows on elevation map");
 
    po::options_description ancientOptions(
       "Ancient map options (ancient map mode only)");
@@ -449,7 +467,10 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
                                      bool                      rivers,
                                      bool                      scatterPlot,
                                      bool                      satelliteMap,
-                                     bool                      icecapsMap)
+                                     bool                      icecapsMap,
+                                     bool                      worldMap,
+                                     bool                      elevationMap,
+                                     bool                      elevationShadows)
 {
    std::shared_ptr<World> world = WorldGen(worldName,
                                            width,
@@ -536,7 +557,7 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
       outputDir + "/" + worldName + "_elevation.png";
    SimpleElevationImage(*world).Draw(
       elevationFilename, world->GetThreshold(ElevationThreshold::Sea));
-   BOOST_LOG_TRIVIAL(info) << "Elevation image generated in "
+   BOOST_LOG_TRIVIAL(info) << "Simple elevation image generated in "
                            << elevationFilename;
 
    if (gsHeightmap)
@@ -579,6 +600,31 @@ std::shared_ptr<World> GenerateWorld(const std::string&        worldName,
       std::string icecapFilename = outputDir + "/" + worldName + "_icecaps.png";
       IcecapImage(*world).Draw(icecapFilename);
       BOOST_LOG_TRIVIAL(info) << "Icecap image generated in " << icecapFilename;
+   }
+
+   if (worldMap)
+   {
+      std::string worldMapFilename = outputDir + "/" + worldName + "_world.png";
+      WorldImage(*world).Draw(worldMapFilename);
+      BOOST_LOG_TRIVIAL(info)
+         << "World map image generated in " << worldMapFilename;
+   }
+
+   if (elevationMap)
+   {
+      std::string elevationMapFilename =
+         outputDir + "/" + worldName + "_elevation_";
+      if (elevationShadows)
+      {
+         elevationMapFilename += "shadow.png";
+      }
+      else
+      {
+         elevationMapFilename += "no_shadow.png";
+      }
+      ElevationImage(*world, elevationShadows).Draw(elevationMapFilename);
+      BOOST_LOG_TRIVIAL(info)
+         << "Elevation image generated in " << elevationMapFilename;
    }
 
    return world;
@@ -636,6 +682,10 @@ void PrintArguments(const ArgumentsType& args)
       std::cout << " Rivers map           : " << args.rivers << std::endl;
       std::cout << " Scatter plot         : " << args.scatterPlot << std::endl;
       std::cout << " Satellite map        : " << args.satelliteMap << std::endl;
+      std::cout << " World map            : " << args.worldMap << std::endl;
+      std::cout << " Elevation map        : " << args.elevationMap << std::endl;
+      std::cout << " Elevation shadows    : " << args.elevationShadows
+                << std::endl;
       std::cout << " Fade borders         : " << !args.notFadeBorders
                 << std::endl;
       std::cout << " Temperature ranges   : " << args.temps << std::endl;
@@ -869,7 +919,10 @@ void CliMain(int argc, const char** argv)
                             args.rivers,
                             args.scatterPlot,
                             args.satelliteMap,
-                            args.icecapsMap);
+                            args.icecapsMap,
+                            args.worldMap,
+                            args.elevationMap,
+                            args.elevationShadows);
    }
    else if (args.operation == OperationType::Plates)
    {

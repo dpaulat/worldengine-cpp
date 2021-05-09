@@ -55,6 +55,9 @@ struct ArgumentsType
    bool               scatterPlot;
    bool               satelliteMap;
    bool               icecapsMap;
+   bool               worldMap;
+   bool               elevationMap;
+   bool               elevationShadows;
 
    // Ancient map options
    std::string worldFile;

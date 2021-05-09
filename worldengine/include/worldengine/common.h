@@ -307,6 +307,9 @@ const bool     DEFAULT_RIVERS_MAP        = false;
 const bool     DEFAULT_SCATTER_PLOT      = false;
 const bool     DEFAULT_SATELLITE_MAP     = false;
 const bool     DEFAULT_ICECAPS_MAP       = false;
+const bool     DEFAULT_WORLD_MAP         = false;
+const bool     DEFAULT_ELEVATION_MAP     = false;
+const bool     DEFAULT_ELEVATION_SHADOWS = false;
 
 const std::vector<float> DEFAULT_TEMPS {
    0.126f, 0.235f, 0.406f, 0.561f, 0.634f, 0.876f};
