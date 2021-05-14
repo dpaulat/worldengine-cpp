@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'WorldEngine C++'
-copyright = '2021, Dan Paulat'
+copyright = '2021, Dan Paulat, 2015, Bret Curtis and Federico Tomassetti'
 author = 'Dan Paulat'
 
 

@@ -40,4 +40,7 @@ if (DOXYGEN_FOUND)
                               ${PROJECT_BINARY_DIR}/Doxyfile.doxygen
                       MAIN_DEPENDENCY ${SPHINX_SOURCE}/conf.py
                       COMMENT "Generating Sphinx documentation")
+
+    add_dependencies(sphinx doxygen)
+
 endif(DOXYGEN_FOUND)

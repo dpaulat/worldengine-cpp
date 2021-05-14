@@ -37,7 +37,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ALL_NO_LIB")
 
 set(WORLDENGINE_DIR ${PROJECT_SOURCE_DIR})
 
+option(BUILD_DOCS "Build documentation" ON)
+
 add_subdirectory(external)
 add_subdirectory(worldengine)
 add_subdirectory(cli)
-add_subdirectory(docs)
+
+if(BUILD_DOCS)
+    add_subdirectory(docs)
+endif()
