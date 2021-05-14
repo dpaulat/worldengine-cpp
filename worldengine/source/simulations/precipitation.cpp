@@ -113,7 +113,7 @@ static void PrecipitationCalculation(World& world, uint32_t seed)
           * curve based on normalized temperature and multiply our precipitation
           * amounts by it.
           *
-          * std::powf(t, curveGamma) generates a standard gamma curve. However
+          * std::pow(t, curveGamma) generates a standard gamma curve. However
           * we probably don't want to be multiplying precipitation by 0 at the
           * far side of the curve. To avoid this we multiply the curve by (1 -
           * curveBonus) and then add back curveBonus. Thus, if we have a curve
@@ -131,7 +131,7 @@ static void PrecipitationCalculation(World& world, uint32_t seed)
           */
 
          // Modify precipitation based on temperature
-         float curve = std::powf(t, curveGamma) * (1 - curveBonus) + curveBonus;
+         float curve = std::pow(t, curveGamma) * (1 - curveBonus) + curveBonus;
          precipitation[y][x] = p * curve;
       }
    }

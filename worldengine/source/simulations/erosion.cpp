@@ -285,7 +285,9 @@ FindLowerElevation(const World& world, int32_t x, int32_t y)
       isWrapped = true;
    }
 
-   return std::tie(found, isWrapped, std::make_pair(destX, destY));
+   Point dest(destX, destY);
+
+   return std::tie(found, isWrapped, dest);
 }
 
 static std::tuple<Direction, int32_t, int32_t>

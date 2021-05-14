@@ -2,6 +2,8 @@
 
 #include "worldengine/world.h"
 
+#include <list>
+
 namespace WorldEngine
 {
 

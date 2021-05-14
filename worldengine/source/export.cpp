@@ -110,18 +110,18 @@ bool ExportImage(const World&                 world,
       GDALDataset* intDataset = intDriver->Create(
          intFilename.c_str(), world.width(), world.height(), 1, eType, NULL);
       GDALRasterBand* band = intDataset->GetRasterBand(1);
-      band->RasterIO(GF_Write,                  // eRWFlag
-                     0,                         // nXOff
-                     0,                         // nYOff
-                     world.width(),             // nXSize
-                     world.height(),            // nYSize
-                     elevation.data(),          // pData
-                     world.width(),             // nBufXSize
-                     world.height(),            // nBufYSize
-                     GDALDataType::GDT_Float32, // eBufType
-                     0,                         // nPixelSpace
-                     0,                         // nLineSpace
-                     NULL);                     // psExtraArg
+      (void) !band->RasterIO(GF_Write,                  // eRWFlag
+                             0,                         // nXOff
+                             0,                         // nYOff
+                             world.width(),             // nXSize
+                             world.height(),            // nYSize
+                             elevation.data(),          // pData
+                             world.width(),             // nBufXSize
+                             world.height(),            // nBufYSize
+                             GDALDataType::GDT_Float32, // eBufType
+                             0,                         // nPixelSpace
+                             0,                         // nLineSpace
+                             NULL);                     // psExtraArg
       GDALClose(intDataset);
 
       // Take the intermediate ENVI format and convert to final format
@@ -171,7 +171,7 @@ bool ExportImage(const World&                 world,
 
       const std::string exportFilename =
          path + "-" + std::to_string(bpp) + "." + fileExtension;
-      finalDriver->CreateCopy(
+      (void) !finalDriver->CreateCopy(
          exportFilename.c_str(), intDataset, FALSE, NULL, NULL, NULL);
 
       BOOST_LOG_TRIVIAL(info)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.11)
 project(worldengine-cli CXX)
 
 add_executable(worldengine-cli source/main.cpp
@@ -26,6 +26,9 @@ target_link_libraries(worldengine-cli Boost::log
 set_target_properties(worldengine-cli PROPERTIES CXX_STANDARD 17
                                                  CXX_STANDARD_REQUIRED ON
                                                  CXX_EXTENSIONS OFF)
-set_target_properties(worldengine-cli PROPERTIES LINK_FLAGS "/ignore:4099")
 set_target_properties(worldengine-cli PROPERTIES ARCHIVE_OUTPUT_NAME worldengine-cli)
 set_target_properties(worldengine-cli PROPERTIES OUTPUT_NAME worldengine)
+
+if (MSVC)
+    set_target_properties(worldengine-cli PROPERTIES LINK_FLAGS "/ignore:4099")
+endif()

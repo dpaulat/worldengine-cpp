@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.11)
 project(libworldengine-test CXX)
 
 include(GoogleTest)
@@ -35,7 +35,10 @@ target_include_directories(worldengine-test PRIVATE ${GTest_INCLUDE_DIRS}
 set_target_properties(worldengine-test PROPERTIES CXX_STANDARD 17
                                                   CXX_STANDARD_REQUIRED ON
                                                   CXX_EXTENSIONS OFF)
-set_target_properties(worldengine-test PROPERTIES LINK_FLAGS "/ignore:4099")
+
+if (MSVC)
+    set_target_properties(worldengine-test PROPERTIES LINK_FLAGS "/ignore:4099")
+endif()
 
 target_compile_definitions(worldengine-test PRIVATE WORLDENGINE_TEST_DATA_DIR="${WORLDENGINE_DIR}/external/worldengine-cpp-data/tests")
 
@@ -44,8 +47,8 @@ gtest_discover_tests(worldengine-test)
 target_link_libraries(worldengine-test Boost::log
                                        GTest::gtest
                                        HDF5::HDF5
-                                       OpenSimplexNoise
                                        protobuf::protobuf
                                        PNG::PNG
-                                       PlateTectonics
-                                       worldengine)
+                                       worldengine
+                                       OpenSimplexNoise
+                                       PlateTectonics)

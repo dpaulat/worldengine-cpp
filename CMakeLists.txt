@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.11)
 set(PROJECT_NAME worldengine)
 project (${PROJECT_NAME} CXX)
 

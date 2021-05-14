@@ -24,7 +24,7 @@ namespace std
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const boost::multi_array<T, 2>& a)
 {
-   boost::multi_array<T, 2>::const_iterator i;
+   typename boost::multi_array<T, 2>::const_iterator i;
 
    const int32_t width  = a.shape()[1];
    const int32_t height = a.shape()[0];

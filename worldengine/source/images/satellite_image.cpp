@@ -2,6 +2,7 @@
 #include "../basic.h"
 
 #include <algorithm>
+#include <list>
 
 template<typename T>
 std::tuple<T, T, T>& operator+=(std::tuple<T, T, T>&       lhs,

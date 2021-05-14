@@ -242,8 +242,8 @@ static void CompareImages(const std::string& file1, const std::string& file2)
    ASSERT_EQ(image1.width(), image2.width());
    ASSERT_EQ(image1.height(), image2.height());
 
-   ImageType::const_view_t view1 = boost::gil::const_view(image1);
-   ImageType::const_view_t view2 = boost::gil::const_view(image2);
+   typename ImageType::const_view_t view1 = boost::gil::const_view(image1);
+   typename ImageType::const_view_t view2 = boost::gil::const_view(image2);
 
    for (size_t y = 0; y < image1.height(); y++)
    {

@@ -149,7 +149,7 @@ void ScatterPlotImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    {
       uint32_t y = static_cast<uint32_t>(
          (size_ - 1) *
-         ((std::powf(static_cast<float>(x) / (size_ - 1), curveGamma) *
+         ((std::pow(static_cast<float>(x) / (size_ - 1), curveGamma) *
            (1 - curveBonus)) +
           curveBonus));
       target(x, (size_ - 1) - y) = boost::gil::rgb8_pixel_t(255, 0, 0);
