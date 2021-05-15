@@ -315,13 +315,13 @@ static int AddOptions(int                      argc,
       ("export-format",
        po::value<std::string>(&args.exportFormat)->default_value("PNG"),
        "Export to a specific format\n"
-       "All possible formats: http://www.gdal.org/formats_list.html")
+       "All possible formats: https://www.gdal.org/formats_list.html")
       //
       ("export-datatype",
        po::value<ExportDataType>(&args.exportDatatype)
           ->default_value(ExportDataType::Uint16),
        "Type of stored data\n"
-       "Valid values: int16, int32, uint16, uint32, float32")
+       "Valid values: int16, int32, uint8, uint16, uint32, float32, float64")
       //
       ("export-dimensions",
        po::value<std::vector<uint32_t>>(&args.exportDimensions)->multitoken(),

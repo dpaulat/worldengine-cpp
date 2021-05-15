@@ -1,0 +1,4 @@
+table.rst-valign-top td
+{
+    vertical-align: top !important;
+}

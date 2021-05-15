@@ -31,16 +31,28 @@ if (DOXYGEN_FOUND)
     set(SPHINX_SOURCE ${PROJECT_SOURCE_DIR})
     set(SPHINX_BUILD ${worldengine_BINARY_DIR}/docs/sphinx)
 
+    set(SPHINX_SOURCE_FILES ${SPHINX_SOURCE}/global.rst
+                            ${SPHINX_SOURCE}/index.rst
+                            ${SPHINX_SOURCE}/biomes.rst
+                            ${SPHINX_SOURCE}/cli.rst
+                            ${SPHINX_SOURCE}/contributing.rst
+                            ${SPHINX_SOURCE}/gui.rst
+                            ${SPHINX_SOURCE}/install.rst
+                            ${SPHINX_SOURCE}/scenarios.rst)
+
     add_custom_target(sphinx ALL
                       COMMAND ${SPHINX_EXECUTABLE}
                       -Dbreathe_projects.worldengine=${DOXYGEN_OUTPUT_DIRECTORY}/xml
                       ${SPHINX_SOURCE} ${SPHINX_BUILD}
                       WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-                      DEPENDS ${PROJECT_SOURCE_DIR}/index.rst
+                      DEPENDS ${SPHINX_SOURCE_FILES}
                               ${PROJECT_BINARY_DIR}/Doxyfile.doxygen
                       MAIN_DEPENDENCY ${SPHINX_SOURCE}/conf.py
                       COMMENT "Generating Sphinx documentation")
 
     add_dependencies(sphinx doxygen)
+
+    set_target_properties(doxygen PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    set_target_properties(sphinx  PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 endif(DOXYGEN_FOUND)

@@ -34,13 +34,13 @@ Temperature and Humidity
 
 As mentioned above Temperature and Humidity are expressed in Worldengine as yearly averages. We do not yet have a complex weather simulating system that is capable of handling seasonal changes.
 
-Worldengine works largely in unitless numbers. What this means is that a value of .5 for something such as Humidity does not mean that it has twice as much water as an area with a value of .25. All that can really be interpreted directly from this number is that it has a greater amount of water, but it is not possible to say exactly how much.
+Worldengine works largely in unitless numbers. What this means is that a value of 0.5 for something such as Humidity does not mean that it has twice as much water as an area with a value of 0.25. All that can really be interpreted directly from this number is that it has a greater amount of water, but it is not possible to say exactly how much.
 
 It is the command line options of **--temps** and **--humids** that convert those unitless values into the actual Temperature and Humidity ranges. The way these values work is to define what percentage of the total land terrain is to be considered a certain value or lower (where lower is considered to be either colder or drier depending upon which variable is specified).
 
-As an example the default value for **--temps** is .126/.235/.406/.561/.634/.876. Thus, the first point of separation is at 12.6%. This in turn means that 12.6% of the land mass will be **Polar**. The next point of separation occurs at 23.5% which means that 23.5% of the land mass will be either **Polar** or **Subpolar** (and since 12.6% of the landmass is **Polar** that leaves only a remaining 10.9% to be **Subpolar**).
+As an example the default value for **--temps** is *0.126 0.235 0.406 0.561 0.634 0.876*. Thus, the first point of separation is at 12.6%. This in turn means that 12.6% of the land mass will be **Polar**. The next point of separation occurs at 23.5% which means that 23.5% of the land mass will be either **Polar** or **Subpolar** (and since 12.6% of the landmass is **Polar** that leaves only a remaining 10.9% to be **Subpolar**).
 
-By altering these values one can make a planet that is either hotter or colder, wetter or drier. A **--temps** value of 0/.126/.235/.406/.561/.634 will result in a planet with no locations with a **Polar** climate and 36.6% of the planet having a **Tropical** climate (as opposed to 12.4% for the default).
+By altering these values one can make a planet that is either hotter or colder, wetter or drier. A **--temps** value of *0.0 0.126 0.235 0.406 0.561 0.634* will result in a planet with no locations with a **Polar** climate and 36.6% of the planet having a **Tropical** climate (as opposed to 12.4% for the default).
 
 Temperature/Humidity Curve and Scatter Plots
 --------------------------------------------
@@ -49,18 +49,18 @@ One thing that many people may notice in the Holdridge life zones chart given ab
 
 At its heart the mathematical operation is not too complicated. Both Temperature values and Humidity values are normalized to a range of 0 to 1. The Temperature value is then fed into a function that returns a new value that also has a range of 0 to 1. The original Humidity value is multiplied by this number and the new Humidity value is determined.
 
-If we assume for just a moment that the value of **-gv** is 1 then the Temperature function is relatively simple. It is a straight line that runs from **-go** to 1 as Temperature runs from 0 to 1. Thus, on the default settings (**-go** = .2) we would multiply the original Humidity value by .2 when Temperature is 0 and we would multiply it by 1 when the Temperature is 1. If we were to use a straight line (**-gv** = 1) then we would multiply by .6 when Temperature is .5, .4 when the Temperature is .25, etc. We do this because without the offset value (**-go**) we find that we are multiplying by numbers that are too small at the coldest end of the Temperature scale resulting in too much **Polar Desert** terrain.
+If we assume for just a moment that the value of **--gamma-value** is 1 then the Temperature function is relatively simple. It is a straight line that runs from **--gamma-offset** to 1 as Temperature runs from 0 to 1. Thus, on the default settings (**--gamma-offset** = 0.2) we would multiply the original Humidity value by 0.2 when Temperature is 0 and we would multiply it by 1 when the Temperature is 1. If we were to use a straight line (**--gamma-value** = 1) then we would multiply by 0.6 when Temperature is 0.5, 0.4 when the Temperature is 0.25, etc. We do this because without the offset value (**--gamma-offset**) we find that we are multiplying by numbers that are too small at the coldest end of the Temperature scale resulting in too much **Polar Desert** terrain.
 
 While this offset gives us better results in the colder ranges we find that unfortunately it has a tendency to push the average rainfall up a bit too much in the middle ranges. In order to correct for this we use the following function:
 
 .. math::
   f(Temperature) = Temperature ^{GV}
 
-where "GV" is the **-gv** variable. This is the same basic function that is used in `gamma correction <https://en.wikipedia.org/wiki/Gamma_correction>`_ and so we have appropriated the term "gamma value" and "gamma offset" to describe our variables (although to be technical our function is not actually a gamma curve).
+where "GV" is the **--gamma-value** variable. This is the same basic function that is used in `gamma correction <https://en.wikipedia.org/wiki/Gamma_correction>`_ and so we have appropriated the term "gamma value" and "gamma offset" to describe our variables (although to be technical our function is not actually a gamma curve).
 
-It should be noted for technical reasons that the curve is actually calculated first, then compressed and shifted by amounts determined by the offset variable (**-go**). This means that the value for f(Temperature) will always range from the offset variable to 1.
+It should be noted for technical reasons that the curve is actually calculated first, then compressed and shifted by amounts determined by the offset variable (**--gamma-offset**). This means that the value for f(Temperature) will always range from the offset variable to 1.
 
-To ensure that the **-gv** and **-go** variables are producing a good curve it may be desirable to generate a scatter plot when the planet is being created.
+To ensure that the **--gamma-value** and **--gamma-offset** variables are producing a good curve it may be desirable to generate a scatter plot when the planet is being created.
 
 .. image:: https://raw.githubusercontent.com/Mindwerks/worldengine-data/master/images/examples/scatter_plot_example.png
    :align: center

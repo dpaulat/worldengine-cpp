@@ -1,100 +1,224 @@
+.. include:: global.rst
+
 Command line interface
 ======================
 
 Using the command line you can issue one single command and let WorldEngine generate a world for you.
 
-   worldengine [options] [world|plates|ancient_map|info]
+   worldengine [<operation> [<file>]] [<options>] [world|plates|ancient_map|info]
 
+Arguments
+~~~~~~~~~
 
-General options
+.. list-table::
+   :widths: auto
+   :header-rows: 1
+
+   * - Argument
+     - Description
+   * - operation
+     - Valid operations: world, plates, ancient_map, info, export
+   * - file
+     - Input filename for info and export
+
+Generic options
 ~~~~~~~~~~~~~~~
 
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-| Short      | Long                 | Description                                                                                                                   |
-+============+======================+===============================================================================================================================+
-| -o DIR     | --output-dir=DIR     | generate files in DIR default = '.'                                                                                           |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-| -n STR     | --worldname=STR      | set world name to STR                                                                                                         |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-|            | --hdf5               | save world using protocol buffer format [default: protocol buffer format ]                                                    |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-| -s N       | --seed=N             | use SEED to initialize the pseudo-random generation                                                                           |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-| -t STR     | --step=STR           | use STEP to specify how far to proceed in the world generation process. Valid values are: plates precipitations full          |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-| -x N       | --width=N            | WIDTH of the world to be generated                                                                                            |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-| -y N       | --height=N           | HEIGHT of the world to be generated                                                                                           |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-| -q N       | --number-of-plates=N | number of plates                                                                                                              |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-|            | --recursion-limit=N  | you need that just if you encounter an error while generating very large maps                                                 |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-| -v         | --verbose            | Enable verbose messages                                                                                                       |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-|            | --version            | Display version information                                                                                                   |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-| --bw       | --black-and-white    | Draw maps in black and white (currently affects only the precipitation and temperature maps)                                  |
-+------------+----------------------+-------------------------------------------------------------------------------------------------------------------------------+
+.. list-table::
+   :widths: auto
+   :header-rows: 1
 
+   * - Short
+     - Long
+     - Description
+   * -
+     - --version
+     - Print version string
+   * - -h
+     - --help
+     - Produce help message
+   * - -v
+     - --verbose
+     - Enable verbose messages
 
-Options valid only for generate
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Configuration
+~~~~~~~~~~~~~
 
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-| Short     | Long                       | Description                                                                                                                                    |
-+===========+============================+================================================================================================================================================+
-| -r FILE   | --rivers=FILE              | Produce a map of rivers, after the option it expects the name of the file where to generate the map                                            |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-| --gs      | --grayscale-heightmap      | Produce a grayscale heightmap                                                                                                                  |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-|           | --ocean_level=N            | Elevation cut off for sea level [default = 1.0]                                                                                                |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-|           | --temps #/#/#/#/#/#        | Specify the quantiles used to identify the temperature levels. It should contains values in [0,1]. [default = .126/.235/.406/.561/.634/.876]   |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-|           | --humidity #/#/#/#/#/#/#   | Specify the quantiles used to identify the humidity levels. It should contains values in [0,1]. [default = .059/.222/.493/.764/.927/.986/.998] |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-| -gv N     | --gamma-value N            | N = Gamma value for temperature/precipitation gamma correction curve. [default = 1.25]                                                         |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-| -go N     | --gamma-offset N           | N = Adjustment value for temperature/precipitation gamma correction curve. [default = .2]                                                      |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-|           | ---not-fade-borders        | Avoid fading borders                                                                                                                           |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-|           | --scatter                  | Generate temperature vs. humidity scatter plot                                                                                                 |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-|           | --sat                      | Generate satellite map                                                                                                                         |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
+.. list-table::
+   :widths: auto
+   :header-rows: 1
+   :class: rst-valign-top
 
-Options valid only for ancient map operations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * - Short
+     - Long
+     - Description
+   * - -o <dir>
+     - --output-dir <dir>
+     - Set output directory |br|
+       *Default = .*
+   * - -n <arg>
+     - --worldname <arg>
+     - Set world name
+   * -
+     - --format <arg>
+     - Set file format |br|
+       Valid formats: hdf5, protobuf |br|
+       *Default = protobuf*
+   * - -s <arg>
+     - --seed <arg>
+     - Initializes the pseudo-random generation
+   * - -t <arg>
+     - --step <arg>
+     - Specifies how far to proceed in the world generation process |br|
+       Valid steps: plates, precipitations, full |br|
+       *Default = full*
+   * - -x <arg>
+     - --width <arg>
+     - Width of the world to be generated |br|
+       *Default = 512*
+   * - -y <arg>
+     - --height <arg>
+     - Height of the world to be generated |br|
+       *Default = 512*
+   * - -q <arg>
+     - --plates <arg>
+     - Number of plates |br|
+       Valid values: [1, 100] |br|
+       *Default = 10*
+   * -
+     - --black-and-white
+     - Generate maps in black and white
 
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------+
-| Short     | Long                       | Description                                                                                          |
-+===========+============================+======================================================================================================+
-| -w FILE   | --worldfile=FILE           | WORLD_FILE to be loaded                                                                              |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------+
-| -g FILE   | --generatedfile=FILE       | name of the GENERATED_FILE                                                                           |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------+
-| -f N      | --resize-factor=N          | resize factor                                                                                        |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------+
-|           | --sea_color                | help="string for color [blue|brown], [default = brown]                                               |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------+
-|           | --not-draw-biome           | Not draw biome                                                                                       |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------+
-|           | --not-draw-mountains       | Not draw mountains                                                                                   |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------+
-|           | --not-draw-rivers          | Not draw rivers                                                                                      |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------+
-|           | --draw-outer-border        | Draw outer land border                                                                               |
-+-----------+----------------------------+------------------------------------------------------------------------------------------------------+
+Generate options
+~~~~~~~~~~~~~~~~
 
+The generate options are for the plate and world modes only.
+
+.. list-table::
+   :widths: auto
+   :header-rows: 1
+   :class: rst-valign-top
+
+   * - Short
+     - Long
+     - Description
+   * - -r
+     - --rivers
+     - Generate rivers map
+   * -
+     - --grayscale-heightmap
+     - Produce a grayscale heightmap
+   * -
+     - --ocean-level <arg>
+     - Elevation cutoff for sea level |br|
+       *Default = 1*
+   * -
+     - --temps <arg>
+     - Provide alternate ranges for temperatures |br|
+       *Default = 0.126 0.235 0.406 0.561 0.634 0.876*
+   * -
+     - --humidity <arg>
+     - Provide alternate ranges for humidities |br|
+       *Default = 0.059 0.222 0.493 0.764 0.927 0.986 0.998*
+   * -
+     - --gamma-value <arg>
+     - Gamma value for temperature/precipitation gamma correction curve |br|
+       Valid values: Positive floating point |br|
+       *Default = 1.25*
+   * -
+     - --gamma-offset <arg>
+     - Adjustment value for temperature/precipitation gamma correction curve |br|
+       Valid values: [0.0, 1.0) |br|
+       *Default = 0.2*
+   * -
+     - --not-fade-borders
+     - Don't fade borders
+   * -
+     - --scatter
+     - Generate scatter plot
+   * -
+     - --sat
+     - Generate satellite map
+   * -
+     - --ice
+     - Generate ice caps map
+   * -
+     - --world-map
+     - Generate world map
+   * -
+     - --elevation-map
+     - Generate elevation map
+   * -
+     - --elevation-shadows
+     - Draw shadows on elevation map
+
+Ancient map options
+~~~~~~~~~~~~~~~~~~~
+
+The ancient map options are for the ancient map mode only.
+
+.. list-table::
+   :widths: auto
+   :header-rows: 1
+   :class: rst-valign-top
+
+   * - Short
+     - Long
+     - Description
+   * - -w <filename>
+     - --worldfile <filename>
+     - File to be loaded
+   * - -g <filename>
+     - --generated-file <filename>
+     - File to be generated
+   * - -f <arg>
+     - --resize-factor <arg>
+     - Resize factor |br|
+       NOTE: This can only be used to increase the size of the map |br|
+       *Default = 1*
+   * -
+     - --sea-color <arg>
+     - Sea color |br|
+       Valid values: blue, brown |br|
+       *Default = brown*
+   * -
+     - --not-draw-biome
+     - Don't draw biome
+   * -
+     - --not-draw-mountains
+     - Don't draw mountains
+   * -
+     - --not-draw-rivers
+     - Don't draw rivers
+   * -
+     - --draw-outer-border
+     - Draw outer land border
+     
 Export options
 ~~~~~~~~~~~~~~
 
-+-----------+----------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Short     | Long                       | Description                                                                                                                    |
-+===========+============================+================================================================================================================================+
-|           | --export-format=FORMAT     | Export to a specific format such as BMP or PNG. See http://www.gdal.org/formats_list.html for possible formats [default = PNG] |
-+-----------+----------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-|           | --export-datatype=TYPE     | Type of stored data, e.g. uint16, int32, float32 etc. [default = uint16]                                                       |
-+-----------+----------------------------+--------------------------------------------------------------------------------------------------------------------------------+
+.. list-table::
+   :widths: auto
+   :header-rows: 1
+   :class: rst-valign-top
+
+   * - Long
+     - Description
+   * - --export-format <arg>
+     - Export to a specific format |br|
+       All possible formats: https://www.gdal.org/formats_list.html |br|
+       *Default = PNG*
+   * - --export-datatype <arg>
+     - Type of stored data |br|
+       Valid values: int16, int32, uint8, uint16, uint32, float32, float64 |br|
+       *Default = uint16*
+   * - --export-dimensions <arg>
+     - Export to desired dimensions |br|
+       *Example: 4096 4096*
+   * - --export-normalize <arg>
+     - Normalize the data set between min and max |br|
+       *Example: 0 255*
+   * - --export-subset <arg>
+     - Selects a subwindow from the data set |br|
+       Arguments: <xoff> <yoff> <xsize> <ysize> |br|
+       *Example: 128 128 256 256*

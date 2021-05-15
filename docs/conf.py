@@ -51,6 +51,12 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# Don't convert quotes and dashes to typographically correct entities
+smartquotes = False
+
+def setup(app):
+    app.add_css_file('custom.css')
+
 
 # -- Breathe configuration ---------------------------------------------------
 
