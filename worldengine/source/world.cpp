@@ -6,6 +6,7 @@
 #include <boost/bimap.hpp>
 #include <boost/bimap/unordered_set_of.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/random.hpp>
 #include <boost/tokenizer.hpp>
 
 #include <hdf5/H5Cpp.h>
@@ -687,8 +688,9 @@ void World::GetRandomLand(std::vector<Point>& landSamples,
       return;
    }
 
-   std::mt19937                            generator(seed);
-   std::uniform_int_distribution<uint32_t> distribution(0, land.size() - 1);
+   std::mt19937                                      generator(seed);
+   boost::random::uniform_int_distribution<uint32_t> distribution(
+      0, land.size() - 1);
 
    for (uint32_t i = 0; i < numSamples; i++)
    {

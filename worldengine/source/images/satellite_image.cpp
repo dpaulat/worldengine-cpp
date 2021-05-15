@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <list>
 
+#include <boost/random.hpp>
+
 template<typename T>
 std::tuple<T, T, T>& operator+=(std::tuple<T, T, T>&       lhs,
                                 const std::tuple<T, T, T>& rhs)
@@ -198,7 +200,7 @@ void SatelliteImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    }
 
    // Paint frozen areas
-   std::uniform_int_distribution<int32_t> variationGenerator(
+   boost::random::uniform_int_distribution<int32_t> variationGenerator(
       0, ICE_COLOR_VARIATION);
    for (uint32_t y = 0; y < height; y++)
    {
@@ -340,8 +342,8 @@ boost::gil::rgb8_pixel_t SatelliteImage::GetBiomeColor(
    // Default is no noise
    RgbValue noise(0, 0, 0);
 
-   std::uniform_int_distribution<int32_t> noiseDistribution(-NOISE_RANGE,
-                                                            NOISE_RANGE);
+   boost::random::uniform_int_distribution<int32_t> noiseDistribution(
+      -NOISE_RANGE, NOISE_RANGE);
 
    if (world_.IsLand(x, y))
    {

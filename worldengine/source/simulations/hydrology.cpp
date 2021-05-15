@@ -4,6 +4,7 @@
 #include <random>
 
 #include <boost/log/trivial.hpp>
+#include <boost/random.hpp>
 
 namespace WorldEngine
 {
@@ -109,8 +110,8 @@ static void WatermapExecute(World& world, uint32_t numSamples, uint32_t seed)
 {
    BOOST_LOG_TRIVIAL(debug) << "Seed: " << seed;
 
-   std::mt19937                            generator(seed);
-   std::uniform_int_distribution<uint32_t> distribution;
+   std::mt19937                                      generator(seed);
+   boost::random::uniform_int_distribution<uint32_t> distribution;
 
    uint32_t width  = world.width();
    uint32_t height = world.height();

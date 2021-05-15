@@ -5,6 +5,7 @@
 
 #include <boost/log/trivial.hpp>
 #include <boost/multiprecision/integer.hpp>
+#include <boost/random.hpp>
 
 namespace bm = boost::multiprecision;
 
@@ -204,7 +205,7 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
          BOOST_LOG_TRIVIAL(debug)
             << "Ancient map: Drawing biome group " << group;
 
-         std::uniform_real_distribution<float> random(0.0f, 1.0f);
+         boost::random::uniform_real_distribution<float> random(0.0f, 1.0f);
 
          const uint32_t width   = world_.width();
          const uint32_t height  = world_.height();

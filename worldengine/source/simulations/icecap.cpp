@@ -4,6 +4,7 @@
 #include <random>
 
 #include <boost/log/trivial.hpp>
+#include <boost/random.hpp>
 
 namespace WorldEngine
 {
@@ -28,8 +29,8 @@ void IcecapSimulation(World& world, uint32_t seed)
 {
    BOOST_LOG_TRIVIAL(info) << "Icecap simulation start";
 
-   std::mt19937                          generator(seed);
-   std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
+   std::mt19937                                    generator(seed);
+   boost::random::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
    const uint32_t width  = world.width();
    const uint32_t height = world.height();

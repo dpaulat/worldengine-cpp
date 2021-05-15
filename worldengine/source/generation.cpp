@@ -14,6 +14,7 @@
 #include <random>
 
 #include <boost/log/trivial.hpp>
+#include <boost/random.hpp>
 
 #include <OpenSimplexNoise.h>
 
@@ -155,8 +156,9 @@ void GenerateWorld(World& world, const Step& step, uint32_t seed)
       return;
    }
 
-   std::mt19937                            generator(seed);
-   std::uniform_int_distribution<uint32_t> distribution(0, UINT32_MAX);
+   std::mt19937                                      generator(seed);
+   boost::random::uniform_int_distribution<uint32_t> distribution(0,
+                                                                  UINT32_MAX);
 
    // Seed map should be appended to to maximize compatibility between versions
    std::unordered_map<Simulation, uint32_t> seedMap;

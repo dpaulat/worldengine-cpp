@@ -5,6 +5,7 @@
 #include <random>
 
 #include <boost/log/trivial.hpp>
+#include <boost/random.hpp>
 
 #include <OpenSimplexNoise.h>
 
@@ -54,8 +55,8 @@ static void TemperatureCalculation(World&              world,
 {
    BOOST_LOG_TRIVIAL(debug) << "Seed: " << seed;
 
-   std::mt19937                            generator(seed);
-   std::uniform_int_distribution<uint32_t> distribution;
+   std::mt19937                                      generator(seed);
+   boost::random::uniform_int_distribution<uint32_t> distribution;
 
    OpenSimplexNoise::Noise noise(distribution(generator));
 
@@ -95,7 +96,7 @@ static void TemperatureCalculation(World&              world,
    const float axialTiltHWHM     = 0.07f;
 
    // Derive parameters
-   float distanceToSun = std::normal_distribution<float>(
+   float distanceToSun = boost::random::normal_distribution<float>(
       1.0f, distanceToSunHWHM / SQRT_2XLN2)(generator);
    // Clamp value, no planets inside the star
    distanceToSun = std::max(0.1f, distanceToSun);
@@ -103,7 +104,7 @@ static void TemperatureCalculation(World&              world,
    distanceToSun *= distanceToSun;
    // An atmosphere would soften the effect of distanceToSun by *some* factor
 
-   float axialTilt = std::normal_distribution<float>(
+   float axialTilt = boost::random::normal_distribution<float>(
       0.0f, axialTiltHWHM / SQRT_2XLN2)(generator);
    axialTilt = std::clamp(axialTilt, -0.5f, 0.5f);
 
