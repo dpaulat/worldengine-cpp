@@ -1,7 +1,7 @@
 WorldEngine C++ - A World Generator
 =========================
 
-[![Build status](https://ci.appveyor.com/api/projects/status/e7p7qcbudxtykyaw?svg=true)](https://ci.appveyor.com/project/dpaulat/worldengine-cpp) [![Coverage Status](https://coveralls.io/repos/github/dpaulat/worldengine-cpp/badge.svg)](https://coveralls.io/github/dpaulat/worldengine-cpp) [![Documentation Status](https://readthedocs.org/projects/worldengine-cpp/badge/?version=latest)](http://worldengine-cpp.readthedocs.io/en/latest/)
+[![Build status](https://ci.appveyor.com/api/projects/status/e7p7qcbudxtykyaw?svg=true)](https://ci.appveyor.com/project/dpaulat/worldengine-cpp) [![codecov](https://codecov.io/gh/dpaulat/worldengine-cpp/branch/master/graph/badge.svg?token=YNHWU3LW7O)](https://codecov.io/gh/dpaulat/worldengine-cpp) [![Documentation Status](https://readthedocs.org/projects/worldengine-cpp/badge/?version=latest)](http://worldengine-cpp.readthedocs.io/en/latest/)
 
 _The current stable version is 0.19.0_
 

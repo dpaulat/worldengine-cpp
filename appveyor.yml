@@ -1,10 +1,14 @@
-version: 0.19.{build}
+version: 0.19.0.{build}
 
 image:
   - Visual Studio 2019
 
 platform:
   - x64
+
+configuration:
+  - Debug
+  - Release
 
 environment:
   matrix:
@@ -25,24 +29,40 @@ install:
   - cmd: conan user # Create the conan data directory
   - cmd: conan --version
   - cmd: pip.exe install sphinx
+  - cmd: choco install opencppcoverage codecov
+  - cmd: set PATH=C:\Program Files\OpenCppCoverage;%PATH%
 
 build_script:
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPE=Release -G "Visual Studio 16 2019" -A x64 ..
-  - cmd: cmake --build . --config Release
+  - cmd: cmake -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DCMAKE_CONFIGURATION_TYPE=%CONFIGURATION% -G "Visual Studio 16 2019" -A x64 ..
+  - cmd: cmake --build . --config %CONFIGURATION%
 
-after_build:
-  - cmd: 7z a worldengine.zip %APPVEYOR_BUILD_FOLDER%\build\bin\worldengine.exe %APPVEYOR_BUILD_FOLDER%\build\bin\*.dll %APPVEYOR_BUILD_FOLDER%\build\lib\*
-
-artifacts:
-  - path: build\worldengine.zip
-    name: WorldEngine
-
-test_script:
-  - cmd: cd bin
-  - cmd: worldengine-test.exe --gtest_output=xml:worldengine-test.xml
-  - cmd: cd ..
-
-after_test:
-  - ps: (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\worldengine-test.xml))
+for:
+  -
+    matrix:
+      only:
+        - configuration: Debug
+    test_script:
+      - cmd: cd bin
+      - cmd: OpenCppCoverage --export_type cobertura:coverage.xml --cover_children --modules "%APPVEYOR_BUILD_FOLDER%\build\bin" --sources "%APPVEYOR_BUILD_FOLDER%\worldengine" --excluded_sources "%APPVEYOR_BUILD_FOLDER%\worldengine\test" -- worldengine-test.exe
+      - cmd: codecov -f coverage.xml
+      - cmd: cd ..
+    artifacts:
+      - path: build\bin\coverage.xml
+        name: Coverage
+  -
+    matrix:
+      only:
+        - configuration: Release
+    after_build:
+      - cmd: 7z a worldengine.zip %APPVEYOR_BUILD_FOLDER%\build\bin\worldengine.exe %APPVEYOR_BUILD_FOLDER%\build\bin\*.dll %APPVEYOR_BUILD_FOLDER%\build\lib\*
+    test_script:
+      - cmd: cd bin
+      - cmd: worldengine-test.exe --gtest_output=xml:worldengine-test.xml
+      - cmd: cd ..
+    after_test:
+      - ps: (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\worldengine-test.xml))
+    artifacts:
+      - path: build\worldengine.zip
+        name: WorldEngine
