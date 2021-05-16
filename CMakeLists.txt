@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.11)
 set(PROJECT_NAME worldengine)
 project (${PROJECT_NAME} CXX)
 
+set(CMAKE_POLICY_DEFAULT_CMP0054 NEW)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
 enable_testing()
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
