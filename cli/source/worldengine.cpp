@@ -93,7 +93,7 @@ static std::shared_ptr<World> LoadWorld(const std::string& filename,
 static void PrintUsage(const std::string&             programName,
                        const po::options_description& options);
 static void PrintWorldInfo(const World& world);
-static void SetLogLevel(const ArgumentsType& args, const po::variables_map& vm);
+static void SetLogLevel(const ArgumentsType& args);
 static int  ValidateArguments(ArgumentsType& args, const po::variables_map& vm);
 
 static int AddOptions(int                      argc,
@@ -786,7 +786,7 @@ static void PrintWorldInfo(const World& world)
    std::cout << "Has Temperature    : " << world.HasTemperature() << std::endl;
 }
 
-static void SetLogLevel(const ArgumentsType& args, const po::variables_map& vm)
+static void SetLogLevel(const ArgumentsType& args)
 {
    boost::log::trivial::severity_level severity = boost::log::trivial::info;
 
@@ -880,7 +880,7 @@ void CliMain(int argc, const char** argv)
 
    if (status == 0)
    {
-      SetLogLevel(args, vm);
+      SetLogLevel(args);
       status = ValidateArguments(args, vm);
    }
 

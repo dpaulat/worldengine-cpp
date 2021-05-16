@@ -39,10 +39,8 @@ void HumiditySimulation(World& world)
 
 static void HumidityCalculation(World& world)
 {
-   uint32_t width  = world.width();
-   uint32_t height = world.height();
-
-   const std::vector<float>& humids = world.humids();
+   const uint32_t width  = world.width();
+   const uint32_t height = world.height();
 
    float precipitationWeight = 1.0f;
    float irrigationWeight    = 3.0f;

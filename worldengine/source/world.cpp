@@ -2,16 +2,20 @@
 
 #include <random>
 
+#pragma warning(push)
+#pragma warning(disable : 4244)
 #include <boost/assign.hpp>
 #include <boost/bimap.hpp>
 #include <boost/bimap/unordered_set_of.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/random.hpp>
 #include <boost/tokenizer.hpp>
+#pragma warning(pop)
 
 #include <hdf5/H5Cpp.h>
 
 #pragma warning(push)
+#pragma warning(disable : 4127)
 #pragma warning(disable : 6385)
 #pragma warning(disable : 6387)
 #pragma warning(disable : 26451)
@@ -104,7 +108,7 @@ static const HumidityQuantileMap humidityQuantiles_ =
    (HumidityLevel::Perhumid, 12);
 
 typedef boost::bimap<boost::bimaps::unordered_set_of<Biome>,
-                     boost::bimaps::unordered_set_of<int>>
+                     boost::bimaps::unordered_set_of<uint16_t>>
                            BiomeIndexMap;
 static const BiomeIndexMap biomeIndices_ =
    boost::assign::list_of<BiomeIndexMap::relation> //

@@ -111,6 +111,18 @@ target_include_directories(worldengine PRIVATE ${PLATE_TECTONICS_INCLUDE_DIR}
 # Disable LGPL features in Eigen
 target_compile_definitions(worldengine PRIVATE EIGEN_MPL2_ONLY)
 
+set(MANUAL_SOURCES ${SRC_IMAGES}
+                   ${SRC_MAIN}
+                   ${SRC_SIMULATIONS})
+
+if (MSVC)
+    set_source_files_properties(${MANUAL_SOURCES}
+                                PROPERTIES COMPILE_FLAGS "/W4 /WX")
+else()
+    set_source_files_properties(${MANUAL_SOURCES}
+                                PROPERTIES COMPILE_FLAGS "-Wall -Wextra -pedantic -Werror")
+endif()
+
 target_include_directories(worldengine INTERFACE ${libworldengine_SOURCE_DIR}/include)
 
 set_target_properties(worldengine PROPERTIES CXX_STANDARD 17

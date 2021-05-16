@@ -81,7 +81,7 @@ std::istream& operator>>(std::istream& in, OperationType& operation)
    {
       operation = OperationTypeFromString(token);
    }
-   catch (std::invalid_argument& e)
+   catch (std::invalid_argument&)
    {
       in.setstate(std::ios_base::failbit);
    }

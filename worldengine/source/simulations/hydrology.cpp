@@ -113,10 +113,9 @@ static void WatermapExecute(World& world, uint32_t numSamples, uint32_t seed)
    std::mt19937                                      generator(seed);
    boost::random::uniform_int_distribution<uint32_t> distribution;
 
-   uint32_t width  = world.width();
-   uint32_t height = world.height();
+   const uint32_t width  = world.width();
+   const uint32_t height = world.height();
 
-   const ElevationArrayType&     elevation      = world.GetElevationData();
    const PrecipitationArrayType& precipitations = world.GetPrecipitationData();
    WaterMapArrayType&            watermap       = world.GetWaterMapData();
    watermap.resize(boost::extents[height][width]);

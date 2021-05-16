@@ -29,9 +29,12 @@ template<typename T>
 boost::gil::rgb8_pixel_t& operator+=(boost::gil::rgb8_pixel_t&  lhs,
                                      const std::tuple<T, T, T>& rhs)
 {
-   lhs[0] = std::clamp<T>(static_cast<T>(lhs[0]) + std::get<0>(rhs), 0, 255);
-   lhs[1] = std::clamp<T>(static_cast<T>(lhs[1]) + std::get<1>(rhs), 0, 255);
-   lhs[2] = std::clamp<T>(static_cast<T>(lhs[2]) + std::get<2>(rhs), 0, 255);
+   lhs[0] = static_cast<uint8_t>(
+      std::clamp<T>(static_cast<T>(lhs[0]) + std::get<0>(rhs), 0, 255));
+   lhs[1] = static_cast<uint8_t>(
+      std::clamp<T>(static_cast<T>(lhs[1]) + std::get<1>(rhs), 0, 255));
+   lhs[2] = static_cast<uint8_t>(
+      std::clamp<T>(static_cast<T>(lhs[2]) + std::get<2>(rhs), 0, 255));
    return lhs;
 }
 
@@ -39,9 +42,12 @@ template<typename T>
 boost::gil::rgb8_pixel_t& operator+=(boost::gil::rgb8_pixel_t& lhs,
                                      const T&                  rhs)
 {
-   lhs[0] = std::clamp<T>(static_cast<T>(lhs[0]) + rhs, 0, 255);
-   lhs[1] = std::clamp<T>(static_cast<T>(lhs[1]) + rhs, 0, 255);
-   lhs[2] = std::clamp<T>(static_cast<T>(lhs[2]) + rhs, 0, 255);
+   lhs[0] =
+      static_cast<uint8_t>(std::clamp<T>(static_cast<T>(lhs[0]) + rhs, 0, 255));
+   lhs[1] =
+      static_cast<uint8_t>(std::clamp<T>(static_cast<T>(lhs[1]) + rhs, 0, 255));
+   lhs[2] =
+      static_cast<uint8_t>(std::clamp<T>(static_cast<T>(lhs[2]) + rhs, 0, 255));
    return lhs;
 }
 
@@ -212,10 +218,10 @@ void SatelliteImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
             smoothMask[y][x]  = true;
             int32_t variation = variationGenerator(generator_);
 
-            target(x, y) =
-               boost::gil::rgb8_pixel_t(255 - ICE_COLOR_VARIATION + variation,
-                                        255 - ICE_COLOR_VARIATION + variation,
-                                        255);
+            target(x, y) = boost::gil::rgb8_pixel_t(
+               static_cast<uint8_t>(255 - ICE_COLOR_VARIATION + variation),
+               static_cast<uint8_t>(255 - ICE_COLOR_VARIATION + variation),
+               255);
          }
       }
    }
@@ -255,11 +261,11 @@ void SatelliteImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
             // we attempt to average the values
             if (!r.empty())
             {
-               int32_t avgR = static_cast<int32_t>(
+               uint8_t avgR = static_cast<uint8_t>(
                   std::accumulate(r.begin(), r.end(), 0) / r.size());
-               int32_t avgG = static_cast<int32_t>(
+               uint8_t avgG = static_cast<uint8_t>(
                   std::accumulate(g.begin(), g.end(), 0) / g.size());
-               int32_t avgB = static_cast<int32_t>(
+               uint8_t avgB = static_cast<uint8_t>(
                   std::accumulate(b.begin(), b.end(), 0) / b.size());
 
                // Set the color of the pixel again

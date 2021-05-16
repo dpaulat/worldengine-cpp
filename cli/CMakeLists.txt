@@ -22,7 +22,10 @@ target_link_libraries(worldengine-cli Boost::log
                                       HDF5::HDF5
                                       PNG::PNG
                                       protobuf::protobuf)
-                                      
+
+target_compile_options(worldengine-cli PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+                                               $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic -Werror>)
+
 set_target_properties(worldengine-cli PROPERTIES CXX_STANDARD 17
                                                  CXX_STANDARD_REQUIRED ON
                                                  CXX_EXTENSIONS OFF)

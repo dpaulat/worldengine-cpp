@@ -41,7 +41,7 @@ static const Direction dirNeighborsCenter_[] = {Direction::Center, //
                                                 Direction::South,
                                                 Direction::West};
 
-static const bool wrap_ = true;
+static bool wrap_ = true;
 
 static const float RIVER_THRESHOLD = 0.02f;
 

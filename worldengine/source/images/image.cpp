@@ -95,7 +95,7 @@ void Image::DrawGrayscaleFromArray(
    {
       for (uint32_t x = 0; x < width; x++)
       {
-         uint32_t color = Interpolate(array[y][x], points);
+         uint8_t color = static_cast<uint8_t>(Interpolate(array[y][x], points));
 
          for (uint32_t dy = 0; dy < scale_; dy++)
          {
@@ -109,12 +109,12 @@ void Image::DrawGrayscaleFromArray(
    }
 }
 
-void Image::DrawImage(boost::gil::gray8_image_t::view_t& target)
+void Image::DrawImage(boost::gil::gray8_image_t::view_t&)
 {
    // Empty grayscale implementation
 }
 
-void Image::DrawImage(boost::gil::rgb8_image_t::view_t& target)
+void Image::DrawImage(boost::gil::rgb8_image_t::view_t&)
 {
    // Empty color implementation
 }

@@ -81,7 +81,9 @@ void ElevationImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
                }
             }
 
-            target(x, y) = boost::gil::rgb8_pixel_t(c, c, c);
+            target(x, y) = boost::gil::rgb8_pixel_t(static_cast<uint8_t>(c),
+                                                    static_cast<uint8_t>(c),
+                                                    static_cast<uint8_t>(c));
          }
       }
    }

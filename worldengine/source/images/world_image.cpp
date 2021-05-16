@@ -24,8 +24,8 @@ void WorldImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
          }
          else
          {
-            uint8_t c = std::clamp<int32_t>(
-               static_cast<int32_t>(seaDepth[y][x] * 200 + 50), 0, 255);
+            uint8_t c    = static_cast<uint8_t>(std::clamp<int32_t>(
+               static_cast<int32_t>(seaDepth[y][x] * 200 + 50), 0, 255));
             target(x, y) = boost::gil::rgb8_pixel_t(0, 0, 255 - c);
          }
       }

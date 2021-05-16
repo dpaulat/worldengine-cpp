@@ -445,9 +445,6 @@ static void CreateMountainMask(const World&                  world,
    const uint32_t width  = world.width();
    const uint32_t height = world.height();
 
-   const ElevationArrayType& elevation = world.GetElevationData();
-   const OceanArrayType&     ocean     = world.GetOceanData();
-
    mask.resize(boost::extents[height][width]);
    std::fill(mask.data(), mask.data() + mask.num_elements(), 0.0f);
 
@@ -485,8 +482,8 @@ static void CreateMountainMask(const World&                  world,
 static void DrawAMountain(boost::gil::rgb8_image_t::view_t& target,
                           int32_t                           x,
                           int32_t                           y,
-                          float                             w,
-                          int32_t                           h)
+                          float,
+                          int32_t h)
 {
    const boost::gil::rgb8_pixel_t mcr(75, 75, 75);
 
