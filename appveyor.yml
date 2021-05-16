@@ -32,6 +32,14 @@ build_script:
   - cmd: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPE=Release -G "Visual Studio 16 2019" -A x64 ..
   - cmd: cmake --build . --config Release
 
+after_build:
+  - cmd: 7z a worldengine.zip %APPVEYOR_BUILD_FOLDER%\build\bin\worldengine.exe %APPVEYOR_BUILD_FOLDER%\build\bin\*.dll %APPVEYOR_BUILD_FOLDER%\build\lib\*
+
+artifacts:
+  - path: build\worldengine.zip
+    name: WorldEngine
+
 test_script:
   - cmd: cd bin
   - cmd: worldengine-test.exe
+  - cmd: cd ..
