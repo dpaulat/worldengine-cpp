@@ -62,7 +62,8 @@ U Interpolate(T x, const std::vector<std::pair<T, U>>& points)
       {
          double t = static_cast<double>(x - (it - 1)->first) /
                     (it->first - (it - 1)->first);
-         U y = (it - 1)->second + t * (it->second - (it - 1)->second);
+         U y = static_cast<U>((it - 1)->second +
+                              t * (it->second - (it - 1)->second));
          return y;
       }
    }

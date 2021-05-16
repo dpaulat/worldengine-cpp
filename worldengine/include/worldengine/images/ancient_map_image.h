@@ -12,7 +12,7 @@ class AncientMapImage : public Image
 public:
    explicit AncientMapImage(const World& world,
                             uint32_t     seed,
-                            size_t       scale               = 1u,
+                            uint32_t     scale               = 1u,
                             SeaColor     seaColor            = SeaColor::Brown,
                             bool         drawBiome           = true,
                             bool         drawRivers          = true,

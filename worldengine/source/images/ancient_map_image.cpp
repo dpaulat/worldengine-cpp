@@ -15,7 +15,7 @@ typedef std::function<void(
    boost::gil::rgb8_image_t::view_t& target, uint32_t x, uint32_t y)>
    DrawFunction;
 
-static const size_t NUM_COLOR_CHANNELS = 3;
+static const uint32_t NUM_COLOR_CHANNELS = 3;
 
 static const boost::gil::rgb8_pixel_t LAND_COLOR =
    boost::gil::rgb8_pixel_t(181, 166, 127);
@@ -31,7 +31,7 @@ static void CreateMountainMask(const World&                  world,
 static void DrawAMountain(boost::gil::rgb8_image_t::view_t& target,
                           int32_t                           x,
                           int32_t                           y,
-                          int32_t                           w,
+                          float                             w,
                           int32_t                           h);
 static void DrawDesertPattern(boost::gil::rgb8_image_t::view_t& target,
                               int32_t                           x,
@@ -96,11 +96,11 @@ static void DrawWarmTemperateForest(boost::gil::rgb8_image_t::view_t& target,
 template<typename T>
 static void ScaleArray(const boost::multi_array<T, 2>& input,
                        boost::multi_array<T, 2>&       output,
-                       size_t                          scale);
+                       uint32_t                        scale);
 
 AncientMapImage::AncientMapImage(const World& world,
                                  uint32_t     seed,
-                                 size_t       scale,
+                                 uint32_t     scale,
                                  SeaColor     seaColor,
                                  bool         drawBiome,
                                  bool         drawRivers,
@@ -124,10 +124,10 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 
    std::mt19937 generator(seed_);
 
-   const uint32_t width   = world_.width();
-   const uint32_t height  = world_.height();
-   const uint32_t sWidth  = width * scale_;
-   const uint32_t sHeight = height * scale_;
+   const int32_t width   = world_.width();
+   const int32_t height  = world_.height();
+   const int32_t sWidth  = width * scale_;
+   const int32_t sHeight = height * scale_;
 
    const boost::gil::rgb8_pixel_t seaColor =
       (seaColor_ == SeaColor::Blue) ? boost::gil::rgb8_pixel_t(142, 162, 179) :
@@ -165,9 +165,9 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
             boost::multi_array<uint32_t, 2> neighbors =
                CountNeighbors(innerBorders);
 
-            for (uint32_t y = 0; y < sHeight; y++)
+            for (int32_t y = 0; y < sHeight; y++)
             {
-               for (uint32_t x = 0; x < sWidth; x++)
+               for (int32_t x = 0; x < sWidth; x++)
                {
                   outerBorders[y][x] = !innerBorders[y][x] &&
                                        scaledOcean[y][x] && neighbors[y][x] > 0;
@@ -207,10 +207,10 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 
          boost::random::uniform_real_distribution<float> random(0.0f, 1.0f);
 
-         const uint32_t width   = world_.width();
-         const uint32_t height  = world_.height();
-         const uint32_t sWidth  = width * scale_;
-         const uint32_t sHeight = height * scale_;
+         const int32_t width   = world_.width();
+         const int32_t height  = world_.height();
+         const int32_t sWidth  = width * scale_;
+         const int32_t sHeight = height * scale_;
 
          for (int32_t sy = 0; sy < sHeight; sy++)
          {
@@ -266,15 +266,15 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
       Gradient(0.5f, 0.0f, 1.0f, borderColor, seaColor);
 
    std::vector<boost::multi_array<float, 2>> channels;
-   for (size_t c = 0; c < NUM_COLOR_CHANNELS; c++)
+   for (uint32_t c = 0; c < NUM_COLOR_CHANNELS; c++)
    {
       channels.push_back(
          boost::multi_array<float, 2>(boost::extents[sHeight][sWidth]));
    }
 
-   for (uint32_t y = 0; y < sHeight; y++)
+   for (int32_t y = 0; y < sHeight; y++)
    {
-      for (uint32_t x = 0; x < sWidth; x++)
+      for (int32_t x = 0; x < sWidth; x++)
       {
          boost::gil::rgb8_pixel_t color;
 
@@ -295,7 +295,7 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
             color = LAND_COLOR;
          }
 
-         for (size_t c = 0; c < NUM_COLOR_CHANNELS; c++)
+         for (uint32_t c = 0; c < NUM_COLOR_CHANNELS; c++)
          {
             channels[c][y][x] = color[c];
          }
@@ -303,17 +303,19 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    }
 
    BOOST_LOG_TRIVIAL(debug) << "Ancient map: Anti-aliasing image";
-   for (size_t c = 0; c < NUM_COLOR_CHANNELS; c++)
+   for (uint32_t c = 0; c < NUM_COLOR_CHANNELS; c++)
    {
       AntiAlias(channels[c]);
    }
 
-   for (uint32_t y = 0; y < sHeight; y++)
+   for (int32_t y = 0; y < sHeight; y++)
    {
-      for (uint32_t x = 0; x < sWidth; x++)
+      for (int32_t x = 0; x < sWidth; x++)
       {
-         target(x, y) = boost::gil::rgb8_pixel_t(
-            channels[0][y][x], channels[1][y][x], channels[2][y][x]);
+         target(x, y) =
+            boost::gil::rgb8_pixel_t(static_cast<uint8_t>(channels[0][y][x]),
+                                     static_cast<uint8_t>(channels[1][y][x]),
+                                     static_cast<uint8_t>(channels[2][y][x]));
       }
    }
 
@@ -349,18 +351,20 @@ void AncientMapImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    {
       BOOST_LOG_TRIVIAL(debug) << "Ancient map: Drawing mountains";
 
-      for (uint32_t sy = 0; sy < sHeight; sy++)
+      for (int32_t sy = 0; sy < sHeight; sy++)
       {
-         uint32_t y = sy / scale_;
-         for (uint32_t sx = 0; sx < sWidth; sx++)
+         int32_t y = sy / scale_;
+         for (int32_t sx = 0; sx < sWidth; sx++)
          {
-            uint32_t x = sx / scale_;
+            int32_t x = sx / scale_;
 
             float w = mountainMask[sy][sx];
             if (w > 0.0f)
             {
-               uint32_t h = 3 + world_.GetLevelOfMountain(x, y);
-               int32_t  r = std::max<int32_t>(w * 2 / 3, h);
+               int32_t h =
+                  static_cast<int32_t>(3u + world_.GetLevelOfMountain(x, y));
+               int32_t r =
+                  std::max<int32_t>(static_cast<int32_t>(w * 2 / 3), h);
 
                if (borderNeighbors.find(r) == borderNeighbors.end())
                {
@@ -481,7 +485,7 @@ static void CreateMountainMask(const World&                  world,
 static void DrawAMountain(boost::gil::rgb8_image_t::view_t& target,
                           int32_t                           x,
                           int32_t                           y,
-                          int32_t                           w,
+                          float                             w,
                           int32_t                           h)
 {
    const boost::gil::rgb8_pixel_t mcr(75, 75, 75);
@@ -499,9 +503,9 @@ static void DrawAMountain(boost::gil::rgb8_image_t::view_t& target,
          DrawPixelCheck(target,
                         x - itx,
                         y + mody,
-                        Gradient(itx,
-                                 darkArea,
-                                 leftBorder,
+                        Gradient(static_cast<float>(itx),
+                                 static_cast<float>(darkArea),
+                                 static_cast<float>(leftBorder),
                                  boost::gil::rgb8_pixel_t(0, 0, 0),
                                  boost::gil::rgb8_pixel_t(64, 64, 64)));
       }
@@ -510,9 +514,9 @@ static void DrawAMountain(boost::gil::rgb8_image_t::view_t& target,
          DrawPixelCheck(target,
                         x + itx,
                         y + mody,
-                        Gradient(itx,
-                                 -darkArea,
-                                 lightArea,
+                        Gradient(static_cast<float>(itx),
+                                 static_cast<float>(-darkArea),
+                                 static_cast<float>(lightArea),
                                  boost::gil::rgb8_pixel_t(64, 64, 64),
                                  boost::gil::rgb8_pixel_t(128, 128, 128)));
       }
@@ -772,9 +776,9 @@ boost::gil::rgb8_pixel_t Gradient(float                    value,
    const uint8_t hg = highColor[1];
    const uint8_t hb = highColor[2];
 
-   const uint8_t r = lr * ix + hr * x;
-   const uint8_t g = lg * ix + hg * x;
-   const uint8_t b = lb * ix + hb * x;
+   const uint8_t r = static_cast<uint8_t>(lr * ix + hr * x);
+   const uint8_t g = static_cast<uint8_t>(lg * ix + hg * x);
+   const uint8_t b = static_cast<uint8_t>(lb * ix + hb * x);
 
    return boost::gil::rgb8_pixel_t(r, g, b);
 }
@@ -782,10 +786,10 @@ boost::gil::rgb8_pixel_t Gradient(float                    value,
 template<typename T>
 static void ScaleArray(const boost::multi_array<T, 2>& input,
                        boost::multi_array<T, 2>&       output,
-                       size_t                          scale)
+                       uint32_t                        scale)
 {
-   const uint32_t width   = input.shape()[1];
-   const uint32_t height  = input.shape()[0];
+   const uint32_t width   = static_cast<uint32_t>(input.shape()[1]);
+   const uint32_t height  = static_cast<uint32_t>(input.shape()[0]);
    const uint32_t sWidth  = width * scale;
    const uint32_t sHeight = height * scale;
 

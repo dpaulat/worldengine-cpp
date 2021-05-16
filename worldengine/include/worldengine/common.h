@@ -315,7 +315,7 @@ const std::vector<float> DEFAULT_TEMPS {
    0.126f, 0.235f, 0.406f, 0.561f, 0.634f, 0.876f};
 
 const std::vector<float> DEFAULT_HUMIDS {
-   0.059, 0.222, 0.493, 0.764, 0.927, 0.986, 0.998};
+   0.059f, 0.222f, 0.493f, 0.764f, 0.927f, 0.986f, 0.998f};
 
 /**
  * @brief Generate a temporary filename with a given prefix and suffix

@@ -6,11 +6,11 @@
 
 namespace WorldEngine
 {
-static const bool   DEFAULT_HAS_COLOR           = true;
-static const bool   DEFAULT_HAS_BLACK_AND_WHITE = false;
-static const size_t DEFAULT_SCALE               = 1u;
+static const bool     DEFAULT_HAS_COLOR           = true;
+static const bool     DEFAULT_HAS_BLACK_AND_WHITE = false;
+static const uint32_t DEFAULT_SCALE               = 1u;
 
-static Size CalculateSize(const World& world, size_t scale);
+static Size CalculateSize(const World& world, uint32_t scale);
 
 Image::Image(const World& world) : Image(world, DEFAULT_SCALE) {}
 
@@ -23,7 +23,7 @@ Image::Image(const World& world, Size size) :
 {
 }
 
-Image::Image(const World& world, size_t scale) :
+Image::Image(const World& world, uint32_t scale) :
     Image(world, DEFAULT_HAS_COLOR, DEFAULT_HAS_BLACK_AND_WHITE, scale)
 {
 }
@@ -41,7 +41,7 @@ Image::Image(const World& world, bool hasColor, bool hasBlackAndWhite) :
 Image::Image(const World& world,
              bool         hasColor,
              bool         hasBlackAndWhite,
-             size_t       scale) :
+             uint32_t     scale) :
     Image(world, hasColor, hasBlackAndWhite, CalculateSize(world, scale), scale)
 {
 }
@@ -50,7 +50,7 @@ Image::Image(const World& world,
              bool         hasColor,
              bool         hasBlackAndWhite,
              Size         size,
-             size_t       scale) :
+             uint32_t     scale) :
     world_(world),
     hasColor_(hasColor),
     hasBlackAndWhite_(hasBlackAndWhite),
@@ -188,7 +188,7 @@ void Image::Draw(const std::string& filename, bool blackAndWhite)
    }
 }
 
-static Size CalculateSize(const World& world, size_t scale)
+static Size CalculateSize(const World& world, uint32_t scale)
 {
    return Size(world.width() * scale, world.height() * scale);
 }

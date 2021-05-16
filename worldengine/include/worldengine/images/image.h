@@ -33,7 +33,7 @@ protected:
     * @param world A world
     * @param scale Image scale
     */
-   explicit Image(const World& world, size_t scale);
+   explicit Image(const World& world, uint32_t scale);
 
    /**
     * @brief Construct an image
@@ -61,7 +61,7 @@ protected:
    explicit Image(const World& world,
                   bool         hasColor,
                   bool         hasBlackAndWhite,
-                  size_t       scale);
+                  uint32_t     scale);
 
    /**
     * @brief Construct an image
@@ -75,15 +75,15 @@ protected:
                   bool         hasColor,
                   bool         hasBlackAndWhite,
                   Size         size,
-                  size_t       scale);
+                  uint32_t     scale);
 
    virtual ~Image();
 
-   const World& world_;
-   const bool   hasColor_;
-   const bool   hasBlackAndWhite_;
-   const Size   size_;
-   const size_t scale_;
+   const World&   world_;
+   const bool     hasColor_;
+   const bool     hasBlackAndWhite_;
+   const Size     size_;
+   const uint32_t scale_;
 
    /**
     * @brief Draw a grayscale image from a multi_array
