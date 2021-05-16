@@ -32,8 +32,8 @@ void IcecapSimulation(World& world, uint32_t seed)
    std::mt19937                                    generator(seed);
    boost::random::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
-   const uint32_t width  = world.width();
-   const uint32_t height = world.height();
+   const int32_t width  = world.width();
+   const int32_t height = world.height();
 
    const OceanArrayType&       ocean       = world.GetOceanData();
    const TemperatureArrayType& temperature = world.GetTemperatureData();
@@ -58,9 +58,9 @@ void IcecapSimulation(World& world, uint32_t seed)
 
    // Map that is true whenever there is land or (certain) ice around
    SolidArrayType solidMap(boost::extents[height][width]);
-   for (uint32_t y = 0; y < height; y++)
+   for (int32_t y = 0; y < height; y++)
    {
-      for (uint32_t x = 0; x < width; x++)
+      for (int32_t x = 0; x < width; x++)
       {
          solidMap[y][x] = !ocean[y][x] || (temperature[y][x] <=
                                            freezeChanceThreshold + minTemp);

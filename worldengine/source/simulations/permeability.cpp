@@ -55,11 +55,11 @@ static void PermeabilityCalculation(World& world, uint32_t seed)
    {
       for (uint32_t x = 0; x < width; x++)
       {
-         float n    = Noise(noise, //
-                         x * nScale / freq,
-                         y * nScale / freq,
-                         octaves);
-         perm[y][x] = n;
+         double n   = Noise(noise, //
+                          x * nScale / freq,
+                          y * nScale / freq,
+                          octaves);
+         perm[y][x] = static_cast<float>(n);
       }
    }
 }

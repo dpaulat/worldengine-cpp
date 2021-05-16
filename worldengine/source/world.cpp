@@ -27,8 +27,8 @@ std::ostream& operator<<(std::ostream& os, const boost::multi_array<T, 2>& a)
 {
    typename boost::multi_array<T, 2>::const_iterator i;
 
-   const int32_t width  = a.shape()[1];
-   const int32_t height = a.shape()[0];
+   const int32_t width  = static_cast<int32_t>(a.shape()[1]);
+   const int32_t height = static_cast<int32_t>(a.shape()[0]);
 
    os << "[";
    for (int32_t y = 0; y < height; y++)
@@ -299,7 +299,9 @@ float World::curveOffset() const
 
 bool World::Contains(int32_t x, int32_t y) const
 {
-   return (0 <= x && x < width() && 0 <= y && y < height());
+   const int32_t w = width();
+   const int32_t h = height();
+   return (0 <= x && x < w && 0 <= y && y < h);
 }
 
 bool World::HasBiome() const
@@ -619,8 +621,8 @@ bool World::IsMountain(uint32_t x, uint32_t y) const
 
 TemperatureLevel World::GetTemperatureLevel(uint32_t x, uint32_t y) const
 {
-   uint32_t width  = temperature_.shape()[1];
-   uint32_t height = temperature_.shape()[0];
+   uint32_t width  = static_cast<uint32_t>(temperature_.shape()[1]);
+   uint32_t height = static_cast<uint32_t>(temperature_.shape()[0]);
 
    if (x >= width || y >= height)
    {
@@ -642,8 +644,8 @@ TemperatureLevel World::GetTemperatureLevel(uint32_t x, uint32_t y) const
 
 HumidityLevel World::GetHumidityLevel(uint32_t x, uint32_t y) const
 {
-   uint32_t width  = precipitation_.shape()[1];
-   uint32_t height = precipitation_.shape()[0];
+   uint32_t width  = static_cast<uint32_t>(precipitation_.shape()[1]);
+   uint32_t height = static_cast<uint32_t>(precipitation_.shape()[0]);
 
    if (x >= width || y >= height)
    {
@@ -669,8 +671,8 @@ void World::GetRandomLand(std::vector<Point>& landSamples,
 {
    std::vector<std::pair<uint32_t, uint32_t>> land;
 
-   uint32_t width  = ocean_.shape()[1];
-   uint32_t height = ocean_.shape()[0];
+   uint32_t width  = static_cast<uint32_t>(ocean_.shape()[1]);
+   uint32_t height = static_cast<uint32_t>(ocean_.shape()[0]);
 
    for (uint32_t y = 0; y < height; y++)
    {
@@ -690,7 +692,7 @@ void World::GetRandomLand(std::vector<Point>& landSamples,
 
    std::mt19937                                      generator(seed);
    boost::random::uniform_int_distribution<uint32_t> distribution(
-      0, land.size() - 1);
+      0u, static_cast<uint32_t>(land.size() - 1));
 
    for (uint32_t i = 0; i < numSamples; i++)
    {
@@ -702,16 +704,19 @@ void World::GetTilesAround(std::vector<std::pair<uint32_t, uint32_t>>& tiles,
                            uint32_t                                    x,
                            uint32_t                                    y) const
 {
-   int32_t radius = 1;
+   const int32_t w      = width();
+   const int32_t h      = height();
+   const int32_t radius = 1;
+
    for (int32_t dx = -radius; dx <= radius; dx++)
    {
       int32_t nx = static_cast<int32_t>(x) + dx;
-      if (0 <= nx && nx < width())
+      if (0 <= nx && nx < w)
       {
          for (int32_t dy = -radius; dy <= radius; dy++)
          {
             int32_t ny = static_cast<int32_t>(y) + dy;
-            if (0 <= ny && ny < height())
+            if (0 <= ny && ny < h)
             {
                tiles.push_back({nx, ny});
             }
@@ -960,9 +965,12 @@ bool World::ProtobufDeserialize(std::istream& input)
 
          // Elevation
          FromProtobufMatrix(pbWorld.heightmapdata(), elevation_);
-         SetThreshold(ElevationThreshold::Sea, pbWorld.heightmapth_sea());
-         SetThreshold(ElevationThreshold::Hill, pbWorld.heightmapth_plain());
-         SetThreshold(ElevationThreshold::Mountain, pbWorld.heightmapth_hill());
+         SetThreshold(ElevationThreshold::Sea,
+                      static_cast<float>(pbWorld.heightmapth_sea()));
+         SetThreshold(ElevationThreshold::Hill,
+                      static_cast<float>(pbWorld.heightmapth_plain()));
+         SetThreshold(ElevationThreshold::Mountain,
+                      static_cast<float>(pbWorld.heightmapth_hill()));
 
          // Plates
          FromProtobufMatrix(pbWorld.plates(), plates_);
@@ -985,7 +993,7 @@ bool World::ProtobufDeserialize(std::istream& input)
             for (const auto& quantile : pbWorld.humidity().quantiles())
             {
                SetThreshold(humidityQuantiles_.right.at(quantile.key()),
-                            quantile.value());
+                            static_cast<float>(quantile.value()));
             }
 
             SetThreshold(HumidityLevel::Superhumid,
@@ -997,8 +1005,10 @@ bool World::ProtobufDeserialize(std::istream& input)
          FromProtobufMatrix(pbWorld.permeabilitydata(), permeability_);
          if (pbWorld.has_permeability_low())
          {
-            SetThreshold(PermeabilityLevel::Low, pbWorld.permeability_low());
-            SetThreshold(PermeabilityLevel::Medium, pbWorld.permeability_med());
+            SetThreshold(PermeabilityLevel::Low,
+                         static_cast<float>(pbWorld.permeability_low()));
+            SetThreshold(PermeabilityLevel::Medium,
+                         static_cast<float>(pbWorld.permeability_med()));
             SetThreshold(PermeabilityLevel::High,
                          std::numeric_limits<float>::max());
          }
@@ -1006,33 +1016,39 @@ bool World::ProtobufDeserialize(std::istream& input)
          FromProtobufMatrix(pbWorld.watermapdata(), waterMap_);
          if (pbWorld.has_watermap_creek())
          {
-            SetThreshold(WaterThreshold::Creek, pbWorld.watermap_creek());
-            SetThreshold(WaterThreshold::River, pbWorld.watermap_river());
+            SetThreshold(WaterThreshold::Creek,
+                         static_cast<float>(pbWorld.watermap_creek()));
+            SetThreshold(WaterThreshold::River,
+                         static_cast<float>(pbWorld.watermap_river()));
             SetThreshold(WaterThreshold::MainRiver,
-                         pbWorld.watermap_mainriver());
+                         static_cast<float>(pbWorld.watermap_mainriver()));
          }
 
          FromProtobufMatrix(pbWorld.precipitationdata(), precipitation_);
          if (pbWorld.has_precipitation_low())
          {
-            SetThreshold(PrecipitationLevel::Low, pbWorld.precipitation_low());
+            SetThreshold(PrecipitationLevel::Low,
+                         static_cast<float>(pbWorld.precipitation_low()));
             SetThreshold(PrecipitationLevel::Medium,
-                         pbWorld.precipitation_med());
+                         static_cast<float>(pbWorld.precipitation_med()));
             SetThreshold(PrecipitationLevel::High, 0.0f);
          }
 
          FromProtobufMatrix(pbWorld.temperaturedata(), temperature_);
          if (pbWorld.has_temperature_polar())
          {
-            SetThreshold(TemperatureLevel::Polar, pbWorld.temperature_polar());
+            SetThreshold(TemperatureLevel::Polar,
+                         static_cast<float>(pbWorld.temperature_polar()));
             SetThreshold(TemperatureLevel::Alpine,
-                         pbWorld.temperature_alpine());
+                         static_cast<float>(pbWorld.temperature_alpine()));
             SetThreshold(TemperatureLevel::Boreal,
-                         pbWorld.temperature_boreal());
-            SetThreshold(TemperatureLevel::Cool, pbWorld.temperature_cool());
-            SetThreshold(TemperatureLevel::Warm, pbWorld.temperature_warm());
+                         static_cast<float>(pbWorld.temperature_boreal()));
+            SetThreshold(TemperatureLevel::Cool,
+                         static_cast<float>(pbWorld.temperature_cool()));
+            SetThreshold(TemperatureLevel::Warm,
+                         static_cast<float>(pbWorld.temperature_warm()));
             SetThreshold(TemperatureLevel::Subtropical,
-                         pbWorld.temperature_subtropical());
+                         static_cast<float>(pbWorld.temperature_subtropical()));
             SetThreshold(TemperatureLevel::Tropical,
                          std::numeric_limits<float>::max());
          }
@@ -1557,8 +1573,8 @@ static void ToProtobufMatrix(const boost::multi_array<T, 2>&   source,
                              U*                                pbMatrix,
                              const std::function<V(const T&)>& transform)
 {
-   const uint32_t width  = source.shape()[1];
-   const uint32_t height = source.shape()[0];
+   const uint32_t width  = static_cast<uint32_t>(source.shape()[1]);
+   const uint32_t height = static_cast<uint32_t>(source.shape()[0]);
 
    for (uint32_t y = 0; y < height; y++)
    {
@@ -1583,10 +1599,12 @@ static void FromProtobufMatrix(const T&                          pbMatrix,
 
    for (uint32_t y = 0; y < height; y++)
    {
-      auto row = pbMatrix.rows(y);
-      for (uint32_t x = 0; x < width && x < row.cells_size(); x++)
+      auto           row     = pbMatrix.rows(y);
+      const uint32_t rowSize = row.cells_size();
+
+      for (uint32_t x = 0; x < width && x < rowSize; x++)
       {
-         dest[y][x] = transform(row.cells(x));
+         dest[y][x] = transform(static_cast<V>(row.cells(x)));
       }
    }
 }

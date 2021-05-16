@@ -51,12 +51,12 @@ bool operator==(const Node& lhs, const Node& rhs)
 struct SQMapHandler
 {
    const ElevationArrayType& mapData_;
-   const uint32_t            width_;
-   const uint32_t            height_;
+   const int32_t             width_;
+   const int32_t             height_;
 
    SQMapHandler(const ElevationArrayType& mapData,
-                uint32_t                  width,
-                uint32_t                  height) :
+                int32_t                   width,
+                int32_t                   height) :
        mapData_(mapData), width_(width), height_(height)
    {
    }
@@ -259,8 +259,8 @@ FindPath(const ElevationArrayType& elevation, Point source, Point destination)
 {
    std::list<Point> path;
 
-   uint32_t width  = elevation.shape()[1];
-   uint32_t height = elevation.shape()[0];
+   const int32_t width  = static_cast<int32_t>(elevation.shape()[1]);
+   const int32_t height = static_cast<int32_t>(elevation.shape()[0]);
 
    SQMapHandler mapHandler(elevation, width, height);
    AStar        pathFinder(mapHandler);

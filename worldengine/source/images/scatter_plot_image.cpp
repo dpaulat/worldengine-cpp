@@ -4,7 +4,7 @@
 
 namespace WorldEngine
 {
-ScatterPlotImage::ScatterPlotImage(const World& world, size_t size) :
+ScatterPlotImage::ScatterPlotImage(const World& world, uint32_t size) :
     Image(world, Size(size, size)), size_(size)
 {
 }
@@ -103,9 +103,9 @@ void ScatterPlotImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
       BOOST_LOG_TRIVIAL(trace) << "i, hMin, hMax, vMax: (" << i << ", " << hMin
                                << ", " << hMax << ", " << vMax << ")";
 
-      for (uint32_t y = hMin; y < hMax; y++)
+      for (int32_t y = hMin; y < hMax; y++)
       {
-         for (uint32_t x = 0; x < vMax; x++)
+         for (int32_t x = 0; x < vMax; x++)
          {
             target(x, (size_ - 1) - y) =
                boost::gil::rgb8_pixel_t(128, 128, 128);
@@ -119,7 +119,7 @@ void ScatterPlotImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
       int32_t v = static_cast<int32_t>(
          (size_ - 1) * (world_.GetThreshold(t) - minTemperature) /
          temperatureDelta);
-      if (0 < v && v < size_)
+      if (0 < v && v < static_cast<int32_t>(size_))
       {
          for (uint32_t y = 0; y < size_; y++)
          {
@@ -132,7 +132,7 @@ void ScatterPlotImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    {
       int32_t h = static_cast<int32_t>(
          (size_ - 1) * (world_.GetThreshold(p) - minHumidity) / humidityDelta);
-      if (0 < h && h < size_)
+      if (0 < h && h < static_cast<int32_t>(size_))
       {
          for (uint32_t x = 0; x < size_; x++)
          {
@@ -240,8 +240,10 @@ void ScatterPlotImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 
             // Calculate x and y position based on normalized temperature and
             // humidity
-            uint32_t nx = (size_ - 1) * (t - minTemperature) / temperatureDelta;
-            uint32_t ny = (size_ - 1) * (p - minHumidity) / humidityDelta;
+            uint32_t nx = static_cast<uint32_t>(
+               (size_ - 1) * (t - minTemperature) / temperatureDelta);
+            uint32_t ny = static_cast<uint32_t>(
+               (size_ - 1) * (p - minHumidity) / humidityDelta);
 
             target(nx, (size_ - 1) - ny) = boost::gil::rgb8_pixel_t(r, 128, b);
          }

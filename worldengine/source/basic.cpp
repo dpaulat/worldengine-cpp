@@ -4,7 +4,15 @@
 #include <boost/accumulators/statistics.hpp>
 #include <boost/log/trivial.hpp>
 
+#pragma warning(push)
+#pragma warning(disable : 4554)
+#pragma warning(disable : 26450)
+#pragma warning(disable : 26451)
+#pragma warning(disable : 26454)
+#pragma warning(disable : 26495)
+#pragma warning(disable : 26812)
 #include <eigen3/unsupported/Eigen/CXX11/Tensor>
+#pragma warning(pop)
 
 #include <OpenSimplexNoise.h>
 
@@ -23,8 +31,8 @@ void AntiAlias(boost::multi_array<float, 2>& mapData, size_t steps)
    Tensor2D kernel(3, 3);
    kernel.setValues({{w, w, w}, {w, w, w}, {w, w, w}});
 
-   const uint32_t width  = mapData.shape()[1];
-   const uint32_t height = mapData.shape()[0];
+   const uint32_t width  = static_cast<uint32_t>(mapData.shape()[1]);
+   const uint32_t height = static_cast<uint32_t>(mapData.shape()[0]);
 
    Tensor2DMap map(mapData.data(), width, height);
 
@@ -68,8 +76,8 @@ template<typename T>
 boost::multi_array<uint32_t, 2>
 CountNeighbors(const boost::multi_array<T, 2>& mask, int32_t radius)
 {
-   const int32_t width  = mask.shape()[1];
-   const int32_t height = mask.shape()[0];
+   const int32_t width  = static_cast<int32_t>(mask.shape()[1]);
+   const int32_t height = static_cast<int32_t>(mask.shape()[0]);
 
    boost::multi_array<uint32_t, 2> neighbors(boost::extents[height][width]);
 
@@ -112,9 +120,9 @@ float FindThresholdF(const boost::multi_array<float, 2>& mapData,
    typedef ba::accumulator_set<float, ba::stats<ba::tag::p_square_quantile>>
       accumulator_t;
 
-   uint32_t width    = mapData.shape()[1];
-   uint32_t height   = mapData.shape()[0];
-   float    quantile = 1.0f - landPercentage;
+   const uint32_t width    = static_cast<uint32_t>(mapData.shape()[1]);
+   const uint32_t height   = static_cast<uint32_t>(mapData.shape()[0]);
+   float          quantile = 1.0f - landPercentage;
 
    accumulator_t accumulator(ba::quantile_probability = quantile);
 

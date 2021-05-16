@@ -52,7 +52,7 @@ std::shared_ptr<World> WorldGen(const std::string&        name,
                                 float                     gammaCurve,
                                 float                     curveOffset,
                                 uint32_t                  numPlates,
-                                uint32_t                  oceanLevel,
+                                float                     oceanLevel,
                                 const Step&               step,
                                 bool                      fadeBorders)
 {

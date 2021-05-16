@@ -28,8 +28,13 @@ std::string Step::name() const
 std::string GenerateTemporaryFilename(const std::string& prefix,
                                       const std::string& suffix)
 {
-   time_t             t    = std::time(nullptr);
-   tm                 time = *std::localtime(&t);
+   time_t t = std::time(nullptr);
+   tm     time;
+#ifdef _MSC_VER
+   localtime_s(&time, &t);
+#else
+   localtime_s(&t, &time);
+#endif
    std::ostringstream oss;
    oss << std::put_time(&time, "%Y%m%dT%H%M%S");
    return std::string(prefix + oss.str() + suffix);
@@ -174,7 +179,7 @@ std::istream& operator>>(std::istream& in, ExportDataType& type)
    {
       type = ExportDataTypeFromString(token);
    }
-   catch (std::invalid_argument& e)
+   catch (std::invalid_argument&)
    {
       in.setstate(std::ios_base::failbit);
    }
@@ -229,7 +234,7 @@ std::istream& operator>>(std::istream& in, SeaColor& color)
    {
       color = SeaColorFromString(token);
    }
-   catch (std::invalid_argument& e)
+   catch (std::invalid_argument&)
    {
       in.setstate(std::ios_base::failbit);
    }
@@ -281,7 +286,7 @@ std::istream& operator>>(std::istream& in, StepType& step)
    {
       step = StepTypeFromString(token);
    }
-   catch (std::invalid_argument& e)
+   catch (std::invalid_argument&)
    {
       in.setstate(std::ios_base::failbit);
    }
@@ -328,7 +333,7 @@ std::istream& operator>>(std::istream& in, WorldFormat& format)
    {
       format = WorldFormatFromString(token);
    }
-   catch (std::invalid_argument& e)
+   catch (std::invalid_argument&)
    {
       in.setstate(std::ios_base::failbit);
    }

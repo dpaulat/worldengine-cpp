@@ -12,8 +12,8 @@ void OceanImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 
    const OceanArrayType& ocean = world_.GetOceanData();
 
-   uint32_t width  = ocean.shape()[1];
-   uint32_t height = ocean.shape()[0];
+   const uint32_t width  = static_cast<uint32_t>(ocean.shape()[1]);
+   const uint32_t height = static_cast<uint32_t>(ocean.shape()[0]);
 
    for (uint32_t y = 0; y < height; y++)
    {

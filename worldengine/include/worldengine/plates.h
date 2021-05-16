@@ -75,7 +75,7 @@ WorldGen(const std::string&        name,
          float                     gammaCurve  = DEFAULT_GAMMA_CURVE,
          float                     curveOffset = DEFAULT_CURVE_OFFSET,
          uint32_t                  numPlates   = DEFAULT_NUM_PLATES,
-         uint32_t                  oceanLevel  = DEFAULT_OCEAN_LEVEL,
+         float                     oceanLevel  = DEFAULT_OCEAN_LEVEL,
          const Step&               step        = DEFAULT_STEP,
          bool                      fadeBorders = DEFAULT_FADE_BORDERS);
 

@@ -47,8 +47,8 @@ boost::gil::rgb8_pixel_t& operator+=(boost::gil::rgb8_pixel_t& lhs,
 
 boost::multi_array<bool, 2> operator!(const boost::multi_array<bool, 2>& rhs)
 {
-   const uint32_t width  = rhs.shape()[1];
-   const uint32_t height = rhs.shape()[0];
+   const uint32_t width  = static_cast<uint32_t>(rhs.shape()[1]);
+   const uint32_t height = static_cast<uint32_t>(rhs.shape()[0]);
 
    boost::multi_array<bool, 2> result(boost::extents[height][width]);
 
@@ -171,8 +171,8 @@ void SatelliteImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    const RiverMapArrayType&  rivermap  = world_.GetRiverMapData();
    const LakeMapArrayType&   lakemap   = world_.GetLakeMapData();
 
-   const uint32_t width  = biomes.shape()[1];
-   const uint32_t height = biomes.shape()[0];
+   const uint32_t width  = static_cast<uint32_t>(biomes.shape()[1]);
+   const uint32_t height = static_cast<uint32_t>(biomes.shape()[0]);
 
    auto minmaxElevation = std::minmax_element(
       elevation.data(), elevation.data() + elevation.num_elements());
@@ -255,9 +255,12 @@ void SatelliteImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
             // we attempt to average the values
             if (!r.empty())
             {
-               int32_t avgR = std::accumulate(r.begin(), r.end(), 0) / r.size();
-               int32_t avgG = std::accumulate(g.begin(), g.end(), 0) / g.size();
-               int32_t avgB = std::accumulate(b.begin(), b.end(), 0) / b.size();
+               int32_t avgR = static_cast<int32_t>(
+                  std::accumulate(r.begin(), r.end(), 0) / r.size());
+               int32_t avgG = static_cast<int32_t>(
+                  std::accumulate(g.begin(), g.end(), 0) / g.size());
+               int32_t avgB = static_cast<int32_t>(
+                  std::accumulate(b.begin(), b.end(), 0) / b.size());
 
                // Set the color of the pixel again
                target(x, y) = boost::gil::rgb8_pixel_t(avgR, avgG, avgB);
@@ -312,8 +315,8 @@ void SatelliteImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
             float difference = elevation[y][x] - avgPrevElev;
 
             // Amplify the difference
-            int32_t adjustedDifference =
-               difference * SAT_SHADOW_DISTANCE_MULTIPLIER;
+            int32_t adjustedDifference = static_cast<int32_t>(
+               difference * SAT_SHADOW_DISTANCE_MULTIPLIER);
 
             // The amplified difference is now translated into the RGB of the
             // tile. This adds light to tiles higher than the previous average,
@@ -445,12 +448,13 @@ SatelliteImage::GetNormalizedElevationArray() const
       {
          if (ocean[y][x])
          {
-            c[y][x] = std::roundf((e[y][x] - minElevSea) * 127 / elevDeltaSea);
+            c[y][x] = static_cast<uint8_t>(
+               std::roundf((e[y][x] - minElevSea) * 127 / elevDeltaSea));
          }
          else
          {
-            c[y][x] =
-               std::roundf((e[y][x] - minElevLand) * 127 / elevDeltaLand + 128);
+            c[y][x] = static_cast<uint8_t>(std::roundf(
+               (e[y][x] - minElevLand) * 127 / elevDeltaLand + 128));
          }
       }
    }

@@ -34,10 +34,13 @@ static void IrrigationExecute(World& world)
       boost::extents[radius * 2 + 1][radius * 2 + 1]);
    for (int32_t y = 0; y <= radius * 2; y++)
    {
-      float dy = y - radius; // Y distance to center: [-10, 10]
+      // Y distance to center: [-10, 10]
+      float dy = static_cast<float>(y - radius);
+
       for (int32_t x = 0; x <= radius * 2; x++)
       {
-         float dx = x - radius; // X distance to center: [-10, 10]
+         // X distance to center: [-10, 10]
+         float dx = static_cast<float>(x - radius);
 
          // Calculate final matrix: ln(sqrt(x^2 + y^2) + 1) + 1
          logs[y][x] = log1pf(sqrtf(dx * dx + dy * dy)) + 1;

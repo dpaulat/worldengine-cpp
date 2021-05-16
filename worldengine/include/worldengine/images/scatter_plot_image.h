@@ -10,7 +10,7 @@ namespace WorldEngine
 class ScatterPlotImage : public Image
 {
 public:
-   explicit ScatterPlotImage(const World& world, size_t size);
+   explicit ScatterPlotImage(const World& world, uint32_t size);
    ~ScatterPlotImage();
 
 protected:
@@ -21,6 +21,6 @@ protected:
    void DrawImage(boost::gil::rgb8_image_t::view_t& target) override;
 
 private:
-   const size_t size_;
+   const uint32_t size_;
 };
 } // namespace WorldEngine

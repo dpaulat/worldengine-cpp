@@ -54,8 +54,8 @@ void BiomeImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
 {
    const BiomeArrayType& biomes = world_.GetBiomeData();
 
-   const uint32_t width  = biomes.shape()[1];
-   const uint32_t height = biomes.shape()[0];
+   const uint32_t width  = static_cast<uint32_t>(biomes.shape()[1]);
+   const uint32_t height = static_cast<uint32_t>(biomes.shape()[0]);
 
    for (uint32_t y = 0; y < height; y++)
    {

@@ -56,7 +56,7 @@ void ElevationImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
          else
          {
             elevation = ((e[y][x] - minElev) / elevDelta);
-            int c     = 255 - elevation * 255;
+            int32_t c = static_cast<int32_t>(255 - elevation * 255);
 
             if (shadow_ && y > 2 && x > 2)
             {

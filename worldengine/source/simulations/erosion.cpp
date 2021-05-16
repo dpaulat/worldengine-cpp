@@ -356,6 +356,9 @@ static std::list<Point> RiverSources(const World&              world,
                                      const WaterPathArrayType& waterPath,
                                      WaterFlowArrayType&       waterFlow)
 {
+   const int32_t width  = world.width();
+   const int32_t height = world.height();
+
    /*
     * Using the wind and rainfall data, create river "seeds" by flowing rainfall
     * along paths until a "flow" threshold is reached and we ahve a beginning of
@@ -373,9 +376,9 @@ static std::list<Point> RiverSources(const World&              world,
    // water flow threshold.  These are our river sources and we mark them as
    // rivers.  While looking, the cells with no outgoing flow, above water flow
    // threshold are still above sea level and marked as "sources".
-   for (int32_t y = 0; y < world.height(); y++)
+   for (int32_t y = 0; y < height; y++)
    {
-      for (int32_t x = 0; x < world.width(); x++)
+      for (int32_t x = 0; x < width; x++)
       {
          if (waterPath[y][x] == Direction::Center)
          {

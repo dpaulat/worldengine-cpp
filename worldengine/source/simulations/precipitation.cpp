@@ -42,9 +42,9 @@ static void PrecipitationCalculation(World& world, uint32_t seed)
 
    OpenSimplexNoise::Noise noise(distribution(generator));
 
-   uint32_t width  = world.width();
-   uint32_t height = world.height();
-   int32_t  border = width / 4;
+   const int32_t width  = world.width();
+   const int32_t height = world.height();
+   const int32_t border = width / 4;
 
    float curveGamma = world.gammaCurve();
    float curveBonus = world.curveOffset();
@@ -57,18 +57,18 @@ static void PrecipitationCalculation(World& world, uint32_t seed)
    float    freq    = 64.0f * octaves;
    float    nScale  = 1024.0f / static_cast<float>(height);
 
-   for (uint32_t y = 0; y < height; y++)
+   for (int32_t y = 0; y < height; y++)
    {
-      for (uint32_t x = 0; x < width; x++)
+      for (int32_t x = 0; x < width; x++)
       {
-         float n = Noise(noise, //
-                         x * nScale / freq,
-                         y * nScale / freq,
-                         octaves);
+         double n = Noise(noise, //
+                          x * nScale / freq,
+                          y * nScale / freq,
+                          octaves);
 
          if (x <= border)
          {
-            n *= static_cast<float>(x) / border;
+            n *= static_cast<double>(x) / border;
             n += Noise(noise,
                        (x * nScale + width) / freq,
                        y * nScale / freq,
@@ -76,7 +76,7 @@ static void PrecipitationCalculation(World& world, uint32_t seed)
                  (border - x) / border;
          }
 
-         precipitation[y][x] = n;
+         precipitation[y][x] = static_cast<float>(n);
       }
    }
 
@@ -101,9 +101,9 @@ static void PrecipitationCalculation(World& world, uint32_t seed)
    BOOST_LOG_TRIVIAL(debug)
       << "Temperature minmax: " << minTemp << ", " << maxTemp;
 
-   for (uint32_t y = 0; y < height; y++)
+   for (int32_t y = 0; y < height; y++)
    {
-      for (uint32_t x = 0; x < width; x++)
+      for (int32_t x = 0; x < width; x++)
       {
          // Normalize temperature and precipitation arrays
          float t = (temperature[y][x] - minTemp) / tempDelta;
@@ -150,9 +150,9 @@ static void PrecipitationCalculation(World& world, uint32_t seed)
    BOOST_LOG_TRIVIAL(debug)
       << "Precipitation minmax (modified): " << minPrecip << ", " << maxPrecip;
 
-   for (uint32_t y = 0; y < height; y++)
+   for (int32_t y = 0; y < height; y++)
    {
-      for (uint32_t x = 0; x < width; x++)
+      for (int32_t x = 0; x < width; x++)
       {
          precipitation[y][x] =
             (precipitation[y][x] - minPrecip) / precipDelta * 2 - 1;

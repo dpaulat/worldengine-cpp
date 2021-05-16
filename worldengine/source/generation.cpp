@@ -24,10 +24,10 @@ namespace WorldEngine
 typedef std::pair<uint32_t, uint32_t> CoordType;
 
 static void Around(std::vector<CoordType>& coordList,
-                   uint32_t                x,
-                   uint32_t                y,
-                   uint32_t                width,
-                   uint32_t                height);
+                   int32_t                 x,
+                   int32_t                 y,
+                   int32_t                 width,
+                   int32_t                 height);
 
 /**
  * @brief Fill the ocean from the borders of the map
@@ -75,7 +75,7 @@ void AddNoiseToElevation(World& world, uint32_t seed)
       for (uint32_t x = 0; x < world.width(); x++)
       {
          double n = Noise(noise, x / freq * 2.0, y / freq * 2.0, octaves);
-         elevation[y][x] += n;
+         elevation[y][x] += static_cast<float>(n);
       }
    }
 }
@@ -95,8 +95,8 @@ void CenterLand(World& world)
          std::accumulate(elevation[y].begin(), elevation[y].end(), 0.0f);
       rowSums.push_back(sum);
    }
-   int32_t yWithMinSum =
-      std::min_element(rowSums.cbegin(), rowSums.cend()) - rowSums.cbegin();
+   int32_t yWithMinSum = static_cast<int32_t>(
+      std::min_element(rowSums.cbegin(), rowSums.cend()) - rowSums.cbegin());
    BOOST_LOG_TRIVIAL(debug)
       << "CenterLand(): Height complete (min y = " << yWithMinSum << ")";
 
@@ -109,8 +109,8 @@ void CenterLand(World& world)
          std::accumulate(colView.begin(), colView.end(), 0.0f);
       colSums.push_back(sum);
    }
-   int32_t xWithMinSum =
-      std::min_element(colSums.cbegin(), colSums.cend()) - colSums.cbegin();
+   int32_t xWithMinSum = static_cast<int32_t>(
+      std::min_element(colSums.cbegin(), colSums.cend()) - colSums.cbegin());
    BOOST_LOG_TRIVIAL(debug)
       << "CenterLand(): Width complete (min x = " << xWithMinSum << ")";
 
@@ -196,8 +196,8 @@ void InitializeOceanAndThresholds(World& world, float oceanLevel)
 
    FillOcean(ocean, e, oceanLevel);
 
-   float hl = FindThresholdF(e, 0.10); // Highest 10% of land is hills
-   float ml = FindThresholdF(e, 0.03); // Highest 3% of land is mountains
+   float hl = FindThresholdF(e, 0.10f); // Highest 10% of land is hills
+   float ml = FindThresholdF(e, 0.03f); // Highest 3% of land is mountains
    world.SetThreshold(ElevationThreshold::Sea, oceanLevel);
    world.SetThreshold(ElevationThreshold::Hill, hl);
    world.SetThreshold(ElevationThreshold::Mountain, ml);
@@ -238,19 +238,19 @@ void PlaceOceansAtMapBorders(World& world)
 }
 
 static void Around(std::vector<CoordType>& coordList,
-                   uint32_t                x,
-                   uint32_t                y,
-                   uint32_t                width,
-                   uint32_t                height)
+                   int32_t                 x,
+                   int32_t                 y,
+                   int32_t                 width,
+                   int32_t                 height)
 {
-   for (int dy = -1; dy <= 1; dy++)
+   for (int32_t dy = -1; dy <= 1; dy++)
    {
-      int ny = y + dy;
+      int32_t ny = y + dy;
       if (0 <= ny && ny < height)
       {
-         for (int dx = -1; dx <= 1; dx++)
+         for (int32_t dx = -1; dx <= 1; dx++)
          {
-            int nx = x + dx;
+            int32_t nx = x + dx;
             if (0 <= nx && nx < width && (dx != 0 || dy != 0))
             {
                coordList.push_back(CoordType(nx, ny));
@@ -264,8 +264,8 @@ static void FillOcean(OceanArrayType&           ocean,
                       const ElevationArrayType& elevation,
                       float                     seaLevel)
 {
-   uint32_t height = elevation.shape()[0];
-   uint32_t width  = elevation.shape()[1];
+   const uint32_t height = static_cast<uint32_t>(elevation.shape()[0]);
+   const uint32_t width  = static_cast<uint32_t>(elevation.shape()[1]);
 
    ocean.resize(boost::extents[height][width]);
 
@@ -328,8 +328,8 @@ static void HarmonizeOcean(const OceanArrayType& ocean,
                            ElevationArrayType&   elevation,
                            float                 oceanLevel)
 {
-   uint32_t width  = ocean.shape()[1];
-   uint32_t height = ocean.shape()[0];
+   const uint32_t width  = static_cast<uint32_t>(ocean.shape()[1]);
+   const uint32_t height = static_cast<uint32_t>(ocean.shape()[0]);
 
    float shallowSea = oceanLevel * 0.85f;
    float midpoint   = shallowSea / 2.0f;
@@ -358,8 +358,8 @@ static void HarmonizeOcean(const OceanArrayType& ocean,
 static boost::multi_array<int32_t, 2>
 NextLandDynamic(const OceanArrayType& ocean, int32_t maxRadius)
 {
-   const int32_t width  = ocean.shape()[1];
-   const int32_t height = ocean.shape()[0];
+   const int32_t width  = static_cast<int32_t>(ocean.shape()[1]);
+   const int32_t height = static_cast<int32_t>(ocean.shape()[0]);
 
    boost::multi_array<int32_t, 2> nextLand(boost::extents[height][width]);
 

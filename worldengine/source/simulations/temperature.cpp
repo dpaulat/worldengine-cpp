@@ -12,7 +12,7 @@
 namespace WorldEngine
 {
 
-static const float SQRT_2XLN2 = sqrtf(2 * log(2));
+static const float SQRT_2XLN2 = sqrtf(2 * logf(2));
 
 static void TemperatureCalculation(World&              world,
                                    uint32_t            seed,
@@ -60,8 +60,8 @@ static void TemperatureCalculation(World&              world,
 
    OpenSimplexNoise::Noise noise(distribution(generator));
 
-   uint32_t width  = world.width();
-   uint32_t height = world.height();
+   const int32_t width  = world.width();
+   const int32_t height = world.height();
 
    TemperatureArrayType& temperature = world.GetTemperatureData();
    temperature.resize(boost::extents[height][width]);
@@ -119,7 +119,7 @@ static void TemperatureCalculation(World&              world,
                                                   {axialTilt, 1.0f},
                                                   {axialTilt + 0.5f, 0.0f}};
 
-   for (uint32_t y = 0; y < height; y++)
+   for (int32_t y = 0; y < height; y++)
    {
       // yScaled = -0.5..0.5
       float yScaled = static_cast<float>(y) / static_cast<float>(height) - 0.5f;
@@ -130,17 +130,17 @@ static void TemperatureCalculation(World&              world,
       //     0.0 = coldest zone
       float latitudeFactor = Interpolate(yScaled, points);
 
-      for (uint32_t x = 0; x < width; x++)
+      for (int32_t x = 0; x < width; x++)
       {
-         float n = Noise(noise, //
-                         x * nScale / freq,
-                         y * nScale / freq,
-                         octaves);
+         double n = Noise(noise, //
+                          x * nScale / freq,
+                          y * nScale / freq,
+                          octaves);
 
          // Added to allow noise pattern to wrap around right and left
          if (x <= border)
          {
-            n *= static_cast<float>(x) / border;
+            n *= static_cast<double>(x) / border;
             n += Noise(noise,
                        (x * nScale + width) / freq,
                        y * nScale / freq,
@@ -148,7 +148,8 @@ static void TemperatureCalculation(World&              world,
                  (border - x) / border;
          }
 
-         float t = (latitudeFactor * 12 + n) / 13.0f / distanceToSun;
+         float t = static_cast<float>((latitudeFactor * 12 + n) / 13.0 /
+                                      distanceToSun);
 
          // Vary temperature based on height
          if (elevation[y][x] > mountainLevel)
