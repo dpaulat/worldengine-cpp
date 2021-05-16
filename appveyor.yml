@@ -41,5 +41,8 @@ artifacts:
 
 test_script:
   - cmd: cd bin
-  - cmd: worldengine-test.exe
+  - cmd: worldengine-test.exe --gtest_output=xml:worldengine-test.xml
   - cmd: cd ..
+
+after_test:
+  - ps: (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\worldengine-test.xml))
