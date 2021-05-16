@@ -33,7 +33,7 @@ std::string GenerateTemporaryFilename(const std::string& prefix,
 #ifdef _MSC_VER
    localtime_s(&time, &t);
 #else
-   localtime_s(&t, &time);
+   localtime_r(&t, &time);
 #endif
    std::ostringstream oss;
    oss << std::put_time(&time, "%Y%m%dT%H%M%S");
