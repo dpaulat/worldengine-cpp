@@ -2,8 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include <filesystem>
-
+#include <boost/filesystem.hpp>
 #include <boost/gil/extension/io/png.hpp>
 
 #include <worldengine/images/ancient_map_image.h>
@@ -119,7 +118,8 @@ TEST_F(ImageTest, ElevationNoShadowTest)
    ElevationImage image(*w_, false);
    image.Draw(filename_);
 
-   const std::string goldenImage = GoldenImagePath("seed_1618_elevation_no_shadow.png");
+   const std::string goldenImage =
+      GoldenImagePath("seed_1618_elevation_no_shadow.png");
 
    CompareImages(filename_, goldenImage);
 }
@@ -191,8 +191,7 @@ TEST_F(ImageTest, ScatterPlotTest)
    ScatterPlotImage image(*w_, 512u);
    image.Draw(filename_);
 
-   const std::string goldenImage =
-      GoldenImagePath("seed_1618_scatter.png");
+   const std::string goldenImage = GoldenImagePath("seed_1618_scatter.png");
 
    CompareImages(filename_, goldenImage);
 }
@@ -230,7 +229,7 @@ TEST_F(ImageTest, WorldTest)
 template<typename ImageType>
 static void CompareImages(const std::string& file1, const std::string& file2)
 {
-   ASSERT_EQ(std::filesystem::exists(file2), true);
+   ASSERT_EQ(boost::filesystem::exists(file2), true);
 
    ImageType                                            image1;
    ImageType                                            image2;

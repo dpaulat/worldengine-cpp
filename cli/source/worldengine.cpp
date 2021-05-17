@@ -1,13 +1,13 @@
 #include "worldengine.h"
 #include "types.h"
 
-#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <random>
 
 #include <boost/assign.hpp>
 #include <boost/bind/bind.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
@@ -816,9 +816,9 @@ static int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
 {
    int status = 0;
 
-   if (std::filesystem::exists(args.outputDir))
+   if (boost::filesystem::exists(args.outputDir))
    {
-      if (!std::filesystem::is_directory(args.outputDir))
+      if (!boost::filesystem::is_directory(args.outputDir))
       {
          BOOST_LOG_TRIVIAL(error)
             << "Output directory exists, but is not a directory: "
@@ -830,7 +830,7 @@ static int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
    {
       BOOST_LOG_TRIVIAL(info)
          << "Creating output directory: " << args.outputDir;
-      std::filesystem::create_directory(args.outputDir);
+      boost::filesystem::create_directory(args.outputDir);
    }
 
    if (args.operation == OperationType::Info ||
@@ -842,8 +842,8 @@ static int ValidateArguments(ArgumentsType& args, const po::variables_map& vm)
             << "For operations info and export, file parameter is required";
          status = -1;
       }
-      else if (!std::filesystem::exists(args.file) ||
-               std::filesystem::is_directory(args.file))
+      else if (!boost::filesystem::exists(args.file) ||
+               boost::filesystem::is_directory(args.file))
       {
          BOOST_LOG_TRIVIAL(error) << "The specified world file does not exist";
          status = -1;

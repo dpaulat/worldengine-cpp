@@ -18,6 +18,7 @@ conan_cmake_configure(REQUIRES boost/1.76.0
                                hdf5/1.12.0
                                libpng/1.6.37
                                protobuf/3.15.5
+                               xz_utils/5.2.5 # Dependency override for conflict
                       GENERATORS cmake
                                  cmake_find_package
                                  cmake_paths

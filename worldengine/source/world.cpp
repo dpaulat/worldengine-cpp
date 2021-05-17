@@ -92,21 +92,23 @@ std::ostream& operator<<(std::ostream& os, const boost::multi_array<T, 2>& a)
 namespace WorldEngine
 {
 
+template<class T, class U>
+static U DefaultTransform(const T& value)
+{
+   return static_cast<U>(value);
+}
+
 template<class T, class U, class V = T>
 static void ToProtobufMatrix(
    const boost::multi_array<T, 2>&   source,
    U*                                pbMatrix,
-   const std::function<V(const T&)>& transform = [](const T& value) {
-      return value;
-   });
+   const std::function<V(const T&)>& transform = &DefaultTransform<T, V>);
 
 template<class T, class U, class V = U>
 static void FromProtobufMatrix(
    const T&                          pbMatrix,
    boost::multi_array<U, 2>&         dest,
-   const std::function<U(const V&)>& transform = [](const V& value) {
-      return value;
-   });
+   const std::function<U(const V&)>& transform = &DefaultTransform<V, U>);
 
 static int32_t WorldengineTag();
 static int32_t VersionHashcode();

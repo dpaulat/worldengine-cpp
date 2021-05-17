@@ -2,7 +2,9 @@
 
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
+#if __GNUC_PREREQ(9, 0)
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#endif
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 

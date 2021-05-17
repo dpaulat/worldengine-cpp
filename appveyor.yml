@@ -1,7 +1,17 @@
 version: 0.19.0.{build}
 
-image:
-  - Visual Studio 2019
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      PYTHON: "C:\\Python39-x64"
+      PYTHON_ARCH: "64"
+      CMAKE_GENERATOR: "Visual Studio 16 2019"
+      DEPLOY_ARTIFACTS: "build\\worldengine.zip"
+
+    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+      PYTHON: "3.9"
+      CMAKE_GENERATOR: "Ninja"
+      DEPLOY_ARTIFACTS: "build/worldengine.zip"
 
 platform:
   - x64
@@ -10,59 +20,89 @@ configuration:
   - Debug
   - Release
 
-environment:
-  matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      PYTHON: "C:\\Python39-x64"
-      PYTHON_VERSION: "3.9.1"
-      PYTHON_ARCH: "64"
+matrix:
+  exclude:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+      configuration: Debug
 
-stack: python %PYTHON_VERSION%
+stack: python %PYTHON%
 
 install:
-  - cmd: git submodule update --init --recursive
-  - cmd: echo "Downloading conan..."
-  - cmd: set PATH=%PYTHON%;%PYTHON%\Scripts\;%PATH%
-  - cmd: python.exe --version
-  - cmd: pip.exe --version
-  - cmd: pip.exe install conan
-  - cmd: conan user # Create the conan data directory
-  - cmd: conan --version
-  - cmd: pip.exe install sphinx
-  - cmd: choco install opencppcoverage codecov
+  - cmd: set PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
   - cmd: set PATH=C:\Program Files\OpenCppCoverage;%PATH%
+  - ps: |
+      git submodule update --init --recursive
+      python --version
+      pip --version
+      
+      Write-Host "Downloading conan..."
+      pip install conan
+      conan user
+      conan --version
+      
+      Write-Host "Downloading sphinx..."
+      pip install sphinx
+      
+      if (${env:CONFIGURATION} -eq "Debug")
+      {
+        Write-Host "Downloading coverage tools..."
+        choco install opencppcoverage codecov
+        
+        $env:COVERAGE_ARTIFACTS = "build\bin\coverage.xml"
+        $env:COVERAGE_NAME = "Coverage"
+      }
+      else
+      {
+        $env:COVERAGE_ARTIFACTS = "$env:APPVEYOR_REPO_COMMIT"
+        $env:COVERAGE_NAME = "$env:COVERAGE_ARTIFACTS"
+        New-Item -Path $env:COVERAGE_ARTIFACTS
+      }
 
 build_script:
-  - cmd: mkdir build
-  - cmd: cd build
-  - cmd: cmake -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DCMAKE_CONFIGURATION_TYPE=%CONFIGURATION% -G "Visual Studio 16 2019" -A x64 ..
-  - cmd: cmake --build . --config %CONFIGURATION%
+  - ps: |
+      mkdir build
+      cd build
+      if ($isWindows)
+      {
+        cmake -DCMAKE_BUILD_TYPE="${env:CONFIGURATION}" -DCMAKE_CONFIGURATION_TYPES="${env:CONFIGURATION}" -G "${env:CMAKE_GENERATOR}" -A x64 ..
+      }
+      else
+      {
+        cmake -DCMAKE_BUILD_TYPE="${env:CONFIGURATION}" -DCMAKE_CONFIGURATION_TYPES="${env:CONFIGURATION}" -G "${env:CMAKE_GENERATOR}" ..
+      }
+      cmake --build . --config "${env:CONFIGURATION}"
 
-for:
-  -
-    matrix:
-      only:
-        - configuration: Debug
-    test_script:
-      - cmd: cd bin
-      - cmd: OpenCppCoverage --export_type cobertura:coverage.xml --cover_children --modules "%APPVEYOR_BUILD_FOLDER%\build\bin" --sources "%APPVEYOR_BUILD_FOLDER%\worldengine" --excluded_sources "%APPVEYOR_BUILD_FOLDER%\worldengine\test" -- worldengine-test.exe
-      - cmd: codecov -f coverage.xml
-      - cmd: cd ..
-    artifacts:
-      - path: build\bin\coverage.xml
-        name: Coverage
-  -
-    matrix:
-      only:
-        - configuration: Release
-    after_build:
-      - cmd: 7z a worldengine.zip %APPVEYOR_BUILD_FOLDER%\build\bin\worldengine.exe %APPVEYOR_BUILD_FOLDER%\build\bin\*.dll %APPVEYOR_BUILD_FOLDER%\build\lib\*
-    test_script:
-      - cmd: cd bin
-      - cmd: worldengine-test.exe --gtest_output=xml:worldengine-test.xml
-      - cmd: cd ..
-    after_test:
-      - ps: (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\worldengine-test.xml))
-    artifacts:
-      - path: build\worldengine.zip
-        name: WorldEngine
+after_build:
+  - ps: |
+      if ($isWindows)
+      {
+        7z a worldengine.zip ${env:APPVEYOR_BUILD_FOLDER}\build\bin\worldengine.exe ${env:APPVEYOR_BUILD_FOLDER}\build\bin\*.dll ${env:APPVEYOR_BUILD_FOLDER}\build\lib\*
+      }
+      else
+      {
+        7z a worldengine.zip ${env:APPVEYOR_BUILD_FOLDER}/build/bin/worldengine ${env:APPVEYOR_BUILD_FOLDER}/build/lib/*
+      }
+
+test_script:
+  - ps: |
+      cd bin
+      if (${env:CONFIGURATION} -eq "Debug")
+      {
+        OpenCppCoverage --export_type cobertura:coverage.xml --cover_children --modules "${env:APPVEYOR_BUILD_FOLDER}\build\bin" --sources "${env:APPVEYOR_BUILD_FOLDER}\worldengine" --excluded_sources "${env:APPVEYOR_BUILD_FOLDER}\worldengine\test" -- .\worldengine-test.exe --gtest_output=xml:worldengine-test.xml
+        codecov -f coverage.xml
+      }
+      else
+      {
+        ./worldengine-test --gtest_output=xml:worldengine-test.xml
+      }
+      cd ..
+
+after_test:
+  - ps: |
+      (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path ./bin/worldengine-test.xml))
+
+artifacts:
+  - path: $(DEPLOY_ARTIFACTS)
+    name: WorldEngine
+  - path: $(COVERAGE_ARTIFACTS)
+    name: $(COVERAGE_NAME)

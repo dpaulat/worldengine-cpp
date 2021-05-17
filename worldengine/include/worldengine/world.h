@@ -12,7 +12,9 @@
 #pragma warning(disable : 4459)
 #elif defined(__GNUC__)
 #pragma GCC diagnostic push
+#if __GNUC_PREREQ(9, 0)
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#endif
 #endif
 
 #include <boost/multi_array.hpp>
