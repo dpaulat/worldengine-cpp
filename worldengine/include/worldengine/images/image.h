@@ -2,7 +2,16 @@
 
 #include "worldengine/world.h"
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4714)
+#endif
+
 #include <boost/gil.hpp>
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 namespace WorldEngine
 {
