@@ -1,9 +1,20 @@
 #include "basic.h"
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
 #include <boost/log/trivial.hpp>
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+
+#if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4554)
 #pragma warning(disable : 26450)
@@ -11,8 +22,13 @@
 #pragma warning(disable : 26454)
 #pragma warning(disable : 26495)
 #pragma warning(disable : 26812)
+#endif
+
 #include <eigen3/unsupported/Eigen/CXX11/Tensor>
+
+#if defined(_MSC_VER)
 #pragma warning(pop)
+#endif
 
 #include <OpenSimplexNoise.h>
 

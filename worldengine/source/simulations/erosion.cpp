@@ -35,12 +35,6 @@ static const Direction dirNeighbors_[] = {Direction::North, //
                                           Direction::South,
                                           Direction::West};
 
-static const Direction dirNeighborsCenter_[] = {Direction::Center, //
-                                                Direction::North,  //
-                                                Direction::East,
-                                                Direction::South,
-                                                Direction::West};
-
 static bool wrap_ = true;
 
 static const float RIVER_THRESHOLD = 0.02f;
@@ -230,8 +224,8 @@ FindLowerElevation(const World& world, int32_t x, int32_t y)
    float   lowestElevation = e[y][x];
    bool    found           = false;
    bool    isWrapped       = false;
-   int32_t destX;
-   int32_t destY;
+   int32_t destX = -1;
+   int32_t destY = -1;
 
    std::vector<Point> wrapped;
    while (!found && currentRadius <= maxRadius)

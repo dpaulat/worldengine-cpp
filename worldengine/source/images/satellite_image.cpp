@@ -180,11 +180,6 @@ void SatelliteImage::DrawImage(boost::gil::rgb8_image_t::view_t& target)
    const uint32_t width  = static_cast<uint32_t>(biomes.shape()[1]);
    const uint32_t height = static_cast<uint32_t>(biomes.shape()[0]);
 
-   auto minmaxElevation = std::minmax_element(
-      elevation.data(), elevation.data() + elevation.num_elements());
-   const float minElevation = *minmaxElevation.first;
-   const float maxElevation = *minmaxElevation.second;
-
    // Re-seed the engine
    generator_.seed(seed_);
 

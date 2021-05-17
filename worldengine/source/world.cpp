@@ -2,18 +2,25 @@
 
 #include <random>
 
+#if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4244)
+#endif
+
 #include <boost/assign.hpp>
 #include <boost/bimap.hpp>
 #include <boost/bimap/unordered_set_of.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/random.hpp>
 #include <boost/tokenizer.hpp>
+
+#if defined(_MSC_VER)
 #pragma warning(pop)
+#endif
 
 #include <hdf5/H5Cpp.h>
 
+#if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4127)
 #pragma warning(disable : 6385)
@@ -21,8 +28,18 @@
 #pragma warning(disable : 26451)
 #pragma warning(disable : 26495)
 #pragma warning(disable : 26812)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wtype-limits"
+#endif
+
 #include <World.pb.h>
+
+#if defined(_MSC_VER)
 #pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 namespace std
 {

@@ -2,17 +2,20 @@
 
 #include <unordered_map>
 
+#if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 26812)
-#include <boost/log/trivial.hpp>
-#pragma warning(pop)
+#endif
 
-#pragma warning(push)
-#pragma warning(disable : 26812)
+#include <boost/log/trivial.hpp>
+
 #include <gdal_priv.h>
 #include <cpl_conv.h>
 #include <gdal_utils.h>
+
+#if defined(_MSC_VER)
 #pragma warning(pop)
+#endif
 
 namespace WorldEngine
 {

@@ -3,9 +3,20 @@
 
 #include <random>
 
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 #include <boost/log/trivial.hpp>
 #include <boost/multiprecision/integer.hpp>
 #include <boost/random.hpp>
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+
 
 namespace bm = boost::multiprecision;
 

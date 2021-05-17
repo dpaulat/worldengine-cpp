@@ -1,10 +1,16 @@
 #include "worldengine/images/image.h"
 #include "../basic.h"
 
+#if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4996)
+#endif
+
 #include <boost/gil/extension/io/png.hpp>
+
+#if defined(_MSC_VER)
 #pragma warning(pop)
+#endif
 
 #include <boost/log/trivial.hpp>
 

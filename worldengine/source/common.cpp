@@ -30,11 +30,13 @@ std::string GenerateTemporaryFilename(const std::string& prefix,
 {
    time_t t = std::time(nullptr);
    tm     time;
-#ifdef _MSC_VER
+
+#if defined(_MSC_VER)
    localtime_s(&time, &t);
 #else
    localtime_r(&t, &time);
 #endif
+
    std::ostringstream oss;
    oss << std::put_time(&time, "%Y%m%dT%H%M%S");
    return std::string(prefix + oss.str() + suffix);

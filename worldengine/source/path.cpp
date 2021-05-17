@@ -24,8 +24,8 @@ struct Node
    Node(Point location, float movementCost, NodePtr parent = nullptr) :
        location_(location),
        movementCost_(movementCost),
-       parent_(parent),
-       score_(0.0f)
+       score_(0.0f),
+       parent_(parent)
    {
    }
 };
