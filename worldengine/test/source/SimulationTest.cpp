@@ -31,7 +31,7 @@ TEST(SimulationTest, RandomLandTest)
 
    for (Point p : landSamples)
    {
-      EXPECT_EQ(w->IsOcean(p), false) << p << " is ocean";
+      EXPECT_EQ(w->IsOcean(p), false) << PointToString(p) << " is ocean";
    }
 }
 

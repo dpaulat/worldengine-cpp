@@ -6,6 +6,7 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
 #include <boost/accumulators/accumulators.hpp>
@@ -24,12 +25,17 @@
 #pragma warning(disable : 26454)
 #pragma warning(disable : 26495)
 #pragma warning(disable : 26812)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
 #include <eigen3/unsupported/Eigen/CXX11/Tensor>
 
 #if defined(_MSC_VER)
 #pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif
 
 #include <OpenSimplexNoise.h>

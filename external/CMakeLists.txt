@@ -25,4 +25,6 @@ endif()
 set(OPENSIMPLEX_NOISE_INCLUDE_DIR ${WORLDENGINE_DIR}/external/OpenSimplexNoise/OpenSimplexNoise PARENT_SCOPE)
 add_library(OpenSimplexNoise OpenSimplexNoise/OpenSimplexNoise/OpenSimplexNoise.cpp
                              OpenSimplexNoise/OpenSimplexNoise/OpenSimplexNoise.h)
-                             
+set_target_properties(OpenSimplexNoise PROPERTIES CXX_STANDARD 11
+                                                  CXX_STANDARD_REQUIRED ON
+                                                  CXX_EXTENSIONS OFF)

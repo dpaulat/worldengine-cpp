@@ -12,6 +12,9 @@
 #pragma warning(disable : 4459)
 #elif defined(__GNUC__)
 #pragma GCC diagnostic push
+#ifndef __GNUC_PREREQ
+#define __GNUC_PREREQ(maj, min) 0
+#endif
 #if __GNUC_PREREQ(9, 0)
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif

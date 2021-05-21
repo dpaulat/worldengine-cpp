@@ -181,8 +181,11 @@ void Image::Draw(const std::string& filename, bool blackAndWhite)
    }
    else
    {
-      boost::gil::gray8_image_t         image(world_.width() * scale_,
-                                      world_.height() * scale_);
+      boost::gil::gray8_image_t image(
+         static_cast<boost::gil::gray8_image_t::x_coord_t>(world_.width()) *
+            scale_,
+         static_cast<boost::gil::gray8_image_t::y_coord_t>(world_.height()) *
+            scale_);
       boost::gil::gray8_image_t::view_t view = boost::gil::view(image);
 
       DrawImage(view);

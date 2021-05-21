@@ -5,12 +5,17 @@
 #if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4714)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
 #include <boost/gil.hpp>
 
 #if defined(_MSC_VER)
 #pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif
 
 namespace WorldEngine
