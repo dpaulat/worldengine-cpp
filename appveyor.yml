@@ -13,6 +13,12 @@ environment:
       CMAKE_GENERATOR: "Ninja"
       DEPLOY_ARTIFACTS: "build/worldengine.zip"
 
+    - APPVEYOR_BUILD_WORKER_IMAGE: macos
+      PYTHON: "3.9"
+      CMAKE_GENERATOR: "Ninja"
+      DEPLOY_ARTIFACTS: "build/worldengine.zip"
+      MACOSX_DEPLOYMENT_TARGET: "10.15"
+
 platform:
   - x64
 
@@ -23,6 +29,8 @@ configuration:
 matrix:
   exclude:
     - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+      configuration: Debug
+    - APPVEYOR_BUILD_WORKER_IMAGE: macos
       configuration: Debug
 
 stack: python %PYTHON%
@@ -39,9 +47,23 @@ install:
       pip install conan
       conan user
       conan --version
+      conan config init
+      
+      if ($isMacOS)
+      {
+        conan profile update settings.os.version=${env:MACOSX_DEPLOYMENT_TARGET} default
+      }
+      
+      conan profile show default
       
       Write-Host "Downloading sphinx..."
       pip install sphinx
+      
+      if ($isMacOS)
+      {
+        Write-Host "Downloading ninja..."
+        pip install ninja
+      }
       
       if (${env:CONFIGURATION} -eq "Debug")
       {
