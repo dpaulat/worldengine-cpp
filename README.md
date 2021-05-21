@@ -1,7 +1,10 @@
 WorldEngine C++ - A World Generator
 =========================
 
-[![Build status](https://ci.appveyor.com/api/projects/status/e7p7qcbudxtykyaw?svg=true)](https://ci.appveyor.com/project/dpaulat/worldengine-cpp) [![codecov](https://codecov.io/gh/dpaulat/worldengine-cpp/branch/master/graph/badge.svg?token=YNHWU3LW7O)](https://codecov.io/gh/dpaulat/worldengine-cpp) [![Documentation Status](https://readthedocs.org/projects/worldengine-cpp/badge/?version=latest)](http://worldengine-cpp.readthedocs.io/en/latest/)
+Branch          | AppVeyor | CodeQL | codecov.io | Docs |
+:-------------: | -------- | ------ | ---------- | ---- |
+[`master`](https://github.com/dpaulat/worldengine-cpp/tree/master) | [![Build status](https://ci.appveyor.com/api/projects/status/e7p7qcbudxtykyaw/branch/master?svg=true)](https://ci.appveyor.com/project/dpaulat/worldengine-cpp/branch/master) | [![CodeQL](https://github.com/dpaulat/worldengine-cpp/workflows/CodeQL/badge.svg?branch=master)](https://github.com/dpaulat/worldengine-cpp/security/code-scanning?query=ref%3Arefs%2Fheads%2Fmaster) | [![codecov](https://codecov.io/gh/dpaulat/worldengine-cpp/branch/master/graph/badge.svg?token=YNHWU3LW7O)](https://codecov.io/gh/dpaulat/worldengine-cpp/branch/master) | [![Documentation Status](https://readthedocs.org/projects/worldengine-cpp/badge/?version=master)](http://worldengine-cpp.readthedocs.io/en/master/) |
+[`develop`](https://github.com/dpaulat/worldengine-cpp/tree/develop) | [![Build status](https://ci.appveyor.com/api/projects/status/e7p7qcbudxtykyaw/branch/develop?svg=true)](https://ci.appveyor.com/project/dpaulat/worldengine-cpp/branch/develop) | [![CodeQL](https://github.com/dpaulat/worldengine-cpp/workflows/CodeQL/badge.svg?branch=develop)](https://github.com/dpaulat/worldengine-cpp/security/code-scanning?query=ref%3Arefs%2Fheads%2Fdevelop) | [![codecov](https://codecov.io/gh/dpaulat/worldengine-cpp/branch/develop/graph/badge.svg?token=YNHWU3LW7O)](https://codecov.io/gh/dpaulat/worldengine-cpp/branch/develop) | [![Documentation Status](https://readthedocs.org/projects/worldengine-cpp/badge/?version=latest)](http://worldengine-cpp.readthedocs.io/en/latest/) |
 
 _The current stable version is 0.19.0_
 
