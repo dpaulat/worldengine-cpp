@@ -30,7 +30,7 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
-#include <eigen3/unsupported/Eigen/CXX11/Tensor>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 #if defined(_MSC_VER)
 #pragma warning(pop)

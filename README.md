@@ -12,7 +12,7 @@ WorldEngine C++ is based on WorldEngine by Bret Curtis and Federico Tomassetti. 
 
 - https://github.com/Mindwerks/worldengine
 
-You can generate the data for your own world, including a number of images (heigthmap, biomes, etc.).
+You can generate the data for your own world, including a number of images (heightmap, biomes, etc.).
 
 For example:
 
