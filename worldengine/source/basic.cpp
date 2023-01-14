@@ -19,6 +19,7 @@
 
 #if defined(_MSC_VER)
 #pragma warning(push)
+#pragma warning(disable : 4127)
 #pragma warning(disable : 4554)
 #pragma warning(disable : 26450)
 #pragma warning(disable : 26451)
@@ -65,7 +66,8 @@ void AntiAlias(boost::multi_array<float, 2>& mapData, size_t steps)
    auto AntiAliasStep = [&width,
                          &height,
                          &mapPart = std::as_const(mapPart),
-                         &kernel  = std::as_const(kernel)](Tensor2DMap& map) {
+                         &kernel  = std::as_const(kernel)](Tensor2DMap& map)
+   {
       // Specify first and second dimension for convolution
       static const Eigen::array<int, 2> dimensions({0, 1});
 

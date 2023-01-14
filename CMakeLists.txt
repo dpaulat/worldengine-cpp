@@ -11,14 +11,14 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 include(${PROJECT_SOURCE_DIR}/external/cmake-conan/conan.cmake)
 
-conan_cmake_configure(REQUIRES boost/1.76.0
-                               eigen/3.3.9
-                               gdal/3.2.1
+conan_cmake_configure(REQUIRES boost/1.81.0
+                               eigen/3.4.0
+                               gdal/3.5.2
                                gtest/cci.20210126
-                               hdf5/1.12.0
-                               libpng/1.6.37
-                               protobuf/3.15.5
-                               xz_utils/5.2.5 # Dependency override for conflict
+                               hdf5/1.13.1
+                               libpng/1.6.39
+                               protobuf/3.21.9
+                               zlib/1.2.13 # Dependency override for conflict
                       GENERATORS cmake
                                  cmake_find_package
                                  cmake_paths
@@ -30,7 +30,7 @@ conan_cmake_autodetect(settings)
 
 conan_cmake_install(PATH_OR_REFERENCE .
                     BUILD missing
-                    REMOTE conan-center
+                    REMOTE conancenter
                     SETTINGS ${settings})
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
