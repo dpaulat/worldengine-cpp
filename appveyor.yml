@@ -8,7 +8,7 @@ environment:
       CMAKE_GENERATOR: "Visual Studio 16 2019"
       DEPLOY_ARTIFACTS: "build\\worldengine.zip"
 
-    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
       PYTHON: "3.9"
       CMAKE_GENERATOR: "Ninja"
       DEPLOY_ARTIFACTS: "build/worldengine.zip"
@@ -22,7 +22,7 @@ configuration:
 
 matrix:
   exclude:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
       configuration: Debug
 
 stack: python %PYTHON%
