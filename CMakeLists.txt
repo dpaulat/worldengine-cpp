@@ -22,7 +22,6 @@ conan_cmake_configure(REQUIRES boost/1.81.0
                       GENERATORS cmake
                                  cmake_find_package
                                  cmake_paths
-                      BUILD_REQUIRES cmake/3.19.4
                       IMPORTS "bin, *.dll -> ./bin"
                       IMPORTS "lib, *.dylib -> ./bin")
 
