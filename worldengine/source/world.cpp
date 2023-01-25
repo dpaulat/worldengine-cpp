@@ -30,6 +30,7 @@
 #pragma warning(disable : 26812)
 #elif defined(__GNUC__)
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #pragma GCC diagnostic ignored "-Wtype-limits"
 #endif
 
