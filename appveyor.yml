@@ -36,7 +36,7 @@ install:
       pip --version
       
       Write-Host "Downloading conan..."
-      pip install conan
+      pip install "conan<2.0"
       conan user
       conan --version
       
