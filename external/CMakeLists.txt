@@ -15,6 +15,9 @@ set(BUILD_SHARED_LIBS ${TMP_BUILD_SHARED_LIBS})
 set(WITH_TESTS ${TMP_WITH_TESTS})
 unset(TMP_BUILD_SHARED_LIBS)
 unset(TMP_WITH_TESTS)
+set_target_properties(PlateTectonics PROPERTIES CXX_STANDARD 11
+                                                CXX_STANDARD_REQUIRED ON
+                                                CXX_EXTENSIONS OFF)
 
 # OpenSimplexNoise has an UNLICENSE
 if (MSVC)
