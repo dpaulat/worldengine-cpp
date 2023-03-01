@@ -15,6 +15,10 @@
 
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
+
+// Disable -Warray-bounds for empty boost::multi_array instances
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 
 
@@ -830,3 +834,7 @@ static void ScaleArray(const boost::multi_array<T, 2>& input,
 }
 
 } // namespace WorldEngine
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
