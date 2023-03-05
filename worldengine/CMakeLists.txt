@@ -120,7 +120,7 @@ if (MSVC)
                                 PROPERTIES COMPILE_FLAGS "/W4 /WX")
 else()
     set_source_files_properties(${MANUAL_SOURCES}
-                                PROPERTIES COMPILE_FLAGS "-Wall -Wextra -pedantic -Werror")
+                                PROPERTIES COMPILE_FLAGS "-Wall -Wextra -pedantic -Werror -Wno-error=deprecated-declarations -Wno-error=stringop-overflow -Wno-error=array-bounds")
 endif()
 
 target_include_directories(worldengine INTERFACE ${libworldengine_SOURCE_DIR}/include)
